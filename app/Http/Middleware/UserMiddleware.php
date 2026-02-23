@@ -16,9 +16,9 @@ class UserMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! Auth::check()) {
-            return redirect()->route('user.choose');
-        }
+        // if (! Auth::check()) {
+        //     return redirect()->route('user.choose');
+        // }
         $user = Auth::user();
 
         if ($user->is_verified == false) {

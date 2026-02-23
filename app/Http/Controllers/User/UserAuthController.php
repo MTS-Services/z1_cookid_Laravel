@@ -6,13 +6,10 @@ use App\Concerns\PasswordValidationRules;
 use App\Enums\ActiveInactive;
 use App\Enums\UserType;
 use App\Http\Controllers\Controller;
-use App\Mail\FoundingAdminRegistrationMail;
-use App\Mail\FoundingPartnerRegistrationMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -79,11 +76,6 @@ class UserAuthController extends Controller
         if (! $user) {
             return redirect()->back()->withErrors(['error' => 'Failed to register user.'])->withInput();
         }
-        // Mail::to($user->email)->send(new FoundingPartnerRegistrationMail($user));
-        if ($user->email) {
-            Mail::to($user->email)->later(now()->addSeconds(5), new FoundingPartnerRegistrationMail($user));
-        }
-        Mail::to(config('mail.from.address'))->send(new FoundingAdminRegistrationMail($user));
         Auth::login($user);
 
         return redirect()->route('user.pending-verification');

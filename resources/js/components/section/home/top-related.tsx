@@ -163,7 +163,7 @@ export default function TopRelated() {
                 <h2 className="mb-5 text-3xl font-medium text-white">
                    Top Rated Near You
                 </h2>
-                <div className="grid grid-cols-4 gap-9">
+                <div className="grid  grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-9">
                     {service.map((item) => (
                         <ServiceCard key={item.id} {...item} />
                     ))}

@@ -135,6 +135,15 @@
 
     --primary-background: #faf7ef;
 
+    --footer-bg: #020817;
+    --footer-panel: #050f24;
+    --footer-card: #081734;
+    --footer-card-highlight: #0d2147;
+    --footer-card-shadow: 0 40px 80px rgba(5, 15, 36, 0.55);
+    --footer-accent: #5c7cff;
+    --footer-accent-foreground: #f7f8ff;
+    --footer-muted: #9fb2df;
+    --footer-border: rgba(255, 255, 255, 0.08);
 }
 
 @utility container {

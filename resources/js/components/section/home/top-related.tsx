@@ -160,7 +160,7 @@ export default function TopRelated() {
             <div className="absolute inset-0 bg-black/70"></div>
             <div className="relative z-10 container flex h-full flex-col justify-center px-4">
                 {/* Card 1 */}
-                <h2 className="mb-5 text-3xl font-medium text-white">
+                <h2 className="mb-5 text-3xl font-medium text-text-white">
                    Top Rated Near You
                 </h2>
                 <div className="grid  grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-9">

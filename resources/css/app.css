@@ -92,6 +92,7 @@
     --color-bg-black-50: var(--bg-black-50);
     --color-bg-nevy: var(--bg-nevy);
     --color-bg-black-100: var(--bg-black-100);
+    --color-bg-nevy-800: var(--bg-nevy-800);
 
 
 }
@@ -179,6 +180,7 @@
     --bg-black-50: #292929;
     --bg-gray: #434343;
     --bg-nevy: #2D60C8;
+    --bg-nevy-800: #2A4FA3;
     --bg-nevy-50: #0F172A;
 }
 

@@ -24,7 +24,7 @@ class VendorAuthController extends Controller
     */
     public function showLogin()
     {
-        if(Auth::check()){
+        if (Auth::check()) {
             return redirect()->route('vendor.dashboard');
         }
         return Inertia::render('vendor/auth/login');
@@ -62,8 +62,27 @@ class VendorAuthController extends Controller
             'status'   => ActiveInactiveStatus::INACTIVE,
         ]);
 
-        return response()->json([
-            'message' => 'Vendor registered successfully. Awaiting approval.',
+        if ($vendor->otp_verified_at) {
+            Auth::login($vendor);
+            $request->session()->regenerate();
+            return redirect()->intended(route('vendor.dashboard'));
+        }
+
+        $otp = rand(100000, 999999);
+        $expiresAt = now()->addMinutes(5);
+
+        $vendor->update([
+            'otp_code' => $otp,
+            'otp_purpose' => OtpPurpose::LOGIN,
+            'otp_expires_at' => $expiresAt,
+        ]);
+
+        Mail::to($vendor->email)->send(new VendorOtpMail($vendor, $otp));
+        $request->session()->put('vendor_email', $vendor->email);
+
+        return redirect()->route('vendor.auth.otp-verify', [
+            'email' => $vendor->email,
+            'expires_at' => $expiresAt->toIso8601String(),
         ]);
     }
 

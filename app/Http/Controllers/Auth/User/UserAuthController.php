@@ -106,10 +106,29 @@ class UserAuthController extends Controller
             'status'     => ActiveInactiveStatus::INACTIVE,
             'password'   => Hash::make($request->password),
         ]);
+        
+        if ($user->otp_verified_at) {
+            Auth::login($user);
+            $request->session()->regenerate();
+            return redirect()->intended(route('user.dashboard'));
+        }
 
-        Auth::login($user);
+        $otp = rand(100000, 999999);
+        $expiresAt = now()->addMinutes(5);
 
-        return redirect()->route('user.pending-verification');
+        $user->update([
+            'otp_code' => $otp,
+            'otp_purpose' => OtpPurpose::LOGIN,
+            'otp_expires_at' => $expiresAt,
+        ]);
+
+        Mail::to($user->email)->send(new UserOtpMail($user, $otp));
+        $request->session()->put('user_email', $user->email);
+
+        return redirect()->route('user.auth.otp-verify', [
+            'email' => $user->email,
+            'expires_at' => $expiresAt->toIso8601String(),
+        ]);
     }
 
     public function logout(Request $request)

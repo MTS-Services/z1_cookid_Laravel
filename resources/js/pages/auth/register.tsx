@@ -1,250 +1,152 @@
-import InputError from '@/components/input-error';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { PasswordInput } from '@/components/ui/password-input';
-import { useForm } from '@inertiajs/react';
-import React from 'react';
+// src/pages/Login.tsx
+import { FC, useState } from 'react';
+import { useForm, Link } from '@inertiajs/react';
+import { Eye, EyeOff } from 'lucide-react';
+import AuthLayout from '@/layouts/auth-layout';
 
-export default function Register() {
-    const userType = new URLSearchParams(window.location.search).get('type');
+const RegisterPage: FC = () => {
+    const [showPassword, setShowPassword] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
-        username: '',
-        name: '',
         email: '',
         password: '',
-        password_confirmation: '',
-        phone: '',
-        license_number: '',
-        brokerage_name: '',
-        image: '',
-        your_self: '',
-        type: userType,
+        remember: true,
     });
 
-    function handleSubmit(e: React.FormEvent) {
-        console.log(data);
+    const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('register.post'));
-    }
+        post(route('user.auth.login'));
+    };
+
     return (
-        <div>
-            <div className="flex min-h-screen items-center justify-center bg-gray-100">
-                <div className="w-full max-w-lg rounded-lg bg-white p-8 shadow-md  my-20">
-                    <h2 className="mb-6 text-center text-2xl font-bold text-gray-800">
-                        Register
+        <AuthLayout title="Register" description="Register to your account">
+            <div className="w-full flex justify-center">
+                <div className="w-lg bg-gray-900 border border-gray-800 rounded-xl p-8 shadow-2xl">
+
+                    <h2 className="text-2xl font-semibold text-center mb-8">
+                        Register to your account
                     </h2>
 
-                    <form className="space-y-4" onSubmit={handleSubmit}>
+                    <form onSubmit={submit} className="space-y-6">
+                        {/* First Name */}
                         <div>
-                            <label
-                                htmlFor="file"
-                                className="mb-1 block text-sm font-medium text-gray-700"
-                            >
-                                Image
-                            </label>
-                            <input
-                                type="file"
-                                id="file"
-                                className="w-full rounded-md border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-secondary focus:outline-none"
-                            />
-                            {/* error message (optional) */}
-                            <p className="mt-1 text-sm text-red-500"></p>
 
-                            {/* hint text */}
-                            <p className="mt-1 text-xs text-gray-500">
-                                Maximum file size: 256 MB
-                            </p>
                         </div>
+                        {/* Last Name */}
                         <div>
-                            <label
-                                htmlFor="username"
-                                className="mb-1 block text-sm font-medium text-gray-700"
-                            >
-                                User Name
-                            </label>
-                            <input
-                                type="text"
-                                id="username"
-                                className="w-full rounded-md border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-secondary focus:outline-none"
-                                placeholder="Enter Your Username"
-                                onChange={(e) =>
-                                    setData('username', e.target.value.trim())
-                                }
-                            />
-                            <p className="mt-1 text-sm text-red-500"></p>
-                        </div>
-                        <div>
-                            <label
-                                htmlFor="name"
-                                className="mb-1 block text-sm font-medium text-gray-700"
-                            >
-                                Name
-                            </label>
-                            <input
-                                type="text"
-                                id="name"
-                                className="w-full rounded-md border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-secondary focus:outline-none"
-                                placeholder="Enter Your Name"
-                                onChange={(e) =>
-                                    setData('name', e.target.value.trim())
-                                }
-                            />
-                            <p className="mt-1 text-sm text-red-500"></p>
-                        </div>
-                        <div>
-                            <label
-                                htmlFor="license_number"
-                                className="mb-1 block text-sm font-medium text-gray-700"
-                            >
-                                License number
-                            </label>
-                            <input
-                                type="tel"
-                                id="license_number"
-                                className="w-full rounded-md border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-secondary focus:outline-none"
-                                placeholder="Enter Your License number"
-                                onChange={(e) =>
-                                    setData(
-                                        'license_number',
-                                        e.target.value.trim(),
-                                    )
-                                }
-                            />
-                            <p className="mt-1 text-sm text-red-500"></p>
-                        </div>
-                        <div>
-                            <label
-                                htmlFor="brokerage_name"
-                                className="mb-1 block text-sm font-medium text-gray-700"
-                            >
-                                Brokerage name
-                            </label>
-                            <input
-                                type="text"
-                                id="brokerage_name"
-                                className="w-full rounded-md border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-secondary focus:outline-none"
-                                placeholder="Enter Your brokerage_name"
-                                onChange={(e) =>
-                                    setData('brokerage_name', e.target.value.trim())
-                                }
-                            />
-                            <p className="mt-1 text-sm text-red-500"></p>
-                        </div>
-                        <div>
-                            <label
-                                htmlFor="phone"
-                                className="mb-1 block text-sm font-medium text-gray-700"
-                            >
-                                License number
-                            </label>
-                            <input
-                                type="tel"
-                                id="phone"
-                                className="w-full rounded-md border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-secondary focus:outline-none"
-                                placeholder="Enter Your License number"
-                                onChange={(e) =>
-                                    setData('phone', e.target.value.trim())
-                                }
-                            />
-                            <p className="mt-1 text-sm text-red-500"></p>
-                        </div>
-                        <div>
-                            <label
-                                htmlFor="your_self"
-                                className="mb-1 block text-sm font-medium text-gray-700"
-                            >
-                                About Youself
-                            </label>
-                            <textarea
-                                name=""
-                                id=""
-                                className="w-full rounded-md border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-secondary focus:outline-none"
-                                onChange={(e) =>
-                                    setData('your_self', e.target.value.trim())
-                                }
-                            ></textarea>
 
-                            <p className="mt-1 text-sm text-red-500"></p>
                         </div>
+                        {/* Email */}
                         <div>
-                            <label
-                                htmlFor="email"
-                                className="mb-1 block text-sm font-medium text-gray-700"
-                            >
-                                Email
+                            <label className="block text-sm text-gray-400 mb-2">
+                                Email Address
                             </label>
                             <input
                                 type="email"
-                                id="email"
-                                className="w-full rounded-md border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-secondary focus:outline-none"
-                                placeholder="Enter Your Email"
-                                onChange={(e) =>
-                                    setData('email', e.target.value.trim())
-                                }
+                                value={data.email}
+                                onChange={e => setData('email', e.target.value)}
+                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition"
+                                required
                             />
-                            <p className="mt-1 text-sm text-red-500"></p>
+                            {errors.email && (
+                                <p className="text-red-500 text-xs mt-2">{errors.email}</p>
+                            )}
                         </div>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
-                            <PasswordInput
-                                id="password"
-                                name="password"
-                                value={data.password}
-                                onChange={(e) => setData('password', e.target.value)}
-                                required
-                                placeholder="********"
-                                className="h-11 border-gray-200 bg-white/50 px-4! py-3! transition-all focus:border-secondary! focus:ring-secondary!"
-                            />
-                            <InputError message={errors.password} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="password_confirmation">Confirm Password</Label>
-                            <PasswordInput
-                                id="password_confirmation"
-                                name="password_confirmation"
-                                value={data.password_confirmation}
-                                onChange={(e) => setData('password_confirmation', e.target.value)}
-                                required
-                                placeholder="********"
-                                className="h-11 border-gray-200 bg-white/50 px-4! py-3! transition-all focus:border-secondary! focus:ring-secondary!"
-                            />
-                            <InputError message={errors.password_confirmation} />
-                        </div>
-
-                        <div className="flex items-center">
-                            <input
-                                type="checkbox"
-                                id="rememberMe"
-                                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-secondary"
-                            />
-                            <label
-                                htmlFor="rememberMe"
-                                className="ml-2 block text-sm text-gray-700"
-                            >
-                                Remember me
+                        {/* Password */}
+                        <div>
+                            <label className="block text-sm text-gray-400 mb-2">
+                                Password
                             </label>
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    value={data.password}
+                                    onChange={e => setData('password', e.target.value)}
+                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition pr-11"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                                >
+                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                </button>
+                            </div>
+                            {errors.password && (
+                                <p className="text-red-500 text-xs mt-2">{errors.password}</p>
+                            )}
                         </div>
 
+                        {/* Remember + Forgot */}
+                        <div className="flex items-center justify-between text-sm">
+                            <label className="flex items-center gap-2 text-gray-300">
+                                <input
+                                    type="checkbox"
+                                    checked={data.remember}
+                                    onChange={e => setData('remember', e.target.checked)}
+                                    className="w-4 h-4 accent-blue-600"
+                                />
+                                Keep me logged in
+                            </label>
+
+                            <Link
+                                href="/forgot-password"
+                                className="text-blue-500 hover:text-blue-400 hover:underline"
+                            >
+                                Forgot password?
+                            </Link>
+                        </div>
+
+                        {/* Submit */}
                         <button
                             type="submit"
-                            className="w-full rounded-md bg-secondary px-4 py-3 text-white transition-colors hover:bg-primary focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:outline-none"
+                            disabled={processing}
+                            className="w-full bg-[#2D60C8] hover:bg-blue-700 disabled:opacity-50 text-white py-3.5 font-medium transition-colors"
                         >
-                            Register
+                            {processing ? 'Logging in...' : 'Login →'}
                         </button>
                     </form>
 
-                    {/* <div className="mt-6 text-center">
-                        <a
-                            href=""
-                            className="text-sm text-gray-600 hover:text-gray-800"
+                    {/* Register */}
+                    <p className="text-center text-gray-400 text-sm mt-6">
+                        Don’t have an account?{' '}
+                        <Link
+                            href={route('user.auth.register')}
+                            className="text-blue-500 hover:text-blue-400 hover:underline"
                         >
-                            Singn Up
-                        </a>
-                    </div> */}
+                            Sign up
+                        </Link>
+                    </p>
+
+                    {/* Divider */}
+                    <div className="relative my-8">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-700"></div>
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="px-4 bg-gray-900 text-gray-500">
+                                or continue with
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Google */}
+                    <button
+                        type="button"
+                        className=""
+                    >
+                        <img
+                            src="https://www.google.com/favicon.ico"
+                            alt="Google"
+                            className="w-12 h-12"
+                        />
+                    </button>
                 </div>
             </div>
-        </div>
+        </AuthLayout>
     );
-}
+};
+
+export default RegisterPage;

@@ -16,7 +16,6 @@ class VendorDashboardController extends Controller
 
     public function index(): Response
     {
-        dd(route('vendor.dashboard'));
         return Inertia::render('vendor/dashboard');
     }
 }

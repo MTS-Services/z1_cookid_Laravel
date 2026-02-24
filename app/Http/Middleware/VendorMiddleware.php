@@ -14,13 +14,10 @@ class VendorMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle($request, Closure $next)
     {
-        if (! Auth::guard('vendor')->check()) {
-            return redirect()->route('vendor.login');
-        }
-        if (Auth::guard('vendor')->check()) {
-            return redirect()->route('vendor.dashboard');
+        if (!auth()->guard('vendor')->check()) {
+            return redirect()->route('vendor.auth.login');
         }
 
         return $next($request);

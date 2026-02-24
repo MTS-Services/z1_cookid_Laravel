@@ -24,6 +24,9 @@ class VendorAuthController extends Controller
     */
     public function showLogin()
     {
+        if(Auth::check()){
+            return redirect()->route('vendor.dashboard');
+        }
         return Inertia::render('vendor/auth/login');
     }
 

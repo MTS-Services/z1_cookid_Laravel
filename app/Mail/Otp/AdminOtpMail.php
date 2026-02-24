@@ -3,7 +3,6 @@
 namespace App\Mail\Otp;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -13,12 +12,16 @@ class AdminOtpMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $admin;
+    public $otpCode;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($admin, $otpCode)
     {
-        //
+        $this->admin = $admin;
+        $this->otpCode = $otpCode;
     }
 
     /**
@@ -37,7 +40,7 @@ class AdminOtpMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.otp.admin',
         );
     }
 

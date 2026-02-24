@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\UserManagement\UserController;
+use App\Http\Controllers\Auth\Admin\AdminAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -11,6 +11,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
         Route::get('/register', [AdminAuthController::class, 'register'])->name('register');
         Route::post('/register', [AdminAuthController::class, 'registerStore'])->name('register.post');
+
+        // Route::post('login/verify', [AdminLoginController::class, 'loginVerify'])->name('login.verify');
+        // Route::post('otp/verify',   [AdminOtpController::class, 'verify'])->name('otp.verify');
+        // Route::post('otp/resend',   [AdminOtpController::class, 'resend'])->name('otp.resend');
     });
 
     Route::middleware('admin')->group(function () {
@@ -36,6 +40,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/user/verify/{id}', [UserController::class, 'verified'])->name('user.verify');
             Route::post('/user/license-verify/{id}/{status}', [UserController::class, 'licenseVerify'])->name('user.license-verify');
         });
-
     });
 });

@@ -1,0 +1,304 @@
+.login-page {
+    min-height: 100vh;
+    background: #0f0f0f;
+    color: #e0e0e0;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+}
+
+/* Header */
+.top-bar {
+    background: #000;
+    border-bottom: 1px solid #222;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.logo-circle {
+    width: 42px;
+    height: 42px;
+    background: #0066ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 15px;
+}
+
+.welcome-text {
+    color: #aaa;
+    font-size: 14px;
+}
+
+.main-nav {
+    display: flex;
+    gap: 32px;
+}
+
+.nav-link {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.nav-link:hover {
+    color: white;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.icon-btn {
+    color: #ccc;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.become-provider-btn {
+    background: #0066ff;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.become-provider-btn:hover {
+    background: #0055dd;
+}
+
+/* Social bar */
+.social-bar {
+    background: #111;
+    text-align: center;
+    padding: 8px;
+    font-size: 13px;
+    color: #888;
+}
+
+.social-bar a {
+    color: #aaa;
+    margin: 0 8px;
+    text-decoration: none;
+}
+
+/* Login Card */
+.login-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 180px);
+    padding: 40px 20px;
+}
+
+.login-card {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 40px 32px;
+    width: 100%;
+    max-width: 420px;
+}
+
+.login-card h2 {
+    text-align: center;
+    margin: 0 0 32px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: white;
+    font-size: 15px;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #0066ff;
+    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.15);
+}
+
+.password-group {
+    position: relative;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px 0 24px;
+    font-size: 14px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #bbb;
+    user-select: none;
+}
+
+.forgot-link {
+    color: #0066ff;
+    text-decoration: none;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    background: #0066ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.login-btn:hover {
+    background: #0055dd;
+}
+
+.signup-prompt {
+    text-align: center;
+    margin: 24px 0;
+    color: #aaa;
+    font-size: 14px;
+}
+
+.signup-link {
+    color: #0066ff;
+    text-decoration: none;
+}
+
+.signup-link:hover {
+    text-decoration: underline;
+}
+
+.divider {
+    text-align: center;
+    margin: 24px 0;
+    color: #666;
+    font-size: 14px;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #333;
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+.google-btn {
+    width: 100%;
+    padding: 12px;
+    background: #222;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.google-btn img {
+    border-radius: 2px;
+}
+
+/* Footer */
+.footer {
+    background: #000;
+    border-top: 1px solid #222;
+    padding: 24px 0;
+    text-align: center;
+    color: #777;
+    font-size: 13px;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+.privacy-link {
+    color: #0066ff;
+    text-decoration: none;
+}
+
+.privacy-link:hover {
+    text-decoration: underline;
+}

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\ActiveInactive;
-use App\Enums\UserType;
+use App\Enums\ActiveInactiveStatus;
+use App\Enums\OtpPurpose;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,37 +12,36 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = [
-        'username',
-        'name',
-        'email',
+     protected $fillable = [
+        'first_name',
+        'last_name',
         'phone',
-        'user_type',
+        'email',
+        'google_id',
+        'provider',
+        'avatar',
+        'otp_code',
+        'otp_purpose',
+        'otp_expires_at',
+        'otp_verified_at',
         'status',
-        'password',
-        'your_self',
-        'brokerage_name',
-        'license_number',
-        'image',
-        'is_verified',
-        'license_verification_status',
+        'email_verified_at',
     ];
 
+    protected $casts = [
+        'status' => ActiveInactiveStatus::class,
+        'otp_purpose' => OtpPurpose::class,
+        'otp_expires_at' => 'datetime',
+        'otp_verified_at' => 'datetime',
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+    
     protected $hidden = [
+        'otp_code',
         'password',
         'remember_token',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'user_type' => UserType::class,
-            'status' => ActiveInactive::class,
-            'is_verified' => 'boolean',
-        ];
-    }
 
     public function isAdmin()
     {

@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\ActiveInactive;
+use App\Enums\ActiveInactiveStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,20 +14,24 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('username')->unique();
-            $table->string('name');
-            $table->string('email')->unique();
+            $table->string('first_name');
+            $table->string('last_name');
             $table->string('phone')->nullable();
-            $table->longText('your_self')->nullable();
-            $table->longText('brokerage_name')->nullable();
-            $table->longText('license_number')->nullable();
+            $table->string('email')->unique();
+            $table->string('google_id')->nullable()->unique();
+            $table->string('provider')->nullable();
+            $table->string('avatar')->nullable();
+
+            $table->string('otp_code')->nullable();
+            $table->enum('otp_purpose', ['login', 'register', 'reset_password'])->nullable();
+            $table->timestamp('otp_expires_at')->nullable();
+            $table->timestamp('otp_verified_at')->nullable();
+            $table->string('password')->nullable();
+
+            $table->enum('status', ['active', 'inactive', 'banned'])
+                ->default('active');
+
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('image')->nullable();
-            $table->string('status')->default(ActiveInactive::ACTIVE->value);
-            $table->string('user_type');
-            $table->boolean('is_verified')->default(false);
-            $table->string('password');
-            $table->rememberToken();
             $table->timestamps();
         });
 

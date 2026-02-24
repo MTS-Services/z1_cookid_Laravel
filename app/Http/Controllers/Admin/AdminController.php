@@ -22,21 +22,9 @@ class AdminController extends Controller
             'users_last_7_days' => User::where('created_at', '>=', now()->subDays(7))->count(),
         ];
 
-        // user type counts
-        $counts = User::selectRaw('user_type, count(*) as cnt')->groupBy('user_type')->pluck('cnt', 'user_type')->toArray();
-
-        $userTypeCounts = [];
-        foreach (UserType::cases() as $type) {
-            $value = $type->value;
-            $userTypeCounts[$value] = [
-                'label' => $type->label(),
-                'count' => $counts[$value] ?? 0,
-            ];
-        }
 
         return Inertia::render('admin/dashboard', [
             'stats' => $stats,
-            'userTypeCounts' => $userTypeCounts,
         ]);
     }
 

@@ -2,7 +2,7 @@
 import { FC, useState } from 'react';
 import { Eye, EyeOff, Heart, User } from 'lucide-react'; // or your icon library
 
-const LoginPage: FC = () => {
+const RegisterPage: FC = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
@@ -143,4 +143,4 @@ const LoginPage: FC = () => {
     );
 };
 
-export default LoginPage;
+export default RegisterPage;

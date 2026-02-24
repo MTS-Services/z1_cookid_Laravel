@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\ActiveInactive;
+use App\Enums\ActiveInactiveStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -42,7 +42,7 @@ class UserRequest extends FormRequest
             'brokerage_name' => ['nullable', 'string'],
             'license_number' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
-            'status' => ['sometimes', new Enum(ActiveInactive::class)],
+            'status' => ['sometimes', new Enum(ActiveInactiveStatus::class)],
             'user_type' => ['required', 'string'],
 
             // Update-er somoy password optional kora hoyeche

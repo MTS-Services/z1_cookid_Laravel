@@ -7,7 +7,6 @@ type Props = {
     users: number;
     users_last_7_days: number;
   };
-  userTypeCounts?: Record<string, { label: string; count: number }>;
 };
 
 const StatCard = ({ title, value, subtext, icon: Icon, colorClass }: any) => (
@@ -26,7 +25,7 @@ export default function Index() {
   const { stats = {
     users: 0,
     users_last_7_days: 0
-  }, userTypeCounts = {} } = props as unknown as Props;
+  } } = props as unknown as Props;
 
 
   return (
@@ -41,20 +40,6 @@ export default function Index() {
             icon={Users}
             colorClass="text-secondary"
           />
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-1">
-          <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-zinc-900">
-            <h3 className="text-lg font-semibold mb-4">User Analytics</h3>
-            <div className="space-y-3">
-              {Object.entries(userTypeCounts).map(([key, item]) => (
-                <div key={key} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-zinc-800">
-                  <span className="text-sm font-medium">{item.label}</span>
-                  <span className="px-2 py-1 bg-white rounded border text-xs font-bold">{item.count}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </AdminLayout >

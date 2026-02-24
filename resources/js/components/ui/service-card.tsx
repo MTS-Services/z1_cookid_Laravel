@@ -1,3 +1,5 @@
+import { Link } from "@inertiajs/react";
+
 interface Props{
     image: string;
     name: string;
@@ -60,9 +62,9 @@ export default function ServiceCard({image, name, rating, location, service, pri
                     <div className="border-t border-text-border my-4" />
                     <div className="flex items-center justify-between">
                         <span className="text-2xl font-semibold">${price}</span>
-                        <button className="rounded-lg bg-bg-nevy p-3 text-base font-medium text-text-gray-100">
+                        <Link className="rounded-lg bg-bg-nevy p-3 text-base font-medium text-text-gray-100">
                             See Details
-                        </button>
+                        </Link>
                     </div>
                 </div>
         </div>

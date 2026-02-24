@@ -79,6 +79,23 @@
     --shadow-card: var(--shadow-card);
 
     --color-primary-background: var(--primary-background);
+
+    /* add new color */
+    --color-text-white: var(--text-white);
+    --color-text-gray: var(--text-gray);
+    --color-text-gray-50: var(--text-gray-50);
+    --color-text-gray-100: var(--text-gray-100);
+    --color-text-gray-200: var(--text-gray-200);
+    --color-text-orange: var(--text-orange);
+    --color-text-border: var(--text-border);
+
+
+    --color-bg-white: var(--bg-white);
+    --color-bg-black: var(--bg-black);
+    --color-bg-black-50: var(--bg-black-50);
+    --color-bg-nevy: var(--bg-nevy);
+
+
 }
 
 :root {
@@ -144,6 +161,26 @@
     --footer-accent-foreground: #f7f8ff;
     --footer-muted: #9fb2df;
     --footer-border: rgba(255, 255, 255, 0.08);
+
+
+    
+    /* add new color */
+
+    --text-white: #ffffff;
+    --text-gray: #77878F;
+    --text-gray-50: #A5A5A5;
+    --text-gray-100: #F0F7FE;
+    --text-gray-200: #E6E6E6;
+    --text-orange: #FA8232;
+    --text-border: #767676;
+
+
+    --bg-white: #FAFAFA;
+    --bg-black: #050505;
+    --bg-black-50: #292929;
+    --bg-gray: #434343;
+    --bg-nevy: #2D60C8;
+    --bg-nevy-50: #0F172A;
 }
 
 @utility container {

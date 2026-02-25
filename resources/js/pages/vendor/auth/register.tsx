@@ -1,146 +1,181 @@
-// src/pages/Login.tsx
 import { FC, useState } from 'react';
-import { Eye, EyeOff, Heart, User } from 'lucide-react'; // or your icon library
+import { useForm, Link } from '@inertiajs/react';
+import { Eye, EyeOff } from 'lucide-react';
+import AuthLayout from '@/layouts/auth-layout';
 
-const RegisterPage: FC = () => {
+const VendorRegisterPage: FC = () => {
     const [showPassword, setShowPassword] = useState(false);
 
+    const { data, setData, post, processing, errors } = useForm({
+        shop_name: '',
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone: '',
+        location: '',
+        password: '',
+        password_confirmation: '',
+    });
+
+    const submit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(route('vendor.auth.register'));
+    };
+
     return (
-        <div className="min-h-screen bg-[#0f0f0f] text-gray-200 font-sans">
-            {/* Top Bar / Navbar */}
-            <header className="bg-black border-b border-gray-800">
-                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-8">
-                        <div className="w-11 h-11 bg-blue-600 rounded-full flex items-center justify-center font-bold text-white text-base">
-                            Glossed
-                        </div>
-                        <p className="text-gray-400 text-sm">
-                            Welcome to Glossed eCommerce store.
+        <AuthLayout title="Sign Up" description="Become a Vendor">
+
+            <div className="max-w-7xl h-full mx-auto grid md:grid-cols-2 gap-10 items-center px-6">
+                    {/* LEFT SIDE - FORM */}
+                    <div className="bg-gray-900 border border-gray-800 p-10 shadow-2xl">
+
+                        <h2 className="text-xl font-semibold mb-1">
+                            Welcome to Glossed Marketplace
+                        </h2>
+
+                        <p className="text-gray-400 text-sm mb-8">
+                            Already have an account?{' '}
+                            <Link
+                                href={route('vendor.auth.login')}
+                                className="text-blue-500 hover:underline"
+                            >
+                                Log in
+                            </Link>
                         </p>
-                    </div>
 
-                    <nav className="hidden md:flex items-center gap-8">
-                        <a href="/" className="text-gray-300 hover:text-white text-sm transition-colors">
-                            Home
-                        </a>
-                        <a href="/service" className="text-gray-300 hover:text-white text-sm transition-colors">
-                            Service
-                        </a>
-                        <a href="/categories" className="text-gray-300 hover:text-white text-sm transition-colors">
-                            Categories
-                        </a>
-                        <a href="/how-it-works" className="text-gray-300 hover:text-white text-sm transition-colors">
-                            How It Works
-                        </a>
-                    </nav>
+                        <form onSubmit={submit} className="space-y-5">
 
-                    <div className="flex items-center gap-5">
-                        <button className="text-gray-300 hover:text-white">
-                            <Heart size={20} />
-                        </button>
-                        <button className="text-gray-300 hover:text-white">
-                            <User size={20} />
-                        </button>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md text-sm font-medium transition-colors">
-                            Become a Provider
-                        </button>
-                    </div>
-                </div>
-            </header>
-            {/* Main Login Section */}
-            <main className="flex items-center justify-center min-h-[calc(100vh-140px)] px-5 py-12">
-                <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-xl p-8 shadow-2xl">
-                    <h2 className="text-2xl font-semibold text-center mb-8">Login to your account</h2>
+                            {/* First + Last Name */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-sm text-gray-400">First Name*</label>
+                                    <input
+                                        type="text"
+                                        value={data.first_name}
+                                        onChange={(e) => setData('first_name', e.target.value)}
+                                        className="w-full mt-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-md text-white"
+                                    />
+                                    {errors.first_name && <p className="text-red-500 text-xs mt-1">{errors.first_name}</p>}
+                                </div>
 
-                    <form className="space-y-6">
-                        <div>
-                            <label className="block text-sm text-gray-400 mb-2">Email Address</label>
-                            <input
-                                type="email"
-                                placeholder="Enter your email"
-                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition"
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm text-gray-400 mb-2">Password</label>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? 'text' : 'password'}
-                                    placeholder="Enter your password"
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition pr-11"
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
-                                >
-                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                                </button>
+                                <div>
+                                    <label className="text-sm text-gray-400">Last Name*</label>
+                                    <input
+                                        type="text"
+                                        value={data.last_name}
+                                        onChange={(e) => setData('last_name', e.target.value)}
+                                        className="w-full mt-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-md text-white"
+                                    />
+                                    {errors.last_name && <p className="text-red-500 text-xs mt-1">{errors.last_name}</p>}
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="flex items-center justify-between text-sm">
-                            <label className="flex items-center gap-2 text-gray-300 select-none">
-                                <input type="checkbox" defaultChecked className="w-4 h-4 accent-blue-600" />
-                                Keep me logged in
-                            </label>
-                            <a href="/forgot-password" className="text-blue-500 hover:text-blue-400 hover:underline">
-                                Forgot password ?
-                            </a>
-                        </div>
+                            {/* Email + Phone */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-sm text-gray-400">Email</label>
+                                    <input
+                                        type="email"
+                                        value={data.email}
+                                        onChange={(e) => setData('email', e.target.value)}
+                                        className="w-full mt-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-md text-white"
+                                    />
+                                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                                </div>
 
-                        <button
-                            type="submit"
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-lg font-medium transition-colors"
-                        >
-                            Login →
-                        </button>
-                    </form>
+                                <div>
+                                    <label className="text-sm text-gray-400">Phone Number*</label>
+                                    <input
+                                        type="text"
+                                        value={data.phone}
+                                        onChange={(e) => setData('phone', e.target.value)}
+                                        className="w-full mt-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-md text-white"
+                                    />
+                                    {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+                                </div>
+                            </div>
 
-                    <p className="text-center text-gray-400 text-sm mt-6">
-                        Don't have an account?{' '}
-                        <a href="/signup" className="text-blue-500 hover:text-blue-400 hover:underline">
-                            Sign in
-                        </a>
-                    </p>
+                            {/* Shop Name */}
+                            <div>
+                                <label className="text-sm text-gray-400">Enter Your Shop Name*</label>
+                                <input
+                                    type="text"
+                                    value={data.shop_name}
+                                    onChange={(e) => setData('shop_name', e.target.value)}
+                                    className="w-full mt-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-md text-white"
+                                />
+                                {errors.shop_name && <p className="text-red-500 text-xs mt-1">{errors.shop_name}</p>}
+                            </div>
 
-                    <div className="relative my-8">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-700"></div>
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-4 bg-gray-900 text-gray-500">or continue with</span>
-                        </div>
+                            {/* Location */}
+                            <div>
+                                <label className="text-sm text-gray-400">Location*</label>
+                                <input
+                                    type="text"
+                                    value={data.location}
+                                    onChange={(e) => setData('location', e.target.value)}
+                                    className="w-full mt-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-md text-white"
+                                />
+                                {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location}</p>}
+                            </div>
+
+                            {/* Password */}
+                            <div>
+                                <label className="text-sm text-gray-400">Password*</label>
+                                <div className="relative mt-1">
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={data.password}
+                                        onChange={(e) => setData('password', e.target.value)}
+                                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-md text-white pr-12"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                    >
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
+                                </div>
+                                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                            </div>
+
+                            {/* Confirm Password */}
+                            <div>
+                                <label className="text-sm text-gray-400">Confirm Password*</label>
+                                <input
+                                    type="password"
+                                    value={data.password_confirmation}
+                                    onChange={(e) => setData('password_confirmation', e.target.value)}
+                                    className="w-full mt-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-md text-white"
+                                />
+                                {errors.password_confirmation &&
+                                    <p className="text-red-500 text-xs mt-1">{errors.password_confirmation}</p>}
+                            </div>
+
+                            {/* Submit */}
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-md font-medium transition"
+                            >
+                                {processing ? 'Creating account...' : 'Create an account →'}
+                            </button>
+                        </form>
                     </div>
 
-                    <button className="w-full flex items-center justify-center gap-3 border border-gray-700 hover:border-gray-500 bg-gray-800 hover:bg-gray-700 text-white py-3 rounded-lg transition-colors">
+                    {/* RIGHT SIDE - IMAGE */}
+                    <div className="hidden md:block">
                         <img
-                            src="https://www.google.com/favicon.ico"
-                            alt="Google"
-                            className="w-5 h-5"
+                            src="/assets/images/vendor/vendor-register.png"
+                            alt="Vendor"
+                            className=" shadow-2xl object-cover w-full h-full  max-h-[800px]"
                         />
-                        Continue with Google
-                    </button>
-                </div>
-            </main>
-
-            {/* Footer */}
-            <footer className="bg-black border-t border-gray-800 py-6 text-center text-sm text-gray-600">
-                <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center justify-center gap-8">
-                    <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center font-bold text-white text-xs">
-                        Glossed
                     </div>
-                    <p>all right reserved ©2026 Glossed</p>
-                    <a href="/privacy" className="text-blue-500 hover:text-blue-400 hover:underline">
-                        Privacy policies
-                    </a>
-                </div>
-            </footer>
-        </div>
+
+            </div>
+        </AuthLayout>
     );
 };
 
-export default RegisterPage;
+export default VendorRegisterPage;

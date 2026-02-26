@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { Bell, ChevronDown } from 'lucide-react';
 import React from 'react';
 
@@ -11,7 +11,7 @@ function VendorHeader({ activePage, subPage }: Props) {
   const [userMenuOpen, setUserMenuOpen] = React.useState(false);
 
   return (
-    <header className="bg-black border-b border-gray-800 h-16 flex items-center px-6 justify-end">
+    <header className="bg-black border-b border-gray-800 py-4 flex items-center px-6 justify-end">
 
       <div className="flex items-center gap-6">
         <button className="relative text-gray-300 hover:text-white">
@@ -26,8 +26,8 @@ function VendorHeader({ activePage, subPage }: Props) {
             onClick={() => setUserMenuOpen(!userMenuOpen)}
             className="flex items-center gap-3 hover:bg-gray-800 px-3 py-2 rounded-lg transition-colors"
           >
-            <div className="w-9 h-9 bg-yellow-500 rounded-full flex items-center justify-center text-black font-bold">
-              B {/* Placeholder for Brayden avatar */}
+            <div className="w-12 h-12 bg-yellow-500 rounded-sm flex items-center justify-center text-black font-bold">
+              <img src="/user.png" alt="user" />
             </div>
             <div className="text-left">
               <p className="text-sm font-medium">Brayden</p>
@@ -40,7 +40,7 @@ function VendorHeader({ activePage, subPage }: Props) {
             <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-lg shadow-xl py-2 z-50">
               <a href="#" className="block px-4 py-2 text-sm hover:bg-gray-800">Profile</a>
               <a href="#" className="block px-4 py-2 text-sm hover:bg-gray-800">Settings</a>
-              <a href="#" className="block px-4 py-2 text-sm hover:bg-gray-800">Logout</a>
+              <button onClick={() => router.post(route('vendor.logout'))} className="block px-4 py-2 text-sm hover:bg-gray-800 w-full text-left text-white">Logout</button>
             </div>
           )}
         </div>

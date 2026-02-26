@@ -23,9 +23,7 @@ export default function VendorLayout({ children }: VendorLayoutProps) {
 
           {/* Notifications List */}
           <main className="flex-1 overflow-y-auto p-6">
-            <div className="max-w-4xl mx-auto">
               {children}
-            </div>
           </main>
         </div>
       </div>

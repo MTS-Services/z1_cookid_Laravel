@@ -11,10 +11,7 @@ function VendorHeader({ activePage, subPage }: Props) {
   const [userMenuOpen, setUserMenuOpen] = React.useState(false);
 
   return (
-    <header className="bg-black border-b border-gray-800 h-16 flex items-center px-6 justify-between">
-      <div className="flex items-center gap-4">
-        <h1 className="text-xl font-semibold">Notifications</h1>
-      </div>
+    <header className="bg-black border-b border-gray-800 h-16 flex items-center px-6 justify-end">
 
       <div className="flex items-center gap-6">
         <button className="relative text-gray-300 hover:text-white">

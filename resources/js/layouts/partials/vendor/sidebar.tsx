@@ -1,14 +1,11 @@
-import Home from '@/pages/frontend'
-import { BarChart2, DollarSign, List, Settings, ShoppingBag } from 'lucide-react'
+import { BarChart2, DollarSign, Home, List, Settings, ShoppingBag } from 'lucide-react'
 import React from 'react'
 
 export default function VendorSidebar() {
     return (
         <aside className="w-64 bg-black border-r border-gray-800 flex flex-col">
             <div className="p-6 border-b border-gray-800">
-                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold text-white text-base mx-auto">
-                    Glossed
-                </div>
+                <img src="/images/logo/logo.png" alt="logo" className="w-10 h-10" />
             </div>
 
             <nav className="flex-1 px-3 py-6 space-y-1">

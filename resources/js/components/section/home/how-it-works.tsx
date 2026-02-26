@@ -5,8 +5,6 @@ export default function HowItWorks() {
         <div
             className="py-20"
         >
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/70"></div>
             <div className="relative z-10 mx-auto max-w-6xl px-4">
                 <div className="mb-16 text-center">
                     <h2 className="mb-4 font-poppins text-4xl font-bold text-white">

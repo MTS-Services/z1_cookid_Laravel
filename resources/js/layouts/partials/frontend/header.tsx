@@ -40,21 +40,15 @@ function FrontendHeader({ activePage, subPage }: Props) {
           </Link>
 
           <Link
-            href="#"
-            className={`text-lg transition-colors ${route().current('categories*')
-                ? 'text-blue-600 font-semibold'
-                : 'text-gray-300 hover:text-white'
-              }`}
+            href={route('frontend.categories')}
+            className={linkClass('frontend.categories')}
           >
             Categories
           </Link>
 
           <Link
-            href="#"
-            className={`text-lg transition-colors ${route().current('how-it-works*')
-                ? 'text-blue-600 font-semibold'
-                : 'text-gray-300 hover:text-white'
-              }`}
+            href={route('frontend.how-it-works')}
+            className={linkClass('frontend.how-it-works')}
           >
             How It Works
           </Link>

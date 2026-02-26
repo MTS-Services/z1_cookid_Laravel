@@ -21,4 +21,12 @@ class FrontendController extends Controller
     {
         return Inertia::render('frontend/services');
     }
+    public function categories(): Response
+    {
+        return Inertia::render('frontend/categories');
+    }
+    public function howItWorks(): Response
+    {
+        return Inertia::render('frontend/how-it-work');
+    }
 }

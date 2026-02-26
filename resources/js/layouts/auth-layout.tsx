@@ -3,6 +3,7 @@ import * as React from 'react';
 
 import AppLogo from '@/components/app-logo';
 import { login } from '@/routes';
+import { Heart, User } from 'lucide-react';
 
 interface AuthLayoutProps {
     children: React.ReactNode;
@@ -18,38 +19,65 @@ export default function AuthLayout({
     description,
 }: AuthLayoutProps) {
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative bg-background overflow-hidden">
+        <div className="min-h-screen bg-black text-gray-200 font-sans">
+            {/* Top Bar / Navbar */}
+            <header className="bg-gray-900 border-b border-gray-900 py-4" >
+                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+                    <div className="w-24">
+                        <img src="/assets/logo/black-logo.png" alt="Logo" />
+                    </div>
 
-            {/* Top Left Ellipse */}
-            <span
-                className='absolute blur-3xl pointer-events-none -top-[15%] -left-[35%] w-115 h-65 sm:w-150 sm:h-90 md:w-200 md:h-105 xl:-top-[30%] xl:-left-[35%] xl:w-300 xl:h-150 2xl:-top-[45%] 2xl:-left-[40%] 2xl:w-400 2xl:h-200 bg-radial from-[hsla(39,63%,84%,1)] from-0% to-transparent to-70%  opacity-80 xl:opacity-100'
-            ></span>
+                    <nav className="hidden md:flex items-center gap-8">
+                        <a href="/" className="text-gray-300 hover:text-white text-sm transition-colors">
+                            Home
+                        </a>
+                        <a href="/service" className="text-gray-300 hover:text-white text-sm transition-colors">
+                            Service
+                        </a>
+                        <a href="/categories" className="text-gray-300 hover:text-white text-sm transition-colors">
+                            Categories
+                        </a>
+                        <a href="/how-it-works" className="text-gray-300 hover:text-white text-sm transition-colors">
+                            How It Works
+                        </a>
+                    </nav>
 
-            {/* Bottom Right Ellipse */}
-            <span
-                className='absolute blur-3xl pointer-events-none -bottom-[15%] -right-[35%] w-115 h-65 sm:w-150 sm:h-90 md:w-200 md:h-105 xl:-bottom-[30%] xl:-right-[35%] xl:w-300 xl:h-150 2xl:-bottom-[45%] 2xl:-right-[40%] 2xl:w-400 2xl:h-200 bg-radial from-[hsla(39,63%,84%,1)] from-0% to-transparent to-70%  opacity-80 xl:opacity-100'
-            ></span>
-
-            <main className='flex flex-col w-full max-w-115 shadow-card rounded-[8px] p-6 md:p-7.5 bg-white/80 dark:bg-transparent backdrop-blur-sm relative z-1'>
-                <Head title={title} />
-
-                {/* <Link href={login()} className="flex flex-col items-center">
-                    <AppLogo className="fill-current text-foreground h-12 w-auto md:h-auto" />
-                </Link> */}
-
-                <div className="space-y-2 text-center mt-6">
-                    <h1 className="font-montserrat font-semibold text-2xl md:text-4xl leading-tight md:leading-[130%] text-[#595959]">
-                        {title || "Availability Scheduler"}
-                    </h1>
-                    <p className="text-base md:text-xl leading-relaxed md:leading-[150%] text-center text-[#595959]">
-                        {description || "Sign in to manage your availability"}
-                    </p>
+                    <div className="flex items-center gap-5">
+                        <button className="text-gray-300 hover:text-white">
+                            <Heart size={20} />
+                        </button>
+                        <button className="text-gray-300 hover:text-white">
+                            <User size={20} />
+                        </button>
+                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md text-sm font-medium transition-colors">
+                            Become a Provider
+                        </button>
+                    </div>
                 </div>
+            </header>
 
-                <div className="mt-8 w-full">
-                    {children}
+            <div className="min-h-[calc(100vh-180px)] flex flex-col items-center justify-center p-4 relative bg-black overflow-hidden">
+                <main className='flex items-center justify-center px-5 py-12'>
+                    <Head title={title} />
+
+                    <div className="mt-8 w-full">
+                        {children}
+                    </div>
+                </main>
+            </div>
+            {/* Footer */}
+            <footer className="bg-gray-900 border-t border-gray-900 py-4 text-center text-sm text-gray-600">
+                <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center justify-between gap-8">
+
+                    <div className="w-24">
+                        <img src="/assets/logo/black-logo.png" alt="Logo" />
+                    </div>
+                    <p className="text-gray-400">all right reserved ©2026 Glossed</p>
+                    <a href="/privacy" className="text-gray-400 hover:text-gray-300">
+                        Privacy policies
+                    </a>
                 </div>
-            </main>
+            </footer>
         </div>
     );
 }

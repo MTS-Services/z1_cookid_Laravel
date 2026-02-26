@@ -16,14 +16,14 @@ class UserMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // if (! Auth::check()) {
-        //     return redirect()->route('user.choose');
-        // }
+        if (! Auth::check()) {
+            return redirect()->route('user.auth.login');
+        }
         $user = Auth::user();
 
-        if ($user->is_verified == false) {
-            return redirect()->route('user.pending-verification');
-        }
+        // if ($user->is_verified == false) {
+        //     return redirect()->route('user.pending-verification');
+        // }
 
         return $next($request);
     }

@@ -15,13 +15,13 @@ const LoginPage: FC = () => {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('user.auth.login'));
+        post(route('vendor.auth.login'));
     };
 
     return (
         <AuthLayout title="Login" description="Login to your account">
             <div className="w-full flex justify-center">
-                <div className="w-lg bg-gray-900 border border-gray-800 rounded-xl p-8 shadow-2xl">
+                <div className="w-full max-w-xl bg-gray-900 border border-gray-800 rounded-xl p-8 shadow-2xl">
 
                     <h2 className="text-2xl font-semibold text-center mb-8">
                         Login to your account
@@ -38,7 +38,7 @@ const LoginPage: FC = () => {
                                 type="email"
                                 value={data.email}
                                 onChange={e => setData('email', e.target.value)}
-                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition"
+                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition"
                                 required
                             />
                             {errors.email && (
@@ -56,7 +56,7 @@ const LoginPage: FC = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     value={data.password}
                                     onChange={e => setData('password', e.target.value)}
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition pr-11"
+                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition pr-11"
                                     required
                                 />
                                 <button
@@ -96,7 +96,7 @@ const LoginPage: FC = () => {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="w-full bg-[#2D60C8] hover:bg-blue-700 disabled:opacity-50 text-white py-3.5 font-medium transition-colors"
+                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3.5 rounded-lg font-medium transition-colors"
                         >
                             {processing ? 'Logging in...' : 'Login →'}
                         </button>
@@ -106,7 +106,7 @@ const LoginPage: FC = () => {
                     <p className="text-center text-gray-400 text-sm mt-6">
                         Don’t have an account?{' '}
                         <Link
-                            href={route('user.auth.register')}
+                            href={route('vendor.auth.register')}
                             className="text-blue-500 hover:text-blue-400 hover:underline"
                         >
                             Sign up
@@ -128,13 +128,14 @@ const LoginPage: FC = () => {
                     {/* Google */}
                     <button
                         type="button"
-                        className=""
+                        className="w-full flex items-center justify-center gap-3 border border-gray-700 hover:border-gray-500 bg-gray-800 hover:bg-gray-700 text-white py-3 rounded-lg transition-colors"
                     >
                         <img
                             src="https://www.google.com/favicon.ico"
                             alt="Google"
-                            className="w-12 h-12"
+                            className="w-5 h-5"
                         />
+                        Continue with Google
                     </button>
                 </div>
             </div>

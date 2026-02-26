@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\UserManagement;
 
 use App\Concerns\PasswordValidationRules;
-use App\Enums\ActiveInactive;
+use App\Enums\ActiveInactiveStatus;
 use App\Enums\UserType;
 use App\Http\Controllers\Controller;
 use App\Mail\FoundingUserVerifiedMail;
@@ -197,7 +197,7 @@ class UserController extends Controller
     public function verified($id)
     {
         $user = User::findOrFail($id);
-        $user->update(['is_verified' => true, 'status' => ActiveInactive::ACTIVE->value]);
+        $user->update(['is_verified' => true, 'status' => ActiveInactiveStatus::ACTIVE->value]);
 
         if (! $user) {
             return redirect()->back()->withErrors(['error' => 'Failed to create user.'])->withInput();

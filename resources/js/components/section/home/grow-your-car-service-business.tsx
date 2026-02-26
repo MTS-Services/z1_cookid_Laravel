@@ -2,7 +2,7 @@ import { Link } from '@inertiajs/react';
 
 export default function GrowYourCarServiceBusiness() {
     return (
-       <div className="py-20">
+       <div className="py-20 -mt-20 absolute w-full -top-52  z-20">
             <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
             <div className="relative z-10 mx-auto max-w-7xl rounded-lg bg-[#0F172A] p-8 text-center shadow-lg lg:p-12">

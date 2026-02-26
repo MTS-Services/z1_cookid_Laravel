@@ -53,7 +53,7 @@ export default function Home({ listings }: any) {
     return (
         <FrontendLayout activePage="home">
             <Banner />
-            <div className="relative bg-cover  bg-no-repeat bg-fixed min-h-screen"
+            <div className="relative bg-cover  bg-no-repeat bg-fixed min-h-screen pb-50 shadow-2xl"
                 style={{
                     backgroundImage: "url('/assets/images/bg.png')",
                 }}>
@@ -65,7 +65,6 @@ export default function Home({ listings }: any) {
                 <TopRelated />
                 <HowItWorks />
                 <WhyChoosePlatform />
-                <GrowYourCarServiceBusiness />
             </div>
         </FrontendLayout>
     )

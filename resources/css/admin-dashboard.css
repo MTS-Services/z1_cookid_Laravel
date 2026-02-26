@@ -1,0 +1,208 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+    --font-sans:
+        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+
+    --font-open-sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-montserrat: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+    --font-inter: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    --color-background:                  var(--background);
+    --color-foreground:                  var(--foreground);
+    --color-card:                        var(--card);
+    --color-card-foreground:             var(--card-foreground);
+    --color-popover:                     var(--popover);
+    --color-popover-foreground:          var(--popover-foreground);
+    --color-primary:                     var(--primary);
+    --color-primary-foreground:          var(--primary-foreground);
+    --color-secondary:                   var(--secondary);
+    --color-secondary-foreground:        var(--secondary-foreground);
+    --color-muted:                       var(--muted);
+    --color-muted-foreground:            var(--muted-foreground);
+    --color-accent:                      var(--accent);
+    --color-accent-foreground:           var(--accent-foreground);
+    --color-destructive:                 var(--destructive);
+    --color-destructive-foreground:      var(--destructive-foreground);
+    --color-border:                      var(--border);
+    --color-input:                       var(--input);
+    --color-ring:                        var(--ring);
+    --color-sidebar:                     var(--sidebar);
+    --color-sidebar-foreground:          var(--sidebar-foreground);
+    --color-sidebar-primary:             var(--sidebar-primary);
+    --color-sidebar-primary-foreground:  var(--sidebar-primary-foreground);
+    --color-sidebar-accent:              var(--sidebar-accent);
+    --color-sidebar-accent-foreground:   var(--sidebar-accent-foreground);
+    --color-sidebar-border:              var(--sidebar-border);
+    --color-sidebar-ring:                var(--sidebar-ring);
+
+    /* ── Admin panel theme tokens ── */
+    --color-adm-bg:             var(--adm-bg);
+    --color-adm-surface:        var(--adm-surface);
+    --color-adm-surface-2:      var(--adm-surface-2);
+    --color-adm-divider:        var(--adm-divider);
+    --color-adm-blue:           var(--adm-blue);
+    --color-adm-blue-hover:     var(--adm-blue-hover);
+    --color-adm-text:           var(--adm-text);
+    --color-adm-text-sub:       var(--adm-text-sub);
+    --color-adm-text-dim:       var(--adm-text-dim);
+    --color-adm-icon-x:         var(--adm-icon-x);
+    --color-adm-icon-check:     var(--adm-icon-check);
+    --color-adm-nav-active-bg:  var(--adm-nav-active-bg);
+    --color-adm-nav-active-bar: var(--adm-nav-active-bar);
+    --color-adm-th-bg:          var(--adm-th-bg);
+    --color-adm-row-border:     var(--adm-row-border);
+}
+
+:root {
+    /* ── Original app variables (unchanged) ── */
+    --background: #F9FAFB;
+    --foreground: #121711;
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: #1b2a4a;
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: #b8912a;
+    --secondary-foreground: #121711;
+    --muted: #F3F3F3;
+    --muted-foreground: #606064;
+    --accent: #FAF5FF;
+    --accent-foreground: #1F3A68;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    --destructive: #D02738;
+    --destructive-foreground: #FEF2F2;
+    --border: #F3F3F3;
+    --input: #F3F3F3;
+    --ring: #2467E3;
+    --radius: 0.625rem;
+    --sidebar: #121711;
+    --sidebar-foreground: #F3F3F3;
+    --sidebar-primary: #D02738;
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: #D02738;
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.87 0 0);
+
+    /* ── Admin panel dark palette (pixel-matched from design) ── */
+    --adm-bg:             #1e1e1e;   /* main content area */
+    --adm-surface:        #1a1a1a;   /* sidebar + topbar */
+    --adm-surface-2:      #2a2a2a;   /* table header row */
+    --adm-divider:        #333333;   /* borders / dividers */
+    --adm-blue:           #4f80f7;   /* active state, button, tab underline */
+    --adm-blue-hover:     #3d6de0;
+    --adm-text:           #e2e2e2;   /* primary text */
+    --adm-text-sub:       #a0a0a0;   /* secondary / muted text */
+    --adm-text-dim:       #666666;   /* very dim text */
+    --adm-icon-x:         #5b8ef5;   /* X icon color (blue-ish) */
+    --adm-icon-check:     #5b8ef5;   /* check icon color (blue-ish) */
+    --adm-nav-active-bg:  #2a2f3d;   /* active nav item bg */
+    --adm-nav-active-bar: #4f80f7;   /* active nav left bar */
+    --adm-th-bg:          #2a2a2a;   /* table header background */
+    --adm-row-border:     #2e2e2e;   /* table row separator */
+}
+
+@layer base {
+    * {
+        @apply border-border font-open-sans;
+    }
+    body {
+        @apply bg-background text-foreground font-open-sans;
+    }
+    h1, h2, h3, h4, h5, h6, button {
+        @apply font-montserrat;
+    }
+}
+
+/* ─── Scrollbar hide ───────────────────────────────────── */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ─── Thin scrollbar for admin content ─────────────────── */
+.adm-scroll::-webkit-scrollbar       { width: 5px; }
+.adm-scroll::-webkit-scrollbar-track { background: transparent; }
+.adm-scroll::-webkit-scrollbar-thumb {
+    background: var(--adm-divider);
+    border-radius: 3px;
+}
+.adm-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--adm-divider) transparent;
+}
+
+/* ─── Active nav left indicator bar ────────────────────── */
+/*
+   Cannot be done with pure Tailwind utilities (pseudo-element with
+   absolute positioning relative to the link). This is the only
+   non-utility rule needed.
+*/
+.adm-nav-active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    background: var(--adm-nav-active-bar);
+}
+
+/* ─── Swiper (unchanged from original) ─────────────────── */
+.swiper-button-prev,
+.swiper-button-next {
+    @apply w-12 h-12 rounded-full bg-secondary! hover:bg-primary! transition-colors;
+}
+.swiper-navigation-icon {
+    @apply w-6! h-6! text-white!;
+}

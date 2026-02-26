@@ -40,7 +40,7 @@ function FrontendHeader({ activePage, subPage }: Props) {
           </Link>
 
           <Link
-            href="/categories"
+            href="#"
             className={`text-lg transition-colors ${route().current('categories*')
                 ? 'text-blue-600 font-semibold'
                 : 'text-gray-300 hover:text-white'
@@ -50,7 +50,7 @@ function FrontendHeader({ activePage, subPage }: Props) {
           </Link>
 
           <Link
-            href="/how-it-works"
+            href="#"
             className={`text-lg transition-colors ${route().current('how-it-works*')
                 ? 'text-blue-600 font-semibold'
                 : 'text-gray-300 hover:text-white'

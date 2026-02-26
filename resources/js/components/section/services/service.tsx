@@ -4,12 +4,108 @@ import ServiceCard from '@/components/ui/service-card';
 
 // Mock Data (Apnar deya image array-ti base kore)
 const INITIAL_SERVICES = [
-    { id: 1, image: '/assets/images/service/EliteAutoSpa.png', name: 'Elite Auto Spa', rating: 4.9, category: 'Full Detailing', location: 'Downtown', vehicleType: 'SUV', price: 120, service: 'DETAILING' },
-    { id: 2, image: '/assets/images/service/Frame 2147225286 (2).png', name: 'Quick Clean Pro', rating: 4.7, category: 'Car Wash', location: 'Westside', vehicleType: 'Sedan', price: 45, service: 'WASH' },
-    { id: 3, image: '/assets/images/service/Frame 2147225286 (1).png', name: 'Glass Guard Tint', rating: 4.8, category: 'Tinting', location: 'San Francisco', vehicleType: 'Luxury', price: 180, service: 'TINTING' },
-    { id: 4, image: '/assets/images/service/acf994a9fb4b2987dc25a22e5d14deef32175a6f.jpg', name: 'Interior Masters', rating: 4.6, category: 'Interior Care', location: 'North Hills', vehicleType: 'Hatchback', price: 350, service: 'INTERIOR' },
-    { id: 5, image: '/assets/images/service/EliteAutoSpa.png', name: 'Detailing Hub', rating: 4.9, category: 'Full Detailing', location: 'Downtown', vehicleType: 'SUV', price: 200, service: 'DETAILING' },
-    { id: 6, image: '/assets/images/service/Frame 2147225286 (2).png', name: 'Express Wash', rating: 4.4, category: 'Car Wash', location: 'Westside', vehicleType: 'Sedan', price: 25, service: 'WASH' },
+    {
+        id: 1,
+        image: '/assets/images/service/EliteAutoSpa.png',
+        name: 'Elite Auto Spa',
+        rating: 4.9,
+        category: 'Full Detailing',
+        location: 'Downtown',
+        vehicleType: 'SUV',
+        price: 120,
+        service: 'DETAILING'
+    },
+    {
+        id: 2,
+        image: '/assets/images/service/Frame 2147225286 (1).png',
+        name: 'Quick Clean Pro',
+        rating: 4.9,
+        category: 'Car Wash',
+        location: 'Westside',
+        vehicleType: 'Sedan',
+        price: 45,
+        service: 'WASH'
+    },
+    {
+        id: 3,
+        image: '/assets/images/service/acf994a9fb4b2987dc25a22e5d14deef32175a6f.jpg',
+        name: 'Elite Automotive Detailers',
+        rating: 4.9,
+        category: 'Tinting',
+        location: 'San Francisco',
+        vehicleType: 'Luxury',
+        price: 180,
+        service: 'TINT'
+    },
+
+    // Repeated rows (like your screenshot grid)
+    {
+        id: 4,
+        image: '/assets/images/service/EliteAutoSpa.png',
+        name: 'Elite Auto Spa',
+        rating: 4.9,
+        category: 'Full Detailing',
+        location: 'Downtown',
+        vehicleType: 'SUV',
+        price: 120,
+        service: 'DETAILING'
+    },
+    {
+        id: 5,
+        image: '/assets/images/service/Frame 2147225286 (1).png',
+        name: 'Quick Clean Pro',
+        rating: 4.9,
+        category: 'Car Wash',
+        location: 'Westside',
+        vehicleType: 'Sedan',
+        price: 45,
+        service: 'WASH'
+    },
+    {
+        id: 6,
+        image: '/assets/images/service/acf994a9fb4b2987dc25a22e5d14deef32175a6f.jpg',
+        name: 'Elite Automotive Detailers',
+        rating: 4.9,
+        category: 'Tinting',
+        location: 'San Francisco',
+        vehicleType: 'Luxury',
+        price: 180,
+        service: 'TINT'
+    },
+
+    {
+        id: 7,
+        image: '/assets/images/service/EliteAutoSpa.png',
+        name: 'Elite Auto Spa',
+        rating: 4.9,
+        category: 'Full Detailing',
+        location: 'Downtown',
+        vehicleType: 'SUV',
+        price: 120,
+        service: 'DETAILING'
+    },
+    {
+        id: 8,
+        image: '/assets/images/service/Frame 2147225286 (1).png',
+        name: 'Quick Clean Pro',
+        rating: 4.9,
+        category: 'Car Wash',
+        location: 'Westside',
+        vehicleType: 'Sedan',
+        price: 45,
+        service: 'WASH'
+    },
+    {
+        id: 9,
+        image: '/assets/images/service/acf994a9fb4b2987dc25a22e5d14deef32175a6f.jpg',
+        name: 'Elite Automotive Detailers',
+        rating: 4.9,
+        category: 'Tinting',
+        location: 'San Francisco',
+        vehicleType: 'Luxury',
+        price: 180,
+        service: 'TINT'
+    }
 ];
 
 const ServiceMarketplace = () => {

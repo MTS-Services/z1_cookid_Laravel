@@ -1,6 +1,9 @@
 import Banner from '@/components/section/home/banner'
 import Category from '@/components/section/home/browse-by-category'
+import GrowYourCarServiceBusiness from '@/components/section/home/grow-your-car-service-business';
+import HowItWorks from '@/components/section/home/how-it-works';
 import TopRelated from '@/components/section/home/top-related';
+import WhyChoosePlatform from '@/components/section/home/why-choose-our-platform';
 import FrontendLayout from '@/layouts/frontend-layout'
 import React from 'react'
 
@@ -52,6 +55,10 @@ export default function Home({ listings  }: any) {
       <Banner />
       <Category categories={categories} />
       <TopRelated/>
+      <HowItWorks/>
+      <WhyChoosePlatform/>
+      <GrowYourCarServiceBusiness/>
+
     </FrontendLayout>
   )
 }

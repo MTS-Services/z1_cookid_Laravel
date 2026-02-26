@@ -1,4 +1,5 @@
 import ServiceCard from '@/components/ui/service-card';
+import { Link } from '@inertiajs/react';
 
 const service = [
     {
@@ -145,7 +146,6 @@ const service = [
         service: 'See Details',
         price: 120,
     },
-
 ];
 
 export default function TopRelated() {
@@ -160,10 +160,15 @@ export default function TopRelated() {
             <div className="absolute inset-0 bg-black/70"></div>
             <div className="relative z-10 container flex h-full flex-col justify-center px-4">
                 {/* Card 1 */}
-                <h2 className="mb-5 text-3xl font-medium text-white">
-                   Top Rated Near You
-                </h2>
-                <div className="grid  grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-9">
+                <div className="flex items-center justify-between mb-5">
+                    <h2 className="text-3xl font-medium text-text-white">
+                        Top Rated Near You
+                    </h2>
+                    <Link className="rounded-lg bg-bg-nevy p-3 text-base font-medium text-text-gray-100">
+                        View All Providers
+                    </Link>
+                </div>
+                <div className="grid grid-cols-1 gap-9 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {service.map((item) => (
                         <ServiceCard key={item.id} {...item} />
                     ))}

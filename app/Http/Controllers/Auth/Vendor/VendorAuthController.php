@@ -111,6 +111,12 @@ class VendorAuthController extends Controller
                 'email' => 'Account is not active.',
             ]);
         }
+        if ($vendor->otp_verified_at) {
+            // Auth::login($vendor);
+            auth()->guard('vendor')->login($vendor);
+            $request->session()->regenerate();
+            return redirect()->intended(route('vendor.dashboard'));
+        }
 
         $otp = rand(100000, 999999);
         $expiresAt = now()->addMinute(5);

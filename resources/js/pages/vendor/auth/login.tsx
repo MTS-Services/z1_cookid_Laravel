@@ -21,7 +21,7 @@ const LoginPage: FC = () => {
     return (
         <AuthLayout title="Login" description="Login to your account">
             <div className="w-full flex justify-center">
-                <div className="w-full max-w-xl bg-gray-900 border border-gray-800 rounded-xl p-8 shadow-2xl">
+                <div className="w-lg     bg-gray-900 border border-gray-800 rounded-xl p-8 shadow-2xl">
 
                     <h2 className="text-2xl font-semibold text-center mb-8">
                         Login to your account

@@ -3,10 +3,7 @@ import { Link } from '@inertiajs/react';
 export default function HowItWorks() {
     return (
         <div
-            className="relative bg-cover bg-center bg-no-repeat py-20"
-            style={{
-                backgroundImage: "url('/assets/images/bg.png')",
-            }}
+            className="py-20"
         >
             {/* Overlay */}
             <div className="absolute inset-0 bg-black/70"></div>

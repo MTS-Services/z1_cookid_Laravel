@@ -55,11 +55,11 @@ export default function ServiceCard({image, name, rating, location, service, pri
                         <span className="text-sm font-normal">{location}</span>
                     </div>
                     <div>
-                        <span className="rounded-sm bg-bg-gray font-medium text-sm border border-text-border text-text-gray-200 px-3 py-1.5">
+                        <span className="rounded-sm bg-bg-gray font-medium text-sm border border-border-gray text-text-gray-200 px-3 py-1.5">
                             {service}
                         </span>
                     </div>
-                    <div className="border-t border-text-border my-4" />
+                    <div className="border-t border-border-gray my-4" />
                     <div className="flex items-center justify-between">
                         <span className="text-2xl font-semibold">${price}</span>
                         <Link className="rounded-lg bg-bg-nevy p-3 text-base font-medium text-text-gray-100">

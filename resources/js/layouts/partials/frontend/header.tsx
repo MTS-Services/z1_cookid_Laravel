@@ -16,18 +16,18 @@ function FrontendHeader({ activePage, subPage }: Props) {
         </div>
 
         <nav className="hidden md:flex items-center gap-8">
-          <a href="/" className="text-gray-300 hover:text-white text-sm transition-colors">
+          <Link href={route('frontend.home')} className="text-gray-300 hover:text-white text-sm transition-colors">
             Home
-          </a>
-          <a href="/service" className="text-gray-300 hover:text-white text-sm transition-colors">
+          </Link>
+          <Link href={route('frontend.services')} className="text-gray-300 hover:text-white text-sm transition-colors">
             Service
-          </a>
-          <a href="/categories" className="text-gray-300 hover:text-white text-sm transition-colors">
+          </Link>
+          <Link href="/categories" className="text-gray-300 hover:text-white text-sm transition-colors">
             Categories
-          </a>
-          <a href="/how-it-works" className="text-gray-300 hover:text-white text-sm transition-colors">
+          </Link>
+          <Link href="/how-it-works" className="text-gray-300 hover:text-white text-sm transition-colors">
             How It Works
-          </a>
+          </Link>
         </nav>
 
         <div className="flex items-center gap-5">

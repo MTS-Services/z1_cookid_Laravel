@@ -12,7 +12,7 @@ interface Category {
     name: string;
     image: string;
 }
-export default function Home({ listings  }: any) {
+export default function Home({ listings }: any) {
     const categories: Category[] = [
         {
             id: 1,
@@ -50,15 +50,23 @@ export default function Home({ listings  }: any) {
             image: '/assets/images/category/MobileServices.png',
         },
     ];
-  return (
-    <FrontendLayout activePage="home">
-      <Banner />
-      <Category categories={categories} />
-      <TopRelated/>
-      <HowItWorks/>
-      <WhyChoosePlatform/>
-      <GrowYourCarServiceBusiness/>
+    return (
+        <FrontendLayout activePage="home">
+            <Banner />
+            <div className="relative bg-cover  bg-no-repeat bg-fixed min-h-screen"
+                style={{
+                    backgroundImage: "url('/assets/images/bg.png')",
+                }}>
 
-    </FrontendLayout>
-  )
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/10"></div>
+
+                <Category categories={categories} />
+                <TopRelated />
+                <HowItWorks />
+                <WhyChoosePlatform />
+                <GrowYourCarServiceBusiness />
+            </div>
+        </FrontendLayout>
+    )
 }

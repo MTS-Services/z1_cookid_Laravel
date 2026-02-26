@@ -151,13 +151,8 @@ const service = [
 export default function TopRelated() {
     return (
         <div
-            className="relative bg-cover bg-center bg-no-repeat py-10"
-            style={{
-                backgroundImage: "url('/assets/images/bg.png')",
-            }}
+            className="py-10"
         >
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/70"></div>
             <div className="relative z-10 container flex h-full flex-col justify-center px-4">
                 {/* Card 1 */}
                 <div className="flex items-center justify-between mb-5">

@@ -2,6 +2,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from '@inertiajs/react';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 interface PaginationProps {
     currentPage: number;
@@ -51,7 +52,7 @@ export default function Pagination({
         `}
                 aria-label="Previous page"
             >
-                <ChevronLeft size={18} strokeWidth={2.5} />
+                <FaArrowLeft size={18} strokeWidth={2.5} />
             </Link>
 
             {/* Page numbers */}
@@ -63,7 +64,7 @@ export default function Pagination({
             flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium
             transition-all duration-200
             ${page === currentPage
-                            ? 'bg-blue-600 text-white border-2 border-blue-400/60 shadow-lg shadow-blue-500/20 scale-110'
+                            ? 'bg-blue-600 text-white border-2 border-transparent shadow-lg shadow-blue-500/20 scale-110'
                             : 'bg-gray-800/70 text-gray-300 hover:bg-gray-700/90 border border-gray-700 hover:border-gray-500'
                         }
           `}
@@ -86,7 +87,7 @@ export default function Pagination({
         `}
                 aria-label="Next page"
             >
-                <ChevronRight size={18} strokeWidth={2.5} />
+                <FaArrowRight  size={18} strokeWidth={2.5} />
             </Link>
         </div>
     );

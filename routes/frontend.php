@@ -14,4 +14,6 @@ Route::name('frontend.')->controller(FrontendController::class)->group(function 
     Route::get('/booking-confirm', 'bookingConfirm')->name('booking-confirm');
     Route::get('/vendor-reviews', 'vendorReviews')->name('vendor-reviews');
     Route::get('/store', 'store')->name('store');
+    Route::get('/profile', 'profile')->name('profile');
+    Route::get('/order-details', 'orderDetails')->name('order-details');
 });

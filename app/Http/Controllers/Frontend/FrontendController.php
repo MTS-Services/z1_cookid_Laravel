@@ -37,4 +37,8 @@ class FrontendController extends Controller
     {
         return Inertia::render('frontend/how-it-work');
     }
+    public function vendorReviews(): Response
+    {
+        return Inertia::render('frontend/vendor-reviews');
+    }
 }

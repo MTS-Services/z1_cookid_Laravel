@@ -12,12 +12,12 @@ const FrontendFooter: React.FC = () => {
     return (
         <>
 
-            <footer className="relative bg-bg-black-100 py-12 text-text-white z-10 pt-16">
+            <footer className="relative bg-bg-black-100 py-6 md:py-12 text-text-white z-10 pt-16 md:pt-20">
             <GrowYourCarServiceBusiness />
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
                         {/* Logo and Social Media */}
-                        <div className="flex flex-col items-center md:items-start">
+                        <div className="flex flex-col items-start">
                             <Link href="/">
                                 <div className="h-18 w-18">
                                     <img
@@ -28,36 +28,36 @@ const FrontendFooter: React.FC = () => {
                                 </div>
                             </Link>
                             <div className="mt-5 flex space-x-4">
-                                <a
+                                <Link
                                     href="#"
-                                    className="flex items-center justify-center rounded-sm bg-bg-nevy-800 p-2"
+                                    className="flex items-center justify-center rounded-sm bg-navy text-sm md:text-base-800 p-2"
                                 >
                                     <FaFacebookF size={20}></FaFacebookF>
-                                </a>
-                                <a
+                                </Link>
+                                <Link
                                     href="#"
-                                    className="flex items-center justify-center rounded-sm bg-bg-nevy-800 p-2"
+                                    className="flex items-center justify-center rounded-sm bg-navy text-sm md:text-base-800 p-2"
                                 >
                                     <FaTwitter size={20}></FaTwitter>
-                                </a>
-                                <a
+                                </Link>
+                                <Link
                                     href="#"
-                                    className="flex items-center justify-center rounded-sm bg-bg-nevy-800 p-2"
+                                    className="flex items-center justify-center rounded-sm bg-navy text-sm md:text-base-800 p-2"
                                 >
                                     <FaInstagram size={20}></FaInstagram>
-                                </a>
-                                <a
+                                </Link>
+                                <Link
                                     href="#"
-                                    className="flex items-center justify-center rounded-sm bg-bg-nevy-800 p-2"
+                                    className="flex items-center justify-center rounded-sm bg-navy text-sm md:text-base-800 p-2"
                                 >
                                     <FaLinkedinIn size={20}></FaLinkedinIn>
-                                </a>
+                                </Link>
                             </div>
                         </div>
 
                         {/* Company Links */}
-                        <div className="text-center md:text-left">
-                            <h3 className="relative mb-4 font-poppins text-xl font-medium">
+                        <div className="">
+                            <h3 className="relative mb-4 font-poppins text-xl inline-block">
                                 Company
                                 <span className="absolute bottom-0 left-0 h-[3px] w-1/2 rounded-full bg-gradient-to-r from-blue-500 via-blue-800 to-transparent" />
                             </h3>
@@ -82,8 +82,8 @@ const FrontendFooter: React.FC = () => {
                         </div>
 
                         {/* Customers Links */}
-                        <div className="text-center md:text-left">
-                            <h3 className="relative mb-4 font-poppins text-xl font-medium">
+                        <div className="">
+                            <h3 className="relative mb-4 font-poppins text-xl inline-block">
                                 Customers
                                 <span className="absolute bottom-0 left-0 h-[3px] w-1/2 rounded-full bg-gradient-to-r from-blue-500 via-blue-800 to-transparent" />
                             </h3>
@@ -116,8 +116,8 @@ const FrontendFooter: React.FC = () => {
                         </div>
 
                         {/* Providers Links */}
-                        <div className="text-center md:text-left">
-                            <h3 className="relative mb-4 font-poppins text-xl font-medium">
+                        <div className="">
+                            <h3 className="relative mb-4 font-poppins text-xl inline-block">
                                 Providers
                                 <span className="absolute bottom-0 left-0 h-[3px] w-1/2 rounded-full bg-gradient-to-r from-blue-500 via-blue-800 to-transparent" />
                             </h3>
@@ -151,28 +151,28 @@ const FrontendFooter: React.FC = () => {
                     </div>
 
                     {/* Bottom Section */}
-                    <div className="mt-12 border-t border-bg-nevy-800 pt-8">
+                    <div className="mt-12 border-t border-navy pt-4 md:pt-8">
                         <div className="flex flex-col items-center justify-between space-y-4 md:flex-row">
                             <p className="font-poppins text-text-gray">
                                 &copy; {new Date().getFullYear()} Cookid. All rights
                                 reserved.
                             </p>
-                            <div className="flex space-x-6">
+                            <div className="flex space-x-4 md:space-x-6">
                                 <Link
                                     href="/privacy-policy"
-                                    className="font-poppins font-normal text-bg-nevy-800"
+                                    className="font-poppins font-normal text-navy text-sm md:text-base"
                                 >
                                     Privacy Policy
                                 </Link>
                                 <Link
                                     href="/terms-of-service"
-                                    className="font-poppins font-normal text-bg-nevy-800"
+                                    className="font-poppins font-normal text-navy text-sm md:text-base"
                                 >
                                     Terms & Condition
                                 </Link>
                                 <Link
                                     href="/terms-of-service"
-                                    className="font-poppins font-normal text-bg-nevy-800"
+                                    className="font-poppins font-normal text-navy text-sm md:text-base"
                                 >
                                     Cookie Policy
                                 </Link>

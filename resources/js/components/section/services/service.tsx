@@ -154,10 +154,10 @@ const ServiceMarketplace = () => {
     }, [selectedService, selectedVehicle, searchLocation, sidebarCategory, sidebarLocation]);
 
     return (
-        <div className="min-h-screen bg-bg-black text-text-white font-poppins p-8 pb-70">
+        <div className="text-text-white font-poppins md:pt-20 pt-16">
 
             {/* Header / Search Bar Section */}
-            <div className="max-w-7xl mx-auto mb-16">
+            <div className="container mx-auto mb-16">
                 <h1 className="text-3xl font-semibold text-center mb-10 text-white">
                     Feature Services for You
                 </h1>
@@ -288,7 +288,7 @@ const ServiceMarketplace = () => {
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-10">
+            <div className="container mx-auto flex flex-col md:flex-row gap-10">
                 {/* Sidebar Filters */}
                 <aside className="w-full md:w-64 flex-shrink-0 space-y-8">
                     <FilterSection
@@ -410,26 +410,5 @@ const FilterSection = ({ title, items, active, onChange }: any) => (
         </ul>
     </div>
 );
-
-// // Reusable Filter Section
-// const FilterSection = ({ title, items, active, onChange }: any) => (
-//     <div className="mb-6">
-//         <h3 className="text-lg font-medium mb-4">{title}</h3>
-//         <ul className="space-y-3">
-//             {items.map((item: string) => (
-//                 <li
-//                     key={item}
-//                     onClick={() => onChange(item)}
-//                     className="flex items-center gap-3 cursor-pointer group"
-//                 >
-//                     <div className={`w-4 h-4 rounded-full border transition-all ${item === active ? 'bg-bg-nevy border-bg-nevy ring-2 ring-blue-900/30' : 'border-text-gray group-hover:border-text-gray-100'}`}></div>
-//                     <span className={`text-sm transition-colors ${item === active ? 'text-text-white font-medium' : 'text-text-gray group-hover:text-text-gray-100'}`}>
-//                         {item}
-//                     </span>
-//                 </li>
-//             ))}
-//         </ul>
-//     </div>
-// );
 
 export default ServiceMarketplace;

@@ -53,19 +53,10 @@ export default function Home({ listings }: any) {
     return (
         <FrontendLayout activePage="home">
             <Banner />
-            <div className="relative bg-cover  bg-no-repeat bg-fixed min-h-screen pb-50 shadow-2xl"
-                style={{
-                    backgroundImage: "url('/assets/images/bg.png')",
-                }}>
-
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-black/70"></div>
-
-                <Category categories={categories} />
-                <TopRelated />
-                <HowItWorks />
-                <WhyChoosePlatform />
-            </div>
+            <Category categories={categories} />
+            <TopRelated />
+            <HowItWorks />
+            <WhyChoosePlatform />
         </FrontendLayout>
     )
 }

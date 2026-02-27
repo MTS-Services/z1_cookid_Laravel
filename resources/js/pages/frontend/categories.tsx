@@ -52,10 +52,8 @@ export default function Categories({ listings }: any) {
     ];
     return (
         <FrontendLayout activePage="categories">
-            <div className="bg-bg-black text-text-white font-poppins p-8 pt-0 pb-70">
-                <Category categories={categories} />
-                <TopRelated />
-            </div>
+            <Category categories={categories} />
+            <TopRelated />
         </FrontendLayout>
     )
 }

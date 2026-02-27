@@ -1,6 +1,7 @@
 import { Link } from "@inertiajs/react";
 
 interface Props{
+    id: number;
     image: string;
     name: string;
     rating: number;
@@ -10,7 +11,7 @@ interface Props{
 }
 
 
-export default function ServiceCard({image, name, rating, location, service, price}: Props) {
+export default function ServiceCard({id, image, name, rating, location, service, price}: Props) {
     return(
         <div className="flex flex-col overflow-hidden rounded-2xl bg-bg-black-50 text-text-white shadow-xl">
                 <div className="h-44 overflow-hidden">
@@ -62,7 +63,7 @@ export default function ServiceCard({image, name, rating, location, service, pri
                     <div className="border-t border-border-gray my-4" />
                     <div className="flex items-center justify-between">
                         <span className="text-2xl font-semibold">${price}</span>
-                        <Link className="rounded-lg bg-bg-nevy p-3 text-base font-medium text-text-gray-100">
+                        <Link href={route('frontend.service-details', { id: id })} className="rounded-lg bg-bg-nevy p-3 text-base font-medium text-text-gray-100">
                             See Details
                         </Link>
                     </div>

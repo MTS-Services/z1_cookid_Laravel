@@ -22,7 +22,7 @@ export default function AuthLayout({
         <div className="min-h-screen bg-black text-gray-200 font-sans">
             {/* Top Bar / Navbar */}
             <header className="bg-gray-900 border-b border-gray-900 py-4" >
-                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+                <div className="container mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="w-24">
                         <img src="/assets/logo/black-logo.png" alt="Logo" />
                     </div>
@@ -67,7 +67,7 @@ export default function AuthLayout({
             </div>
             {/* Footer */}
             <footer className="bg-gray-900 border-t border-gray-900 py-4 text-center text-sm text-gray-600">
-                <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center justify-between gap-8">
+                <div className="container mx-auto px-6 flex flex-wrap items-center justify-between gap-8">
 
                     <div className="w-24">
                         <img src="/assets/logo/black-logo.png" alt="Logo" />

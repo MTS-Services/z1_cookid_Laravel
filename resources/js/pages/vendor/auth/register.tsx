@@ -25,7 +25,7 @@ const VendorRegisterPage: FC = () => {
     return (
         <AuthLayout title="Sign Up" description="Become a Vendor">
 
-            <div className="max-w-7xl h-full mx-auto grid md:grid-cols-2 gap-10 items-center px-6">
+            <div className="container h-full mx-auto grid md:grid-cols-2 gap-10 items-center px-6">
                     {/* LEFT SIDE - FORM */}
                     <div className="bg-gray-900 border border-gray-800 p-10 shadow-2xl">
 

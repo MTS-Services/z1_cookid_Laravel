@@ -20,9 +20,9 @@ export default function Category({ categories }: { categories: Category[] }) {
                 <h2 className="mb-5 text-3xl font-medium text-text-white">
                     Browse By Category
                 </h2>
-                <div className="flex items-center justify-between text-center">
+                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-4 items-center justify-between text-center">
                     {categories.map((item, index) => (
-                        <div className="">
+                        <div className="w-full">
                             <img
                                 src={item.image}
                                 alt="Car Wash"

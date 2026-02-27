@@ -12,7 +12,7 @@ interface Category {
     name: string;
     image: string;
 }
-export default function Home({ listings }: any) {
+export default function Categories({ listings }: any) {
     const categories: Category[] = [
         {
             id: 1,
@@ -51,12 +51,9 @@ export default function Home({ listings }: any) {
         },
     ];
     return (
-        <FrontendLayout activePage="home">
-            <Banner />
+        <FrontendLayout activePage="categories">
             <Category categories={categories} />
             <TopRelated />
-            <HowItWorks />
-            <WhyChoosePlatform />
         </FrontendLayout>
     )
 }

@@ -2,14 +2,7 @@ import { Link } from '@inertiajs/react';
 
 export default function WhyChoosePlatform() {
     return (
-       <div
-            className="relative bg-cover bg-center bg-no-repeat py-20"
-            style={{
-                backgroundImage: "url('/assets/images/bg.png')",
-            }}
-        >
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/70"></div>
+       <div className="py-20">
             <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col items-center justify-between gap-12 lg:flex-row">
                     {/* Left Section: Text Content */}

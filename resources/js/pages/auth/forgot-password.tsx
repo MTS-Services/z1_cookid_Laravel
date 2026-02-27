@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
-import { login } from '@/routes';
 import { email } from '@/routes/password';
 
 export default function ForgotPassword({ status }: { status?: string }) {
@@ -35,7 +34,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                 Send Reset Link
                             </Button>
 
-                            <Link href={login()} className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                            <Link href={route('user.auth.login')} className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
                                 <ChevronLeft className="h-4 w-4" />
                                 Back to log in
                             </Link>

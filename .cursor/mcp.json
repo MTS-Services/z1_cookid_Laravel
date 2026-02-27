@@ -13,10 +13,10 @@
                 "shadcn@latest",
                 "mcp"
             ]
+        },
+        "Figma": {
+            "url": "https://mcp.figma.com/mcp"
         }
-    },
-    "Figma": {
-      "url": "https://mcp.figma.com/mcp"
     },
     "registries": {
         "@acme": "https://acme.com/r/{name}.json"

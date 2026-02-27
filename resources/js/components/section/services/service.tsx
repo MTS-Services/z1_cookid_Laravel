@@ -205,7 +205,7 @@ const ServiceMarketplace = () => {
                                             setIsServiceOpen(false);
                                         }}
                                         className="px-6 py-3 text-sm text-gray-300 
-                                       hover:bg-bg-nevy hover:text-white 
+                                       hover:bg-navy hover:text-white 
                                        cursor-pointer transition"
                                     >
                                         {s}
@@ -254,7 +254,7 @@ const ServiceMarketplace = () => {
                                             setIsVehicleOpen(false);
                                         }}
                                         className="px-6 py-3 text-sm text-gray-300 
-                                       hover:bg-bg-nevy hover:text-white 
+                                       hover:bg-navy hover:text-white 
                                        cursor-pointer transition"
                                     >
                                         {v}
@@ -280,7 +280,7 @@ const ServiceMarketplace = () => {
 
                         {/* Search Button */}
                         <button className="px-5 py-3
-                           bg-black hover:bg-bg-nevy rounded-sm m-1 transition flex items-center gap-2 text-white text-sm font-medium">
+                           bg-black hover:bg-navy rounded-sm m-1 transition flex items-center gap-2 text-white text-sm font-medium">
                             <Search size={18} />
                             Search
                         </button>
@@ -380,7 +380,7 @@ const FilterSection = ({ title, items, active, onChange }: any) => (
                         <div
                             className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200
                             ${isActive
-                                    ? 'bg-bg-nevy'
+                                    ? 'bg-navy'
                                     : 'bg-gray-300'
                                 }`}
                         >
@@ -398,7 +398,7 @@ const FilterSection = ({ title, items, active, onChange }: any) => (
                         <span
                             className={`text-xl font-medium transition-colors
                             ${isActive
-                                    ? 'text-bg-nevy'
+                                    ? 'text-navy'
                                     : 'text-gray-400'
                                 }`}
                         >

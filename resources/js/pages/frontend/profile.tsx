@@ -250,15 +250,15 @@ function BookingsSection() {
                                 <div className="border-t border-[#292929] pt-4">
                                     {['Confirmed', 'Completed'].includes(booking.status) ? (
                                         <div className="grid grid-cols-2 gap-3">
-                                            <Link href="#">
-                                                <Button className="w-full rounded-lg bg-navy px-5 py-2 text-sm font-semibold">
+                                            <Link href={route('frontend.order-details')}>
+                                                <Button className="w-full rounded-lg bg-navy px-5 py-2 text-sm font-semibold cursor-pointer">
                                                     View Details
                                                 </Button>
                                             </Link>
                                             {booking.status === 'Confirmed' && (
                                                 <Link href="#">
                                                     <Button
-                                                        className={`${statusStyles.Confirmed.button} w-full rounded-lg px-5 py-2 text-sm font-semibold bg-transparent`}
+                                                        className={`${statusStyles.Confirmed.button} w-full rounded-lg px-5 py-2 text-sm font-semibold bg-transparent cursor-pointer`}
                                                         variant="outline"
                                                     >
                                                         Cancel
@@ -268,7 +268,7 @@ function BookingsSection() {
                                             {booking.status === 'Completed' && (
                                                 <Link href="#">
                                                     <Button
-                                                        className={`${statusStyles.Completed.button} w-full rounded-lg px-5 py-2 text-sm font-semibold`}
+                                                        className={`${statusStyles.Completed.button} w-full rounded-lg px-5 py-2 text-sm font-semibold cursor-pointer`}
                                                         variant="outline"
                                                     >
                                                         Leave review

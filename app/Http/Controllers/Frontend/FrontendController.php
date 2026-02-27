@@ -21,6 +21,14 @@ class FrontendController extends Controller
     {
         return Inertia::render('frontend/services');
     }
+    public function serviceDetails($id = null): Response
+    {
+        return Inertia::render('frontend/service-details');
+    }
+    public function bookingConfirm(): Response
+    {
+        return Inertia::render('frontend/booking-confirmation');
+    }
     public function categories(): Response
     {
         return Inertia::render('frontend/categories');
@@ -28,5 +36,20 @@ class FrontendController extends Controller
     public function howItWorks(): Response
     {
         return Inertia::render('frontend/how-it-work');
+    }
+    public function vendorReviews(): Response
+    {
+        return Inertia::render('frontend/vendor-reviews');
+    }
+    public function store(): Response
+    {
+        return Inertia::render('frontend/store');
+    }
+    public function profile(): Response
+    {
+        return Inertia::render('frontend/profile');
+    }
+    public function orderDetails($id = null){
+        return Inertia::render('frontend/order-details');
     }
 }

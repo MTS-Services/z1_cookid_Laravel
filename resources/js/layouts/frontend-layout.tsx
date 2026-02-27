@@ -21,7 +21,7 @@ export default function FrontendLayout({ children, activePage, subPage }: Fronte
 
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-black/70"></div>
-                    <div className="relative">
+                    <div className="relative text-white">
                         {children}
                     </div>
                 </div>

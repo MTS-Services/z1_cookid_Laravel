@@ -21,7 +21,7 @@ class UserAuthController extends Controller
     public function showLogin()
     {
         if (Auth::check()) {
-            return redirect()->route('user.dashboard');
+            return redirect()->route('user.profile');
         }
         return Inertia::render('auth/login');
     }

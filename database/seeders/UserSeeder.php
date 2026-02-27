@@ -19,6 +19,7 @@ class UserSeeder extends Seeder
             'password'   => Hash::make('user@dev.com'),
             'status'     => ActiveInactiveStatus::ACTIVE,
             'email_verified_at' => now(),
+            'otp_verified_at' => now(),
         ]);
     }
 }

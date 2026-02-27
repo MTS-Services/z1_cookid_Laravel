@@ -1,6 +1,7 @@
 // Pagination.tsx
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from '@inertiajs/react';
 
 interface PaginationProps {
     currentPage: number;
@@ -37,7 +38,7 @@ export default function Pagination({
     return (
         <div className="flex items-center justify-center gap-2 md:gap-3 py-6 px-4">
             {/* Previous button */}
-            <button
+            <Link
                 onClick={() => handlePageClick(currentPage - 1)}
                 disabled={currentPage === 1}
                 className={`
@@ -51,11 +52,11 @@ export default function Pagination({
                 aria-label="Previous page"
             >
                 <ChevronLeft size={18} strokeWidth={2.5} />
-            </button>
+            </Link>
 
             {/* Page numbers */}
             {pages.map((page) => (
-                <button
+                <Link
                     key={page}
                     onClick={() => handlePageClick(page)}
                     className={`
@@ -68,11 +69,11 @@ export default function Pagination({
           `}
                 >
                     {page.toString().padStart(2, '0')}
-                </button>
+                </Link>
             ))}
 
             {/* Next button */}
-            <button
+            <Link
                 onClick={() => handlePageClick(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className={`
@@ -86,7 +87,7 @@ export default function Pagination({
                 aria-label="Next page"
             >
                 <ChevronRight size={18} strokeWidth={2.5} />
-            </button>
+            </Link>
         </div>
     );
 }

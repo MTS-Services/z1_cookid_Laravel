@@ -38,51 +38,8 @@ export default function CustomerFeedbackSection({
     { stars: 2, percentage: 1, count: 9352 },
     { stars: 1, percentage: 3, count: 28041 }, // example adjustment
   ],
-  reviews = [
-    {
-      id: '1',
-      name: 'Darrell Steward',
-      timeAgo: 'Just now',
-      rating: 5,
-      comment: 'My car looks brand new again. The detailing was done perfectly inside and out.',
-    },
-    {
-      id: '2',
-      name: 'Brooklyn Simmons',
-      timeAgo: '2 min ago',
-      rating: 5,
-      comment: 'Very professional team. They removed stains I thought would never go away.',
-    },
-    {
-      id: '3',
-      name: 'Kathryn Murphy',
-      timeAgo: '21 min ago',
-      rating: 5,
-      comment: 'Amazing shine after the polish. Totally worth the price!',
-    },
-    {
-      id: '4',
-      name: 'Guy Hawkins',
-      timeAgo: '1 hour ago',
-      rating: 4,
-      comment: 'Good service. Took a little longer than expected, but the result was excellent.',
-    },
-    {
-      id: '5',
-      name: 'Robert Fox',
-      timeAgo: '1 day ago',
-      rating: 5,
-      comment: 'The interior cleaning was outstanding. My car smells fresh and clean.',
-    },
-    {
-      id: '6',
-      name: 'Esther Howard',
-      timeAgo: '1 day ago',
-      rating: 5,
-      comment: 'Best detailing service in town. Highly recommended!',
-    },
-  ],
   totalPages = 6,
+  reviews = []
 }: CustomerFeedbackProps) {
   const [activePage, setActivePage] = useState(1);
 

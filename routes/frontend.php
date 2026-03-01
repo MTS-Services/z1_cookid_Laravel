@@ -16,6 +16,7 @@ Route::name('frontend.')->controller(FrontendController::class)->group(function 
     Route::get('/vendor-reviews', 'vendorReviews')->name('vendor-reviews');
     Route::get('/store', 'store')->name('store');
     Route::get('/search/{id?}', 'search')->name('search');
+    Route::get('/about-us', 'aboutUs')->name('about-us');
 });
 
 Route::name('frontend.')->controller(ContactController::class)->group(function () {

@@ -48,4 +48,8 @@ class FrontendController extends Controller
     {
         return Inertia::render('frontend/store');
     }
+    public function aboutUs(): Response
+    {
+        return Inertia::render('frontend/about');
+    }
 }

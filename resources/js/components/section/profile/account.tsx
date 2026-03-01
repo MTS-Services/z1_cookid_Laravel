@@ -1,19 +1,32 @@
-import { type FormEvent, type HTMLInputTypeAttribute, useEffect, useMemo } from 'react'
+import { type FormEvent, type HTMLInputTypeAttribute, useEffect, useMemo, useState } from 'react'
 import { useForm, usePage } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import type { SharedData } from '@/types'
+import { Label } from '@/components/ui/label'
+import FileUpload from '@/components/file-upload'
 
-type AccountFormFields = {
+type AccountFormData = {
     first_name: string
     last_name: string
     email: string
     phone: string
+    avatar: File | null
 }
 
-type ProfileUser = SharedData['auth']['user'] & Partial<AccountFormFields>
+type ExistingAvatar = {
+    id: string | number
+    path: string
+    url: string
+    mime_type: string
+    name?: string
+}
 
-const fields: { key: keyof AccountFormFields; label: string; type?: HTMLInputTypeAttribute }[] = [
+type ProfileUser = SharedData['auth']['user'] & Partial<AccountFormData>
+
+type EditableFieldKey = Exclude<keyof AccountFormData, 'avatar'>
+
+const fields: { key: EditableFieldKey; label: string; type?: HTMLInputTypeAttribute }[] = [
     { key: 'first_name', label: 'First Name' },
     { key: 'last_name', label: 'Last Name' },
     { key: 'email', label: 'Email Address', type: 'email' },
@@ -24,8 +37,6 @@ export function AccountSection() {
     const { auth } = usePage<SharedData>().props
     const fallbackUser: ProfileUser = {
         id: 0,
-        username: '',
-        name: '',
         email: '',
         phone: '',
         email_verified_at: null,
@@ -34,23 +45,27 @@ export function AccountSection() {
         first_name: '',
         last_name: '',
         image_url: '',
+        avatar: null,
     }
     const user: ProfileUser = {
         ...fallbackUser,
         ...(auth?.user as ProfileUser | undefined),
     }
 
-    const initialValues = useMemo<AccountFormFields>(() => {
-        const [firstName = '', lastName = ''] = (user.name ?? '').split(' ')
+    const initialValues = useMemo<AccountFormData>(() => {
+        const derivedFirstName = user.first_name ?? user.name?.split(' ')[0] ?? ''
+        const derivedLastName = user.last_name ?? user.name?.split(' ').slice(1).join(' ') ?? ''
+
         return {
-            first_name: user.first_name ?? firstName,
-            last_name: user.last_name ?? lastName,
+            first_name: derivedFirstName,
+            last_name: derivedLastName,
             email: user.email ?? '',
             phone: user.phone ?? '',
+            avatar: null,
         }
-    }, [user])
+    }, [user.first_name, user.last_name, user.name, user.email, user.phone])
 
-    const { data, setData, post, processing, errors, recentlySuccessful } = useForm<AccountFormFields>(initialValues)
+    const { data, setData, post, processing, errors, recentlySuccessful } = useForm<AccountFormData>(initialValues)
 
     useEffect(() => {
         setData(() => initialValues)
@@ -60,7 +75,37 @@ export function AccountSection() {
         event.preventDefault()
         post(route('user.profile.update'), {
             preserveScroll: true,
+            forceFormData: true,
         })
+    }
+
+    const buildExistingAvatar = (): ExistingAvatar[] => {
+        if (!user.image_url) {
+            return []
+        }
+
+        const avatarPath = typeof user.avatar === 'string' ? user.avatar : 'current-avatar'
+
+        return [
+            {
+                id: 'current-avatar',
+                path: avatarPath,
+                url: user.image_url,
+                mime_type: 'image/jpeg',
+                name: 'Profile photo',
+            },
+        ]
+    }
+
+    const [existingFiles, setExistingFiles] = useState<ExistingAvatar[]>(buildExistingAvatar)
+
+    useEffect(() => {
+        setExistingFiles(buildExistingAvatar())
+    }, [user.image_url, user.avatar])
+
+    const handleRemoveExisting = (fileId: string | number) => {
+        setExistingFiles((prev) => prev.filter((file) => file.id !== fileId))
+        setData('avatar', null)
     }
 
     return (
@@ -74,8 +119,18 @@ export function AccountSection() {
             <Card className="bg-[#292929]/60 border-[#292929] text-white">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6 px-6 py-8">
                     <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
-                        <div className="flex items-center justify-center w-24 h-24">
-                            <img src={user.image_url ?? '/user.png'} alt={user.name ?? 'Profile photo'} />
+                        <div className="grid gap-2">
+                            <Label htmlFor="image">Image</Label>
+                            <FileUpload
+                                value={data.avatar}
+                                onChange={(file) => setData('avatar', file as File | null)}
+                                existingFiles={existingFiles}
+                                onRemoveExisting={handleRemoveExisting}
+                                accept="image/*"
+                                maxSize={10}
+                                error={errors.avatar}
+                            />
+                            {errors.avatar && <p className="text-xs text-rose-400">{errors.avatar}</p>}
                         </div>
                         <div className="grid flex-1 gap-6 md:grid-cols-2">
                             {fields.map(({ key, label, type }) => (

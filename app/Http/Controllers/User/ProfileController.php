@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
@@ -29,12 +30,27 @@ class ProfileController extends Controller
                 Rule::unique('users', 'email')->ignore($user->id),
             ],
             'phone' => ['nullable', 'string', 'max:20'],
+            'avatar' => ['nullable', 'file', 'mimes:jpeg,jpg,png', 'max:2048'],
         ]);
-
         $user->fill($validated);
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
+        }
+
+        if ($request->hasFile('image')) {
+
+            // delete old image
+            if ($user->avatar && Storage::disk('public')->exists('user_images/' . $user->avatar)) {
+                Storage::disk('public')->delete('user_images/' . $user->avatar);
+            }
+
+            // store new image
+            $file = $request->file('image');
+            $imageName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('user_images', $imageName);
+
+            $data['image'] = $imageName;
         }
 
         $user->save();

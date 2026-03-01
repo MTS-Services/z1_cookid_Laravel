@@ -56,22 +56,21 @@ export interface SharedData {
 
 export interface User {
     id: number;
-    username: string | null;
-    name: string;
+    first_name?: string | null;
+    last_name?: string | null;
+    name?: string | null;
     email: string;
-    image?: string;
-    phone?: string;
-    image_url?: string;
-    user_type?: string;
-    email_verified_at: string | null;
-    two_factor_enabled?: boolean;
+    phone?: string | null;
+    avatar?: string | null;
+    avatar_url?: string | null;
+    image?: string | null;
+    image_url?: string | null;
+    email_verified_at?: string | null;
+    role_label?: string | null;
     permissions?: string[];
     all_permissions?: string[];
-    created_at: string;
-    updated_at: string;
-    brokerage_name?: string;
-    license_number?: string;
-    license_verification_status?: string;
+    created_at?: string;
+    updated_at?: string;
     [key: string]: unknown;
 }
 

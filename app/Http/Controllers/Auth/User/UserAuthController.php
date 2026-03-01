@@ -49,7 +49,7 @@ class UserAuthController extends Controller
         if ($user->otp_verified_at) {
             Auth::login($user);
             $request->session()->regenerate();
-            return redirect()->intended(route('frontend.profile'));
+            return redirect()->intended(route('user.profile'));
         }
 
         $otp = rand(100000, 999999);

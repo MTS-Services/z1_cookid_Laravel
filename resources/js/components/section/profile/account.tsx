@@ -119,9 +119,9 @@ export function AccountSection() {
             <Card className="bg-[#292929]/60 border-[#292929] text-white">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6 px-6 py-8">
                     <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
-                        <div className="grid gap-2">
-                            <Label htmlFor="image">Image</Label>
-                            <FileUpload
+                        <div className="grid gap-2 max-w-36">
+                            {/* <Label htmlFor="image">Image</Label> */}
+                            {/* <FileUpload
                                 value={data.avatar}
                                 onChange={(file) => setData('avatar', file as File | null)}
                                 existingFiles={existingFiles}
@@ -130,7 +130,8 @@ export function AccountSection() {
                                 maxSize={10}
                                 error={errors.avatar}
                             />
-                            {errors.avatar && <p className="text-xs text-rose-400">{errors.avatar}</p>}
+                            {errors.avatar && <p className="text-xs text-rose-400">{errors.avatar}</p>} */}
+                            <img src={data.avatar ? URL.createObjectURL(data.avatar) : user.image_url} alt="" />
                         </div>
                         <div className="grid flex-1 gap-6 md:grid-cols-2">
                             {fields.map(({ key, label, type }) => (

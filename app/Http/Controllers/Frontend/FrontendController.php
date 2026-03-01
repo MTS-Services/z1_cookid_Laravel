@@ -12,7 +12,10 @@ class FrontendController extends Controller
     {
         return Inertia::render('frontend/index');
     }
-
+    public function search($id = null): Response
+    {
+        return Inertia::render('frontend/search-page');
+    }
     public function privacyPolicy(): Response
     {
         return Inertia::render('frontend/privacy-policy');
@@ -44,12 +47,5 @@ class FrontendController extends Controller
     public function store(): Response
     {
         return Inertia::render('frontend/store');
-    }
-    public function profile(): Response
-    {
-        return Inertia::render('frontend/profile');
-    }
-    public function orderDetails($id = null){
-        return Inertia::render('frontend/order-details');
     }
 }

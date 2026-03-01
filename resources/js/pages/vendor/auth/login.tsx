@@ -19,7 +19,7 @@ const LoginPage: FC = () => {
     };
 
     return (
-        <AuthLayout title="Login" description="Login to your account">
+        <AuthLayout title="Login">
             <div className="w-full flex justify-center">
                 <div className="w-lg     bg-gray-900 border border-gray-800 rounded-xl p-8 shadow-2xl">
 
@@ -96,7 +96,7 @@ const LoginPage: FC = () => {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3.5 rounded-lg font-medium transition-colors"
+                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3.5 rounded-lg font-medium transition-colors cursor-pointer"
                         >
                             {processing ? 'Logging in...' : 'Login →'}
                         </button>
@@ -128,7 +128,7 @@ const LoginPage: FC = () => {
                     {/* Google */}
                     <button
                         type="button"
-                        className="w-full flex items-center justify-center gap-3 border border-gray-700 hover:border-gray-500 bg-gray-800 hover:bg-gray-700 text-white py-3 rounded-lg transition-colors"
+                        className="w-full flex items-center justify-center gap-3 border border-gray-700 hover:border-gray-500 bg-gray-800 hover:bg-gray-700 text-white py-3 rounded-lg transition-colors cursor-pointer"
                     >
                         <img
                             src="https://www.google.com/favicon.ico"

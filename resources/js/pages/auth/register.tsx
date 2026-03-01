@@ -142,7 +142,7 @@ const RegisterPage: FC = () => {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="w-full bg-[#2D60C8] hover:bg-blue-700 disabled:opacity-50 text-white py-3.5 rounded-lg font-medium transition-colors"
+                            className="w-full bg-[#2D60C8] hover:bg-blue-700 disabled:opacity-50 text-white py-3.5 rounded-lg font-medium transition-colors cursor-pointer"
                         >
                             {processing ? 'Creating account...' : 'Register →'}
                         </button>

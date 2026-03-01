@@ -42,6 +42,11 @@ class AdminAuthController extends Controller
                 'email' => 'Account is not active.',
             ]);
         }
+        if ($admin->otp_verified_at) {
+            Auth::guard('admin')->login($admin);
+            $request->session()->regenerate();
+            return redirect()->intended(route('admin.dashboard'));
+        }
 
         $otp = rand(100000, 999999);
         $expiresAt = now()->addMinutes(5);

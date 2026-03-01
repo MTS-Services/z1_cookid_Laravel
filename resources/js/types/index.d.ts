@@ -6,8 +6,11 @@ export interface Auth {
     admin: Admin;
 }
 export interface Admin {
-    name: string | null;
+    first_name: string | null;
+    last_name: string | null;
     email: string | null;
+    image?: string | null;
+    image_url?: string | null;
     created_at: string | null;
     updated_at: string | null;
 }

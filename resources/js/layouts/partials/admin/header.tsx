@@ -11,7 +11,7 @@ import {
 import { useInitials } from '@/hooks/use-initials';
 import { type BreadcrumbItem, type SharedData, type NavItemType } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { ChevronsLeft, ChevronsRight, Search, BellIcon, } from 'lucide-react';
+import { ChevronsLeft, ChevronsRight, Search, BellIcon, ChevronDown } from 'lucide-react';
 import * as React from 'react';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 import { cn, toUrl } from '@/lib/utils';
@@ -38,13 +38,14 @@ const activeItemStyles =
 
 export function AdminHeader({ isCollapsed, setIsCollapsed }: AdminHeaderProps) {
     const { auth } = usePage<SharedData>().props;
+    const adminAvatarSrc = auth.admin?.image_url || '/user.png';
     const getInitials = useInitials();
     const page = usePage<SharedData>();
     const { urlIsActive } = useActiveUrl();
 
 
     return (
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-sidebar-border/50 px-6 transition-all ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4">
+        <header className="bg-bg-black flex h-24.5 shrink-0 items-center gap-2 border-b border-text-border px-6 transition-all ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4">
             <Button
                 variant="outline"
                 size="icon"
@@ -52,59 +53,37 @@ export function AdminHeader({ isCollapsed, setIsCollapsed }: AdminHeaderProps) {
             >
                 {isCollapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
             </Button>
-            {/* <div className="hidden h-full items-center space-x-6 lg:flex">
-                <NavigationMenu className="flex h-full items-stretch">
-                    <NavigationMenuList className="flex h-full items-stretch space-x-2">
 
-                        <NavigationMenuItem
-                            key="dashboard"
-                            className="relative flex h-full items-center"
-                        >
-
-                            <Link
-                                href="#"
-                                className={cn(
-                                    navigationMenuTriggerStyle(),
-                                    urlIsActive('#') && activeItemStyles,
-                                    'h-9 cursor-pointer px-3',
-                                )}
-                            >
-
-                                <Icon
-                                    iconNode={ChevronsRight}
-                                    className="mr-2 h-4 w-4"
-                                />
-                            </Link>
-                            {urlIsActive('#') && (
-                                <div className="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
-                            )}
-                        </NavigationMenuItem>
-                    </NavigationMenuList>
-                </NavigationMenu>
-            </div> */}
-
-            <div className="ml-auto flex items-center space-x-2">
-                <div className="relative flex items-center space-x-1">
-                 
-                    <Separator orientation="vertical"/>
-              
-                </div>
+            <div className="ml-auto flex items-center space-x-3">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:bg-secondary hover:text-white"
+                    aria-label="Notifications"
+                >
+                    <BellIcon size={16} className="w-6 h-6" />
+                </Button>
+                <Separator orientation="vertical" className="hidden h-6 bg-white! sm:block" />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            className="size-10 rounded-full p-1"
+                        <div
+                            className="group flex items-center gap-3 rounded-full bg-transparent px-1.5 py-1 text-left hover:bg-transparent"
                         >
-                            <Avatar className="size-8 overflow-hidden rounded-full">
+                            <Avatar className="size-14 overflow-hidden rounded border border-neutral-800">
                                 <AvatarImage
-                                    src={'/'}
-                                    alt={auth.admin.name}
+                                    src={adminAvatarSrc}
+                                    alt={auth.admin.first_name + ' ' + auth.admin.last_name || 'Admin avatar'}
                                 />
-                                <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                    {getInitials(auth.admin.name)}
+                                <AvatarFallback className="rounded-full bg-neutral-700 text-xl font-semibold text-white">
+                                    {getInitials(auth.admin.first_name + ' ' + auth.admin.last_name)}
                                 </AvatarFallback>
                             </Avatar>
-                        </Button>
+                            <div className="hidden min-w-30 flex-col text-left text-white sm:flex">
+                                <span className="text-base font-semibold leading-tight">{auth.admin.first_name + ' ' + auth.admin.last_name}</span>
+                                <span className="text-xs text-neutral-400">Admin</span>
+                            </div>
+                            <ChevronDown className="h-4 w-4 text-neutral-500 transition group-hover:text-white" />
+                        </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end">
                         <AdminMenuContent admin={auth.admin} />

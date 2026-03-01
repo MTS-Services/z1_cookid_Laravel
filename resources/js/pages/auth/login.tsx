@@ -96,7 +96,7 @@ const LoginPage: FC = () => {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="w-full bg-[#2D60C8] hover:bg-blue-700 disabled:opacity-50 text-white py-3.5 font-medium transition-colors"
+                            className="w-full bg-[#2D60C8] hover:bg-blue-700 disabled:opacity-50 text-white py-3.5 font-medium transition-colors cursor-pointer"
                         >
                             {processing ? 'Logging in...' : 'Login →'}
                         </button>
@@ -126,16 +126,13 @@ const LoginPage: FC = () => {
                     </div>
 
                     {/* Google */}
-                    <button
-                        type="button"
-                        className=""
-                    >
+                    <a href="" className="cursor-pointer">
                         <img
                             src="https://www.google.com/favicon.ico"
                             alt="Google"
                             className="w-12 h-12"
                         />
-                    </button>
+                    </a>
                 </div>
             </div>
         </AuthLayout>

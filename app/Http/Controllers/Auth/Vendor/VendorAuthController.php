@@ -184,8 +184,6 @@ class VendorAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return response()->json([
-            'message' => 'Logged out successfully.',
-        ]);
+        return redirect()->route('frontend.home');
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\FrontendController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,9 @@ Route::name('frontend.')->controller(FrontendController::class)->group(function 
     Route::get('/booking-confirm', 'bookingConfirm')->name('booking-confirm');
     Route::get('/vendor-reviews', 'vendorReviews')->name('vendor-reviews');
     Route::get('/store', 'store')->name('store');
-    Route::get('/profile', 'profile')->name('profile');
-    Route::get('/order-details', 'orderDetails')->name('order-details');
+    Route::get('/search/{id?}', 'search')->name('search');
+});
+
+Route::name('frontend.')->controller(ContactController::class)->group(function () {
+    Route::get('/contact', 'index')->name('contact');
 });

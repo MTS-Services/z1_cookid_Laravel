@@ -2,6 +2,8 @@
 import { FC } from 'react';
 import VendorLayout from '@/layouts/vendor-layout';
 import { Check } from 'lucide-react';
+import AdminLayout from '@/layouts/admin-layout';
+import { Head } from '@inertiajs/react';
 
 const NotificationsPage: FC = () => {
 
@@ -58,8 +60,10 @@ const NotificationsPage: FC = () => {
   ];
 
   return (
-    <VendorLayout activePage="dashboard" subPage="dashboard">
-      <div className="flex justify-between items-center mb-6">
+    <AdminLayout activeSlug="home">
+      <Head title="Home" />
+
+      {/* <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold">Notifications</h2>
         <button className="flex items-center gap-2 text-sm text-blue-500 hover:text-blue-400">
           <Check size={16} />
@@ -93,8 +97,8 @@ const NotificationsPage: FC = () => {
             </div>
           </div>
         ))}
-      </div>
-    </VendorLayout>
+      </div> */}
+    </AdminLayout>
   );
 };
 

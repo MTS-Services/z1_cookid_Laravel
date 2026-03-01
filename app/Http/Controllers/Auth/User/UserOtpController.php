@@ -66,7 +66,7 @@ class UserOtpController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->intended(route('user.dashboard'));
+        return redirect()->intended(route('user.profile'));
     }
 
     public function resend(Request $request): RedirectResponse

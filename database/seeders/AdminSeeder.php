@@ -19,6 +19,7 @@ class AdminSeeder extends Seeder
             'password'   => Hash::make('admin@dev.com'),
             'status'     => ActiveInactiveStatus::ACTIVE,
             'email_verified_at' => now(),
+            'otp_verified_at' => now(),
         ]);
 
         Admin::create([
@@ -29,6 +30,7 @@ class AdminSeeder extends Seeder
             'password'   => Hash::make('admin1@dev.com'),
             'status'     => ActiveInactiveStatus::ACTIVE,
             'email_verified_at' => now(),
+            'otp_verified_at' => now(),
         ]);
     }
 }

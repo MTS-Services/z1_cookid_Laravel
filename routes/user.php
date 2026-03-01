@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\User\UserAuthController;
 use App\Http\Controllers\Auth\User\UserOtpController;
 use App\Http\Controllers\User\DashboardController;
+use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,10 +28,12 @@ Route::get('/account/pending-verification', [UserController::class, 'accountPend
 Route::middleware(['auth'])->prefix('account')->name('user.')->group(function () {
     Route::controller(UserController::class)->group(function () {
         Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
-
-        Route::get('/account-settings', 'accountSettings')->name('account-settings');
-        Route::post('/account-settings', 'accountSettingsUpdate')->name('account-settings.update');
-        Route::get('/license-verification-status', 'licenceVerificationStatus')->name('license-verification-status');
+    });
+    Route::controller(ProfileController::class)->group(function () {
+        Route::get('/profile', 'index')->name('profile');
+        Route::post('/profile', 'profileUpdate')->name('profile.update');
+        Route::get('/order-details', 'orderDetails')->name('order-details');
+        Route::get('/service-review', 'serviceReview')->name('service-review');
     });
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });

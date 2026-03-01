@@ -4,8 +4,8 @@ import React from 'react';
 import {
     FaFacebookF,
     FaInstagram,
-    FaLinkedinIn,
     FaTwitter,
+    FaYoutube,
 } from 'react-icons/fa';
 
 const FrontendFooter: React.FC = () => {
@@ -28,30 +28,38 @@ const FrontendFooter: React.FC = () => {
                                 </div>
                             </Link>
                             <div className="mt-5 flex space-x-4">
-                                <Link
-                                    href="#"
+                                <a
+                                    href="https://www.facebook.com/share/p/1ArbKDvNrq/"
+                                    target="_blank"
+                                    rel="noreferrer"
                                     className="flex items-center justify-center rounded-sm bg-navy text-sm md:text-base-800 p-2"
                                 >
                                     <FaFacebookF size={20}></FaFacebookF>
-                                </Link>
-                                <Link
-                                    href="#"
+                                </a>
+                                <a
+                                    href="https://x.com/glossedbooking?s=21"
+                                    target="_blank"
+                                    rel="noreferrer"
                                     className="flex items-center justify-center rounded-sm bg-navy text-sm md:text-base-800 p-2"
                                 >
                                     <FaTwitter size={20}></FaTwitter>
-                                </Link>
-                                <Link
-                                    href="#"
+                                </a>
+                                <a
+                                    href="https://www.instagram.com/glossedbooking?igsh=MXMwM20zbXNodGVzYw%3D%3D&utm_source=qr"
+                                    target="_blank"
+                                    rel="noreferrer"
                                     className="flex items-center justify-center rounded-sm bg-navy text-sm md:text-base-800 p-2"
                                 >
                                     <FaInstagram size={20}></FaInstagram>
-                                </Link>
-                                <Link
-                                    href="#"
+                                </a>
+                                <a
+                                    href="https://www.youtube.com/channel/UCdsmPvh1P00ur9N7JgAACDw"
+                                    target="_blank"
+                                    rel="noreferrer"
                                     className="flex items-center justify-center rounded-sm bg-navy text-sm md:text-base-800 p-2"
                                 >
-                                    <FaLinkedinIn size={20}></FaLinkedinIn>
-                                </Link>
+                                    <FaYoutube size={20}></FaYoutube>
+                                </a>
                             </div>
                         </div>
 
@@ -124,7 +132,7 @@ const FrontendFooter: React.FC = () => {
                             <ul className="space-y-2">
                                 <li>
                                     <Link
-                                        href="/become-provider"
+                                        href={route("vendor.auth.register")}
                                         className="font-poppins font-normal text-text-white transition-colors"
                                     >
                                         Become a Provider
@@ -132,18 +140,10 @@ const FrontendFooter: React.FC = () => {
                                 </li>
                                 <li>
                                     <Link
-                                        href="/provider-login"
+                                        href={route("vendor.auth.login")}
                                         className="font-poppins font-normal text-text-white transition-colors"
                                     >
                                         Provider Login
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link
-                                        href="/provider-resources"
-                                        className="font-poppins font-normal text-text-white transition-colors"
-                                    >
-                                        Resources
                                     </Link>
                                 </li>
                             </ul>
@@ -159,22 +159,16 @@ const FrontendFooter: React.FC = () => {
                             </p>
                             <div className="flex space-x-4 md:space-x-6">
                                 <Link
-                                    href="/privacy-policy"
+                                    href={route("frontend.privacy-policy")}
                                     className="font-poppins font-normal text-navy text-sm md:text-base"
                                 >
                                     Privacy Policy
                                 </Link>
                                 <Link
-                                    href="/terms-of-service"
+                                    href={route("frontend.privacy-policy")}
                                     className="font-poppins font-normal text-navy text-sm md:text-base"
                                 >
                                     Terms & Condition
-                                </Link>
-                                <Link
-                                    href="/terms-of-service"
-                                    className="font-poppins font-normal text-navy text-sm md:text-base"
-                                >
-                                    Cookie Policy
                                 </Link>
                             </div>
                         </div>

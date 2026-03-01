@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "@inertiajs/react";
 import { Heart, User, Menu, X } from "lucide-react";
 import {
   FaTwitter,
@@ -9,6 +8,7 @@ import {
   FaYoutube,
   FaRedditAlien,
 } from "react-icons/fa";
+import { Link } from "@inertiajs/react";
 
 interface Props {
   activePage?: string;
@@ -36,24 +36,24 @@ function FrontendHeader({ activePage, subPage }: Props) {
           <div className="flex items-center justify-center md:justify-end gap-4">
             <span className="hidden md:inline">Follow us:</span>
 
-            <Link href="#" className="hover:text-white">
+            <a href={"https://x.com/glossedbooking?s=21"} target="_blank" className="hover:text-white">
               <FaTwitter size={14} />
-            </Link>
-            <Link href="#" className="hover:text-white">
+            </a>
+            <a href={"https://www.facebook.com/share/p/1ArbKDvNrq/"} target="_blank" className="hover:text-white">
               <FaFacebookF size={14} />
-            </Link>
-            <Link href="#" className="hover:text-white">
+            </a>
+            {/* <Link href="#" className="hover:text-white">
               <FaPinterestP size={14} />
             </Link>
             <Link href="#" className="hover:text-white">
               <FaRedditAlien size={14} />
-            </Link>
-            <Link href="#" className="hover:text-white">
+            </Link> */}
+            <a href={"https://www.youtube.com/channel/UCdsmPvh1P00ur9N7JgAACDw"} target="_blank" className="hover:text-white">
               <FaYoutube size={14} />
-            </Link>
-            <Link href="#" className="hover:text-white">
+            </a>
+            <a href="https://www.instagram.com/glossedbooking?igsh=MXMwM20zbXNodGVzYw%3D%3D&utm_source=qr" target="_blank" className="hover:text-white">
               <FaInstagram size={14} />
-            </Link>
+            </a>
           </div>
         </div>
       </div>

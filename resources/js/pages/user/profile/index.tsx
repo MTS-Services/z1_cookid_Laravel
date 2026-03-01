@@ -1,219 +1,67 @@
-import FileUpload from '@/components/file-upload';
-import UserDashboardLayout from '@/layouts/user-dashboard-layout';
-import { Link, useForm } from '@inertiajs/react';
-import { Label } from '@/components/ui/label';
-import React, { useEffect, useState } from 'react';
-import { User } from '@/types';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { CardContent } from '@/components/ui/card';
-import InputError from '@/components/input-error';
-import { PasswordInput } from '@/components/ui/password-input';
+import { useEffect, useRef, useState } from 'react'
+import FrontendLayout from '@/layouts/frontend-layout'
+import {
+    Calendar,
+    Heart,
+    User2,
+} from 'lucide-react'
+import { AccountSection } from '@/components/section/profile/account'
+import { BookingsSection } from '@/components/section/profile/booking'
+import { WishlistSection } from '@/components/section/profile/wishlist'
 
-
-interface Props {
-    user: User;
-}
-
-
-export default function Index({ user }: Props) {
-    // const { data, setData, post, processing, errors } = useForm({
-    //     id: item.id,
-    //     name: item.name ?? '',
-    //     username: item.username ?? '',
-    //     email: item.email ?? '',
-    //     password: '',
-    //     password_confirmation: '',
-    //     phone: item.phone ?? '',
-    //     license_number: item.license_number ?? '',
-    //     brokerage_name: item.brokerage_name ?? '',
-    //     image: item.image ?? '',
-    //     your_self: item.your_self ?? '',
-    // });
-
-    const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
-        id: '',
-        username: '',
-        email: '',
-        phone: '',
-        brokerage_name: '',
-        license_number: '',
-        image: null as File | null,
-        password: '',
-        password_confirmation: '',
-        _method: 'POST',
-    });
-    const [existingFiles, setExistingFiles] = useState<any[]>([]);
+export default function Index() {
+    const [section, setSection] = useState<'bookings' | 'wishlist' | 'account'>('bookings')
+    const scrollRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        if (user) {
-            setData({
-                name: user.name,
-                id: user.id,
-                username: user.username || '',
-                email: user.email,
-                phone: user.phone || '',
-                brokerage_name: user.brokerage_name || '',
-                license_number: user.license_number || '',
-                image: null,
-                _method: 'POST',
-                your_self: user.your_self || '',
-                password: '',
-                password_confirmation: '',
-            });
+        scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }, [section])
 
-            // Update existing files whenever information changes
-            if (user.image) {
-                setExistingFiles([{
-                    id: user.id,
-                    url: `${user.image_url}`,
-                    name: user.image.split('/').pop(),
-                    mime_type: 'image/*',
-                    path: user.image,
-                }]);
-            } else {
-                setExistingFiles([]);
-            }
-        }
-    }, [user]);
-
-    const handleRemoveExisting = () => {
-        if (confirm('Are you sure you want to remove this file? You must upload a new file to save the changes.')) {
-            setExistingFiles([]);
-        }
-    };
-
-    function handleSubmit(e: React.FormEvent) {
-        console.log(data);
-        e.preventDefault();
-        post(route('user.account-settings.update'));
-    }
     return (
-        <UserDashboardLayout>
-            <div className="flex items-center justify-center">
-                <div className="w-full rounded-lg bg-white p-8 shadow-md">
-                    <h2 className="mb-6 text-2xl font-bold text-slate-800">
-                        Your Account Setting
-                    </h2>
-                    <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="space-y-4 grid md:grid-cols-2 gap-6">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="image">Image</Label>
-                                    <FileUpload
-                                        value={data.image}
-                                        onChange={(file) => setData('image', file as File | null)}
-                                        existingFiles={existingFiles}
-                                        onRemoveExisting={handleRemoveExisting}
-                                        accept="image/*"
-                                        maxSize={10}
-                                    />
-                                </div>
-                                <div></div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="username">Username</Label>
-                                    <Input
-                                        id="username"
-                                        type="text"
-                                        value={data.username}
-                                        onChange={(e) => setData('username', e.target.value)}
-                                        required
-                                    />
-                                    {errors.username && <div className="text-red-500 text-sm">{errors.username}</div>}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="name">Name</Label>
-                                    <Input
-                                        id="name"
-                                        type="text"
-                                        value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
-                                        required
-                                    />
-                                    {errors.name && <div className="text-red-500 text-sm">{errors.name}</div>}
-                                </div>
+        <FrontendLayout activePage="user.profile">
+            <div className="min-h-screen  text-white">
+                <div className="mx-auto max-w-7xl space-y-10 px-6 py-12">
+                    <header className="space-y-3">
+                        <h1 className="text-4xl font-bold">
+                            Hello John (not John? <span className="cursor-pointer text-blue-400">Log out</span>)
+                        </h1>
+                        <p className="text-slate-400">
+                            From your account dashboard you can view your <span className="text-blue-400">recent orders</span> and manage your{' '}
+                            <span className="text-blue-400">Account</span>.
+                        </p>
+                    </header>
 
-                                <div className="grid gap-2">
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        value={data.email}
-                                        onChange={(e) => setData('email', e.target.value)}
-                                        required
-                                    />
-                                    {errors.email && <div className="text-red-500 text-sm">{errors.email}</div>}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="phone">Phone</Label>
-                                    <Input
-                                        id="phone"
-                                        type="text"
-                                        value={data.phone}
-                                        onChange={(e) => setData('phone', e.target.value)}
+                    <div className="grid max-w-2xl gap-4 sm:grid-cols-3">
+                        {[
+                            { key: 'bookings', label: 'Bookings', icon: <Calendar className="h-10 w-10" /> },
+                            { key: 'wishlist', label: 'Wishlist', icon: <Heart className="h-10 w-10" /> },
+                            { key: 'account', label: 'Account', icon: <User2 className="h-10 w-10" /> },
+                        ].map(({ key, label, icon }) => {
+                            const isActive = section === key
+                            return (
+                                <button
+                                    key={key}
+                                    onClick={() => setSection(key as typeof section)}
+                                    className={`rounded-lg border p-6 text-center shadow-lg transition-all duration-300 cursor-pointer ${
+                                        isActive
+                                            ? 'bg-linear-to-br from-navy to-navy border-transparent shadow-blue-500/25'
+                                            : 'border-[#292929] bg-[#292929]/50 hover:border-slate-700'
+                                    }`}
+                                >
+                                    <div className="mb-3 flex justify-center text-4xl text-white">{icon}</div>
+                                    <p className="text-lg font-semibold">{label}</p>
+                                </button>
+                            )
+                        })}
+                    </div>
 
-                                    />
-                                    {errors.phone && <div className="text-red-500 text-sm">{errors.phone}</div>}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="brokerage_name">Brokerage Name</Label>
-                                    <Input
-                                        id="brokerage_name"
-                                        type="text"
-                                        value={data.brokerage_name}
-                                        onChange={(e) => setData('brokerage_name', e.target.value)}
-
-                                    />
-                                    {errors.brokerage_name && <div className="text-red-500 text-sm">{errors.brokerage_name}</div>}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="license_number">License Number</Label>
-                                    <Input
-                                        id="license_number"
-                                        type="text"
-                                        value={data.license_number}
-                                        onChange={(e) => setData('license_number', e.target.value)}
-
-                                    />
-                                    {errors.license_number && <div className="text-red-500 text-sm">{errors.license_number}</div>}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="password">Password</Label>
-                                    <PasswordInput
-                                        id="password"
-                                        name="password"
-                                        value={data.password}
-                                        onChange={(e) => setData('password', e.target.value)}
-                                        placeholder="********"
-                                        className="h-11 border-gray-200 bg-white/50 px-4! py-3! transition-all focus:border-secondary! focus:ring-secondary!"
-                                    />
-                                    <InputError message={errors.password} />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="password_confirmation">Confirm Password</Label>
-                                    <PasswordInput
-                                        id="password_confirmation"
-                                        name="password_confirmation"
-                                        value={data.password_confirmation}
-                                        onChange={(e) => setData('password_confirmation', e.target.value)}
-                                        placeholder="********"
-                                        className="h-11 border-gray-200 bg-white/50 px-4! py-3! transition-all focus:border-secondary! focus:ring-secondary!"
-                                    />
-                                    <InputError message={errors.password_confirmation} />
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-4">
-                                <Button type="submit" disabled={processing}>
-                                    {processing ? 'Updating...' : 'Update User'}
-                                </Button>
-                            </div>
-                        </form>
-                    </CardContent>
+                    <main ref={scrollRef} className="space-y-10">
+                        {section === 'bookings' && <BookingsSection />}
+                        {section === 'wishlist' && <WishlistSection />}
+                        {section === 'account' && <AccountSection />}
+                    </main>
                 </div>
             </div>
-        </UserDashboardLayout>
-    );
+        </FrontendLayout>
+    )
 }
-

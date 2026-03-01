@@ -45,11 +45,4 @@ class FrontendController extends Controller
     {
         return Inertia::render('frontend/store');
     }
-    public function profile(): Response
-    {
-        return Inertia::render('frontend/profile');
-    }
-    public function orderDetails($id = null){
-        return Inertia::render('frontend/order-details');
-    }
 }

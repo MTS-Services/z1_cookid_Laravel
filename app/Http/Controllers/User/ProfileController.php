@@ -38,19 +38,21 @@ class ProfileController extends Controller
             $user->email_verified_at = null;
         }
 
-        if ($request->hasFile('image')) {
+        // Handle uploaded avatar (frontend sends field name `avatar`)
+        if ($request->hasFile('avatar')) {
 
-            // delete old image
+            // delete old image if exists
             if ($user->avatar && Storage::disk('public')->exists('user_images/' . $user->avatar)) {
                 Storage::disk('public')->delete('user_images/' . $user->avatar);
             }
 
-            // store new image
-            $file = $request->file('image');
+            // store new image on the public disk
+            $file = $request->file('avatar');
             $imageName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('user_images', $imageName);
+            $file->storeAs('user_images', $imageName, 'public');
 
-            $data['image'] = $imageName;
+            // assign filename to user's avatar attribute
+            $user->avatar = $imageName;
         }
 
         $user->save();

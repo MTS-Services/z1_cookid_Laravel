@@ -99,7 +99,7 @@ function FrontendHeader({ activePage, subPage }: Props) {
 
             <Link
               href={route("user.auth.register")}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md text-sm font-medium"
+              className="bg-navy hover:bg-navy/80 text-white px-5 py-3 rounded-md text-sm font-medium"
             >
               Become a Provider
             </Link>
@@ -151,7 +151,7 @@ function FrontendHeader({ activePage, subPage }: Props) {
 
             <Link
               href={route("user.auth.register")}
-              className="block bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md text-center text-sm font-medium"
+              className="block bg-navy hover:bg-navy/80 text-white px-5 py-2 rounded-md text-center text-sm font-medium"
             >
               Become a Provider
             </Link>

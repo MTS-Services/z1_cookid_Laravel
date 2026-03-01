@@ -98,18 +98,23 @@ export default function ServiceReview() {
                                 {Array.from({ length: orderDetails.rating.max }).map((_, index) => (
                                     <Star
                                         key={index}
-                                        className={`h-7 w-7 ${
-                                            index < orderDetails.rating.score ? 'fill-amber-400' : 'fill-transparent text-slate-600'
-                                        }`}
+                                        className={`h-7 w-7 ${index < orderDetails.rating.score ? 'fill-amber-400' : 'fill-transparent text-slate-600'
+                                            }`}
                                     />
                                 ))}
                             </div>
-                            <p className="rounded-xl border border-slate-800 bg-slate-900/60 p-6 text-sm text-slate-200">
+                            {/* <p className="rounded-xl border border-slate-800 bg-slate-900/60 p-6 text-sm text-slate-200">
                                 {orderDetails.rating.comment}
-                            </p>
-                            <button className="mx-auto block rounded-full bg-blue-600 px-8 py-3 text-sm font-semibold text-white transition hover:bg-blue-500">
-                                Submit Review
-                            </button>
+                            </p> */}
+                            <form action="">
+                                <textarea
+                                    placeholder="Write your review..."
+                                    className="w-full rounded-xl border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-200"
+                                />
+                                <button type="submit" className="mx-auto block cursor-pointer rounded-sm bg-navy px-8 py-3 text-sm font-semibold text-white transition hover:bg-navy/80 mt-4">
+                                    Submit Review
+                                </button>
+                            </form>
                         </div>
                     </Section>
                 </div>

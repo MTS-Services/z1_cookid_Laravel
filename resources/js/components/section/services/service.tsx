@@ -1,6 +1,9 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, MapPin, Star, Heart, ChevronDown } from 'lucide-react';
 import ServiceCard from '@/components/ui/service-card';
+import FilterSection from '@/components/ui/filter-section';
+import PriceRange from '@/components/ui/price-range';
+import { router } from '@inertiajs/react';
 
 // Mock Data (Apnar deya image array-ti base kore)
 const INITIAL_SERVICES = [
@@ -152,6 +155,18 @@ const ServiceMarketplace = () => {
             return matchesServiceDrop && matchesVehicleDrop && matchesSearchLoc && matchesSidebarCat && matchesSidebarLoc;
         });
     }, [selectedService, selectedVehicle, searchLocation, sidebarCategory, sidebarLocation]);
+
+    const priceOptions = [
+        { label: "All Price", min: 0, max: 10000 },
+        { label: "Under $20", min: 0, max: 20 },
+        { label: "$25 to $100", min: 25, max: 100 },
+        { label: "$100 to $300", min: 100, max: 300 },
+        { label: "$300 to $500", min: 300, max: 500 },
+        { label: "$500 to $1,000", min: 500, max: 1000 },
+        { label: "$1,000 to $10,000", min: 1000, max: 10000 },
+    ];
+
+    const [activePrice, setActivePrice] = useState("All Price");
 
     return (
         <div className="text-text-white font-poppins md:pt-20 pt-16">
@@ -306,18 +321,25 @@ const ServiceMarketplace = () => {
                     />
 
                     {/* Price Range (UI only) */}
-                    <div>
-                        <h3 className="text-lg font-medium mb-4">Price Range</h3>
-                        <div className="relative h-1 bg-bg-black-50 rounded-full mb-6">
-                            <div className="absolute h-1 bg-bg-nevy rounded-full left-0 right-1/4"></div>
-                            <div className="absolute -top-1.5 left-0 w-4 h-4 bg-white rounded-full border-2 border-bg-nevy shadow-md"></div>
-                            <div className="absolute -top-1.5 right-1/4 w-4 h-4 bg-white rounded-full border-2 border-bg-nevy shadow-md"></div>
-                        </div>
-                        <div className="flex gap-2 mb-4">
-                            <input type="text" placeholder="Min price" className="w-1/2 bg-bg-black-50 border-none rounded p-2 text-sm text-text-white" />
-                            <input type="text" placeholder="Max price" className="w-1/2 bg-bg-black-50 border-none rounded p-2 text-sm text-text-white" />
-                        </div>
-                    </div>
+                    <PriceRange
+                        options={priceOptions}
+                        active={activePrice}
+                        onChange={(option) => {
+                            setActivePrice(option.label);
+
+                            router.get(
+                                route("frontend.services"),
+                                {
+                                    min_price: option.min,
+                                    max_price: option.max,
+                                },
+                                {
+                                    preserveState: true,
+                                    replace: true,
+                                }
+                            );
+                        }}
+                    />
 
                     {/* Ratings */}
                     <div>
@@ -359,56 +381,5 @@ const ServiceMarketplace = () => {
         </div>
     );
 };
-
-const FilterSection = ({ title, items, active, onChange }: any) => (
-    <div className="mb-8">
-        {title && (
-            <h3 className="text-2xl font-medium mb-4">{title}</h3>
-        )}
-
-        <ul className="space-y-3">
-            {items.map((item: string) => {
-                const isActive = item === active;
-
-                return (
-                    <li
-                        key={item}
-                        onClick={() => onChange(item)}
-                        className="flex items-center gap-4 cursor-pointer"
-                    >
-                        {/* Outer Circle */}
-                        <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200
-                            ${isActive
-                                    ? 'bg-navy'
-                                    : 'bg-gray-300'
-                                }`}
-                        >
-                            {/* Inner Dot */}
-                            <div
-                                className={`w-2.5 h-2.5 rounded-full
-                                ${isActive
-                                        ? 'bg-white'
-                                        : 'bg-gray-300'
-                                    }`}
-                            />
-                        </div>
-
-                        {/* Text */}
-                        <span
-                            className={`text-xl font-medium transition-colors
-                            ${isActive
-                                    ? 'text-navy'
-                                    : 'text-gray-400'
-                                }`}
-                        >
-                            {item}
-                        </span>
-                    </li>
-                );
-            })}
-        </ul>
-    </div>
-);
 
 export default ServiceMarketplace;

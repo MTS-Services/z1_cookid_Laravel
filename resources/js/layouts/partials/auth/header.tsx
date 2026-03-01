@@ -1,137 +1,133 @@
-import { Link, usePage } from '@inertiajs/react';
-import { Menu, XIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useState } from "react";
+import { Heart, User, Menu, X } from "lucide-react";
+import {
+    FaTwitter,
+    FaFacebookF,
+    FaPinterestP,
+    FaInstagram,
+    FaYoutube,
+    FaRedditAlien,
+} from "react-icons/fa";
+import { Link } from "@inertiajs/react";
 
-import AppLogo from '@/components/app-logo';
-import AppearanceToggleDropdown from '@/components/appearance-dropdown';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTrigger } from '@/components/ui/sheet';
-import { UserMenuContent } from '@/components/admin-menu-content';
-import { useInitials } from '@/hooks/use-initials';
-import { login, register } from '@/routes';
-import { type SharedData } from '@/types';
+interface Props {
+    activePage?: string;
+    subPage?: string;
+}
 
+function AuthHeader({ activePage, subPage }: Props) {
+    const [mobileOpen, setMobileOpen] = useState(false);
 
-export function AuthHeader() {
-    const { auth } = usePage<SharedData>().props;
-    const getInitials = useInitials();
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-    const navLinks = [
-        { name: 'Features', href: '#' },
-        { name: 'Pricing', href: '#' },
-        { name: 'About', href: '#' },
-    ];
+    const linkClass = (routeName: string) =>
+        `block py-2 text-lg transition-colors ${route().current(routeName)
+            ? "text-blue-500 font-semibold"
+            : "text-gray-300 hover:text-white"
+        }`;
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
-            <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
-                <div className="flex items-center gap-8">
-                    <Link href="/" className="transition-transform active:scale-95">
-                        <AppLogo />
+        <>
+            {/* ================= MAIN HEADER ================= */}
+            <header className="bg-gray-900 border-b border-gray-800 relative">
+                <div className="container mx-auto px-6 py-2 md:py-4 flex items-center justify-between">
+                    {/* Logo */}
+                    <Link href={route("frontend.home")}>
+                        <div className="w-16 md:w-24">
+                            <img src="/assets/logo/black-logo.png" alt="Logo" />
+                        </div>
                     </Link>
 
-                    <nav className="hidden items-center gap-1 md:flex">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.name}
-                                href={link.href}
-                                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                            >
-                                {link.name}
-                            </Link>
-                        ))}
+                    {/* Desktop Navigation */}
+                    <nav className="hidden md:flex items-center gap-8">
+                        <Link href={route("frontend.home")} className={linkClass("frontend.home")}>
+                            Home
+                        </Link>
+
+                        <Link href={route("frontend.services")} className={linkClass("frontend.services")}>
+                            Service
+                        </Link>
+
+                        <Link href={route("frontend.categories")} className={linkClass("frontend.categories")}>
+                            Categories
+                        </Link>
+
+                        <Link href={route("frontend.how-it-works")} className={linkClass("frontend.how-it-works")}>
+                            How It Works
+                        </Link>
                     </nav>
+
+                    {/* Desktop Right Side */}
+                    <div className="hidden md:flex items-center gap-5">
+                        <Link href="#" className="text-gray-300 hover:text-white">
+                            <Heart size={20} />
+                        </Link>
+
+                        <Link href={route("user.auth.login")} className="text-gray-300 hover:text-white">
+                            <User size={20} />
+                        </Link>
+
+                        <Link
+                            href={route("vendor.auth.register")}
+                            className="bg-navy hover:bg-navy/80 text-white px-5 py-3 rounded-md text-sm font-medium"
+                        >
+                            Become a Provider
+                        </Link>
+                    </div>
+
+                    {/* Mobile Menu Button */}
+                    <button
+                        onClick={() => setMobileOpen(!mobileOpen)}
+                        className="md:hidden text-gray-300 hover:text-white"
+                    >
+                        {mobileOpen ? <X size={26} /> : <Menu size={26} />}
+                    </button>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <AppearanceToggleDropdown />
+                {/* ================= MOBILE DROPDOWN ================= */}
+                {mobileOpen && (
+                    <div className="md:hidden bg-gray-900 border-t border-gray-800 px-6 py-6 space-y-4">
 
-                    <div className="hidden h-6 w-[1px] bg-border md:block" /> {/* Divider */}
+                        <Link href={route("frontend.home")} className={linkClass("frontend.home")}>
+                            Home
+                        </Link>
 
-                    {auth.user ? (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="relative h-9 w-9 rounded-full ring-offset-background transition-all hover:ring-2 hover:ring-ring">
-                                    <Avatar className="h-9 w-9">
-                                        <AvatarImage src={auth.user.avatar_url || auth.user.avatar} alt={auth.user.name} />
-                                        <AvatarFallback className="bg-violet-600 text-white text-xs">
-                                            {getInitials(auth.user.name)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56" align="end" sideOffset={8}>
-                                <UserMenuContent user={auth.user} />
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    ) : (
-                        <div className="hidden items-center gap-2 md:flex">
-                            <Link href={login()}>
-                                <Button variant="ghost" size="sm" className="text-sm font-medium">Log in</Button>
+                        <Link href={route("frontend.services")} className={linkClass("frontend.services")}>
+                            Service
+                        </Link>
+
+                        <Link href={route("frontend.categories")} className={linkClass("frontend.categories")}>
+                            Categories
+                        </Link>
+
+                        <Link href={route("frontend.how-it-works")} className={linkClass("frontend.how-it-works")}>
+                            How It Works
+                        </Link>
+
+                        <div className="border-t border-gray-800 pt-4 flex items-center gap-6">
+                            <Link href="#" className="text-gray-300 hover:text-white flex items-center gap-2">
+                                <Heart size={18} />
+                                Wishlist
                             </Link>
-                            <Link href={register()}>
-                                <Button size="sm" className="bg-violet-600 text-white shadow-sm hover:bg-violet-700">
-                                    Get Started
-                                </Button>
+
+                            <Link
+                                href={route("user.auth.login")}
+                                className="text-gray-300 hover:text-white flex items-center gap-2"
+                            >
+                                <User size={18} />
+                                Login
                             </Link>
                         </div>
-                    )}
 
-                    {/* Mobile Menu Trigger */}
-                    <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                        <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="md:hidden">
-                                <Menu className="h-5 w-5" />
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent side="right" className="flex w-full flex-col p-0 sm:max-w-sm">
-                            <SheetHeader className="flex-row items-center justify-between border-b p-6 space-y-0">
-                                <AppLogo />
-                                <SheetClose asChild>
-                                    <Button variant="ghost" size="icon" className="rounded-full">
-                                        <XIcon className="h-5 w-5" />
-                                    </Button>
-                                </SheetClose>
-                            </SheetHeader>
-
-                            <div className="flex flex-1 flex-col justify-between p-6">
-                                <nav className="flex flex-col gap-2">
-                                    {navLinks.map((link) => (
-                                        <Link
-                                            key={link.name}
-                                            href={link.href}
-                                            className="block rounded-lg px-4 py-3 text-lg font-medium transition-colors hover:bg-accent"
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                        >
-                                            {link.name}
-                                        </Link>
-                                    ))}
-                                </nav>
-
-                                <div className="space-y-3">
-                                    {!auth.user ? (
-                                        <>
-                                            <Link href={login()} className="block w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                                                <Button variant="outline" className="w-full py-6">Log in</Button>
-                                            </Link>
-                                            <Link href={register()} className="block w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                                                <Button className="w-full bg-violet-600 py-6 hover:bg-violet-700">Get Started</Button>
-                                            </Link>
-                                        </>
-                                    ) : (
-                                        <Link href={route('dashboard')} className="block w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                                            <Button className="w-full bg-violet-600 py-6">Dashboard</Button>
-                                        </Link>
-                                    )}
-                                </div>
-                            </div>
-                        </SheetContent>
-                    </Sheet>
-                </div>
-            </div>
-        </header>
+                        <Link
+                            href={route("vendor.auth.register")}
+                            className="block bg-navy hover:bg-navy/80 text-white px-5 py-2 rounded-md text-center text-sm font-medium"
+                        >
+                            Become a Provider
+                        </Link>
+                    </div>
+                )}
+            </header>
+        </>
     );
 }
+
+export default AuthHeader;

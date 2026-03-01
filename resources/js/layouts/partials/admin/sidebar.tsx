@@ -3,45 +3,74 @@ import { NavItem } from '@/components/ui/nav-item';
 import { cn } from '@/lib/utils';
 import { type NavItemType, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BarChart, LayoutGrid, User, Users } from 'lucide-react';
 import * as React from 'react';
+import {
+    Home,
+    Building2,
+    Boxes,
+    Users,
+    ClipboardList,
+    DollarSign,
+    Percent,
+    Settings,
+    LayoutGrid,
+} from "lucide-react";
 
 // Navigation configuration
 const adminNavItems: NavItemType[] = [
     {
-        title: 'Dashboard',
-        href: route('admin.dashboard'),
-        icon: LayoutGrid,
-        slug: 'dashboard',
+        title: "Home",
+        href: route("admin.dashboard"),
+        icon: Home,
+        slug: "home",
     },
     {
-        title: 'User Management',
+        title: "Vendor Management",
+        href: '#',
+        icon: Building2,
+        slug: "vendor-management",
+    },
+    {
+        title: "Service Management",
+        href: '#',
+        icon: Boxes,
+        slug: "service-management",
+    },
+    {
+        title: "Customers",
         href: '#',
         icon: Users,
-        badge: 2,
-        slug: 'user-management',
-        children: [
-            {
-                title: 'Users',
-                href: route('admin.um.users.index'),
-                icon: User,
-                permission: 'manage users',
-                slug: 'users',
-            },
-            {
-                title: 'Pending Verification',
-                href: route('admin.um.user.pending-verification'),
-                icon: User,
-                permission: 'manage users',
-                slug: 'pending-verification',
-            },
-        ],
+        slug: "customers",
+    },
+    {
+        title: "Orders",
+        href: '#',
+        icon: ClipboardList,
+        slug: "orders",
+    },
+    {
+        title: "Finances",
+        href: '#',
+        icon: DollarSign,
+        slug: "finances",
+    },
+    {
+        title: "Commission",
+        href: '#',
+        icon: Percent,
+        slug: "commission",
+    },
+    {
+        title: "Settings",
+        href: '#',
+        icon: Settings,
+        slug: "settings",
     },
 ];
 
 interface AdminSidebarProps {
     isCollapsed: boolean;
-    activeSlug?: string | null;
+    activeSlug?: string;
 }
 
 export const AdminSidebar = React.memo<AdminSidebarProps>(
@@ -55,7 +84,6 @@ export const AdminSidebar = React.memo<AdminSidebarProps>(
             return (
                 auth?.user?.permissions ||
                 auth?.user?.all_permissions ||
-                auth?.permissions ||
                 []
             );
         }, [props.auth]);
@@ -63,7 +91,7 @@ export const AdminSidebar = React.memo<AdminSidebarProps>(
         return (
             <aside
                 className={cn(
-                    'relative hidden h-screen border-r bg-background',
+                    'bg-bg-black relative hidden h-screen border-r border-text-border',
                     'transition-all duration-300 ease-in-out',
                     'flex-col md:flex',
                     isCollapsed ? 'w-16' : 'w-64',
@@ -72,7 +100,7 @@ export const AdminSidebar = React.memo<AdminSidebarProps>(
                 {/* Logo Section */}
                 <div
                     className={cn(
-                        'flex h-16 items-center border-b',
+                        'flex p-2 items-center border-b border-text-border',
                         isCollapsed ? 'justify-center px-2' : 'px-6',
                     )}
                 >
@@ -81,7 +109,7 @@ export const AdminSidebar = React.memo<AdminSidebarProps>(
                         className="flex items-center gap-2 transition-opacity hover:opacity-80"
                     >
                         {isCollapsed ? (
-                            <LayoutGrid className="h-6 w-6 text-primary" />
+                            <LayoutGrid className="h-6 w-6 text-white" />
                         ) : (
                             <AppLogo className="text-base!" />
                         )}
@@ -114,13 +142,13 @@ export const AdminSidebar = React.memo<AdminSidebarProps>(
                 </div>
 
                 {/* Footer */}
-                {!isCollapsed && (
+                {/* {!isCollapsed && (
                     <div className="border-t p-4">
                         <div className="text-center text-xs text-muted-foreground">
                             v1.0.0
                         </div>
                     </div>
-                )}
+                )} */}
             </aside>
         );
     },

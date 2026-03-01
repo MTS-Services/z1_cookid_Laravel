@@ -21,6 +21,7 @@ class VendorSeeder extends Seeder
             'password' => Hash::make('vendor@dev.com'),
             'status' => ActiveInactiveStatus::ACTIVE,
             'email_verified_at' => now(),
+            'otp_verified_at' => now(),
         ]);
 
         Vendor::create([
@@ -33,6 +34,7 @@ class VendorSeeder extends Seeder
             'password' => Hash::make('vendor1@dev.com'),
             'status' => ActiveInactiveStatus::INACTIVE,
             'email_verified_at' => now(),
+            'otp_verified_at' => now(),
         ]);
     }
 }

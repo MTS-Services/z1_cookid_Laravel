@@ -23,7 +23,7 @@ const VendorRegisterPage: FC = () => {
     };
 
     return (
-        <AuthLayout title="Sign Up" description="Become a Vendor">
+        <AuthLayout title="Sign Up">
 
             <div className="container h-full mx-auto grid md:grid-cols-2 gap-10 items-center px-6">
                     {/* LEFT SIDE - FORM */}
@@ -157,7 +157,7 @@ const VendorRegisterPage: FC = () => {
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-md font-medium transition"
+                                className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-md font-medium transition cursor-pointer"
                             >
                                 {processing ? 'Creating account...' : 'Create an account →'}
                             </button>

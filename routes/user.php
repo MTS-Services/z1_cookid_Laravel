@@ -35,5 +35,4 @@ Route::middleware(['auth'])->prefix('account')->name('user.')->group(function ()
         Route::get('/order-details', 'orderDetails')->name('order-details');
         Route::get('/service-review', 'serviceReview')->name('service-review');
     });
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });

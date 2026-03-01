@@ -35,16 +35,17 @@ export default function AdminLayout({ children, activeSlug }: AdminLayoutProps) 
     }, [isCollapsed]);
 
     return (
-        <div className="relative flex h-full max-h-screen min-h-screen bg-background">
-            <AdminSidebar isCollapsed={isCollapsed} activeSlug={activeSlug} />
-            <div className="flex flex-1 flex-col overflow-hidden">
-                <AdminHeader isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-                <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-6">
-                    {children}
-                </main>
+        <>
+            <div className="relative flex h-full min-h-screen max-h-screen bg-bg-black">
+                <AdminSidebar isCollapsed={isCollapsed} activeSlug={activeSlug} />
+                <div className="flex flex-1 flex-col overflow-hidden">
+                    <AdminHeader isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+                    <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-6">
+                        {children}
+                    </main>
 
-                <AdminFooter />
+                </div>
             </div>
-        </div>
+        </>
     );
 }

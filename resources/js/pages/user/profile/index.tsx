@@ -8,6 +8,7 @@ import {
 import { AccountSection } from '@/components/section/profile/account'
 import { BookingsSection } from '@/components/section/profile/booking'
 import { WishlistSection } from '@/components/section/profile/wishlist'
+import { router } from '@inertiajs/react'
 
 export default function Index() {
     const [section, setSection] = useState<'bookings' | 'wishlist' | 'account'>('bookings')
@@ -23,7 +24,7 @@ export default function Index() {
                 <div className="mx-auto max-w-7xl space-y-10 px-6 py-12">
                     <header className="space-y-3">
                         <h1 className="text-4xl font-bold">
-                            Hello John (not John? <span className="cursor-pointer text-blue-400">Log out</span>)
+                            Hello John (not John? <span className="cursor-pointer text-blue-400" onClick={() => router.post(route('logout'))}>Log out</span>)
                         </h1>
                         <p className="text-slate-400">
                             From your account dashboard you can view your <span className="text-blue-400">recent orders</span> and manage your{' '}

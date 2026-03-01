@@ -80,7 +80,7 @@ const FrontendFooter: React.FC = () => {
                                 </li>
                                 <li>
                                     <Link
-                                        href="/contact"
+                                        href={route("frontend.contact")}
                                         className="font-poppins font-normal text-text-white transition-colors"
                                     >
                                         Contact

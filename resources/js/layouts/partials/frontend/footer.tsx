@@ -72,7 +72,7 @@ const FrontendFooter: React.FC = () => {
                             <ul className="space-y-2">
                                 <li>
                                     <Link
-                                        href="/about"
+                                        href="/about-us"
                                         className="font-poppins font-normal text-text-white transition-colors"
                                     >
                                         About

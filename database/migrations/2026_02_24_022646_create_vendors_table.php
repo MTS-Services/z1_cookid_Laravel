@@ -35,10 +35,10 @@ return new class extends Migration
             $table->string('shop_name');
 
             // Detailed Location Fields
-            $table->string('region_state');
-            $table->string('city');
-            $table->string('zip_code');
-            $table->text('address');
+            $table->string('region_state')->nullable();
+            $table->string('city')->nullable();
+            $table->string('zip_code')->nullable();
+            $table->text('address')->nullable();
 
             // File Upload
             $table->string('government_id_path')->nullable();

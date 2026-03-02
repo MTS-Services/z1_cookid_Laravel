@@ -9,8 +9,10 @@ use App\Enums\OtpPurpose;
 use App\Mail\Otp\VendorOtpMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -95,12 +97,12 @@ class VendorAuthController extends Controller
             'email'         => ['required', 'email', 'unique:vendors,email'],
             'phone'         => ['required', 'string', 'max:20'],
             'shop_name'     => ['required', 'string', 'max:255'],
-            'region_state'  => ['required', 'string'],
-            'city'          => ['required', 'string'],
-            'zip_code'      => ['required', 'string', 'max:10'],
-            'address'       => ['required', 'string'],
+            'region_state'  => ['nullable', 'string'],
+            'city'          => ['nullable', 'string'],
+            'zip_code'      => ['nullable', 'string'],
+            'address'       => ['nullable', 'string'],
             // Design requires JPEG/PNG max 100MB
-            'government_id' => ['required', 'file', 'mimes:jpeg,png', 'max:102400'],
+            'government_id' => ['nullable', 'file', 'mimes:jpeg,png', 'max:102400'],
             'password'      => [
                 'required',
                 'string',
@@ -113,36 +115,49 @@ class VendorAuthController extends Controller
             'terms'         => ['accepted'], // For the checkbox in design
         ]);
 
-        // Handle File Upload
+        $governmentIdPath = null;
+
         if ($request->hasFile('government_id')) {
-            $path = $request->file('government_id')->store('vendor_ids', 'public');
-            $validated['government_id_path'] = $path;
+            $governmentIdPath = $request->file('government_id')->store('vendor_ids', 'public');
         }
 
-        $vendor = Vendor::create([
-            'first_name'         => $validated['first_name'],
-            'last_name'          => $validated['last_name'],
-            'email'              => $validated['email'],
-            'phone'              => $validated['phone'],
-            'shop_name'          => $validated['shop_name'],
-            'region_state'       => $validated['region_state'],
-            'city'               => $validated['city'],
-            'zip_code'           => $validated['zip_code'],
-            'address'            => $validated['address'],
-            'government_id_path' => $validated['government_id_path'] ?? null,
-            'password'           => Hash::make($validated['password']),
-            'status'             => 'inactive',
-        ]);
+        DB::beginTransaction();
 
-        // OTP Logic (remains similar to your previous code)
-        $otp = rand(100000, 999999);
-        $expiresAt = now()->addMinutes(5);
+        try {
+            $vendor = Vendor::create([
+                'first_name'         => $validated['first_name'],
+                'last_name'          => $validated['last_name'],
+                'email'              => $validated['email'],
+                'phone'              => $validated['phone'],
+                'shop_name'          => $validated['shop_name'],
+                'region_state'       => $validated['region_state'],
+                'city'               => $validated['city'],
+                'zip_code'           => $validated['zip_code'],
+                'address'            => $validated['address'],
+                'government_id_path' => $governmentIdPath,
+                'password'           => Hash::make($validated['password']),
+                'status'             => ActiveInactiveStatus::INACTIVE,
+            ]);
 
-        $vendor->update([
-            'otp_code' => $otp,
-            'otp_purpose' => 'register',
-            'otp_expires_at' => $expiresAt,
-        ]);
+            $otp = random_int(100000, 999999);
+            $expiresAt = now()->addMinutes(5);
+
+            $vendor->forceFill([
+                'otp_code' => $otp,
+                'otp_purpose' => OtpPurpose::REGISTER,
+                'otp_expires_at' => $expiresAt,
+            ])->save();
+
+            DB::commit();
+        } catch (\Throwable $exception) {
+            DB::rollBack();
+
+            if ($governmentIdPath) {
+                Storage::disk('public')->delete($governmentIdPath);
+            }
+
+            throw $exception;
+        }
 
         Mail::to($vendor->email)->send(new VendorOtpMail($vendor, $otp));
         $request->session()->put('vendor_email', $vendor->email);

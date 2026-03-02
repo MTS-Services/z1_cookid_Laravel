@@ -21,7 +21,7 @@ export default function AuthLayout({
                 <main className='flex items-center justify-center px-5 py-12'>
                     <Head title={title} />
 
-                    <div className="mt-8 w-full">
+                    <div className="mt-8 w-full!">
                         {children}
                     </div>
                 </main>

@@ -12,7 +12,7 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-     protected $fillable = [
+    protected $fillable = [
         'first_name',
         'last_name',
         'phone',
@@ -36,7 +36,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    
+
     protected $hidden = [
         'otp_code',
         'password',
@@ -48,17 +48,22 @@ class User extends Authenticatable
         return false;
     }
 
-    protected $appends = ['image_url'];
+    protected $appends = ['avatar_url', 'full_name'];
 
-    public function getImageUrlAttribute()
+    public function getAvatarUrlAttribute()
     {
-        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
-            return $this->image;
+        if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
+            return $this->avatar;
         }
-        if (! $this->image) {
+        if (! $this->avatar) {
             return asset('no-user-image-icon.png');
         }
 
-        return asset('storage/user_images/'.$this->image);
+        return asset('storage/user_images/' . $this->avatar);
+    }
+    // Full name accessor
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
     }
 }

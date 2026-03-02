@@ -22,12 +22,12 @@ function VendorHeader({ isCollapsed, setIsCollapsed }: VendorHeaderProps) {
       </Button>
 
       <div className="flex items-center gap-6">
-        <button className="relative text-gray-300 hover:text-white">
+        <Link href={route('vendor.notification')} className="relative text-gray-300 hover:text-white">
           <Bell size={20} />
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
             0
           </span>
-        </button>
+        </Link>
 
         <div className="relative text-white">
           <button

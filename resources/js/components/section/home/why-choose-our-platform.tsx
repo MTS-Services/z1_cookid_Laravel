@@ -2,7 +2,7 @@ import { Link } from '@inertiajs/react';
 
 export default function WhyChoosePlatform() {
     return (
-       <div className="py-20">
+       <div className="py-5 lg:py-20">
             <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col items-center justify-between gap-12 lg:flex-row">
                     {/* Left Section: Text Content */}
@@ -69,7 +69,7 @@ export default function WhyChoosePlatform() {
                         </div>
                         <div className="flex flex-col justify-center gap-4 sm:flex-row lg:justify-start">
                             <Link
-                                href="#"
+                                href={route("vendor.auth.register")}
                                 className="inline-flex items-center justify-center rounded-md bg-bg-nevy px-6 py-3 text-base font-normal font-poppins text-text-white"
                             >
                                Become a Provider    

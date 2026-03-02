@@ -160,7 +160,7 @@ export function BookingsSection() {
                             className={`rounded-md px-6 py-2 text-sm font-semibold transition-all duration-300 ${
                                 isActive
                                     ? 'bg-navy text-white shadow-lg shadow-blue-500/30'
-                                    : 'border border-[#292929] bg-[#292929]/70 text-slate-400 hover:text-white'
+                                    : 'border border-text-border bg-bg-gray/50 text-white/80 hover:text-white'
                             }`}
                         >
                             {tab}

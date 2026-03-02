@@ -3,10 +3,10 @@ import { Link } from '@inertiajs/react';
 export default function HowItWorks() {
     return (
         <div
-            className="py-20"
+            className="py-5 lg:py-20"
         >
             <div className="relative z-10 mx-auto max-w-6xl px-4">
-                <div className="mb-16 text-center">
+                <div className="lg:mb-16 text-center">
                     <h2 className="mb-4 font-poppins text-4xl font-bold text-white">
                         How It Works
                     </h2>
@@ -18,23 +18,23 @@ export default function HowItWorks() {
 
                 {/* Three Steps */}
                 <div className="relative">
-                    <div className="mx-auto max-w-5xl space-y-28">
+                    <div className="mx-auto max-w-5xl lg:space-y-28">
                         {/* STEP 01 */}
                         <div className="flex flex-col items-center gap-10 md:flex-row md:gap-0">
                             {/* Left: Number + Card */}
                             <div className="relative flex flex-1 items-center justify-start">
-                                <div className="absolute top-26 -left-8 h-[209px] w-[418px] rounded-full">
+                                <div className="absolute top-26 -left-8 h-44 w-[330px] lg:h-[209px] lg:w-[418px] rounded-full">
                                     <img
                                         src="/assets/images/home/Ellipse 1328.png"
                                         alt="Ellipse 1328"
                                         className="h-full w-full"
                                     />
                                 </div>
-                                <span className="absolute top-14 -left-15 z-0 font-poppins text-8xl font-bold text-text-border">
+                                <span className="absolute top-18 lg:top-14 -left-8 lg:-left-15 z-0 font-poppins text-7xl lg:text-8xl font-bold text-text-border">
                                     01
                                 </span>
-                                <div className="relative z-10 mt-12 ml-14 w-[325px] border border-text-border bg-bg-black-100 p-9 shadow-2xl backdrop-blur-sm">
-                                    <h3 className="mb-4 text-center text-2xl font-medium text-text-white">
+                                <div className="relative z-10 mt-12 ml-24 lg:ml-14 w-[200px] lg:w-[325px] border border-text-border bg-bg-black-100 p-6 lg:p-9 shadow-2xl backdrop-blur-sm">
+                                    <h3 className="mb-4 text-center text-base lg:text-2xl font-medium text-text-white">
                                         Create Account
                                     </h3>
                                     <div className="mb-5 flex flex-col items-center space-y-2">
@@ -44,7 +44,7 @@ export default function HowItWorks() {
                                         <div className="h-2 w-[90%] rounded-full bg-text-border" />
                                     </div>
                                     <div className="flex justify-center">
-                                        <Link className="rounded-md bg-bg-nevy px-6 py-3 text-xs font-normal text-text-white">
+                                        <Link href={route('user.auth.register')} className="rounded-md bg-bg-nevy px-6 py-3 text-xs font-normal text-text-white">
                                             Sign up
                                         </Link>
                                     </div>
@@ -67,7 +67,7 @@ export default function HowItWorks() {
                         {/* STEP 02 */}
                         <div className="flex flex-col items-center gap-10 md:flex-row md:gap-0">
                             {/* Left: Text */}
-                            <div className="order-2 flex-1 md:order-1 md:pr-16">
+                            <div className="order-2 flex-1 md:order-1 md:pr-16 mt-16 lg:mt-0">
                                 <h2 className="mb-3 font-poppins text-2xl font-medium text-text-white">
                                     Search for Services
                                 </h2>
@@ -81,18 +81,18 @@ export default function HowItWorks() {
 
                             {/* Right: Number + Card */}
                             <div className="relative order-1 flex flex-1 items-center justify-end md:order-2">
-                                <div className="absolute top-26 -left-8 h-[209px] w-[418px] rounded-full">
+                                <div className="absolute top-26 -left-8 h-44 w-[330px] lg:h-[209px] lg:w-[418px] rounded-full">
                                     <img
                                         src="/assets/images/home/Ellipse 1328.png"
                                         alt="Ellipse 1328"
                                         className="h-full w-full"
                                     />
                                 </div>
-                                <span className="absolute top-14 -left-15 z-0 font-poppins text-8xl font-bold text-text-border">
+                                <span className="absolute top-18 lg:top-14 -left-8 lg:-left-15 z-0 font-poppins text-6xl lg:text-8xl font-bold text-text-border">
                                     02
                                 </span>
-                                <div className="relative z-10 mt-12 ml-14 w-[380px] border border-text-border bg-bg-black-100 p-9 shadow-2xl backdrop-blur-sm">
-                                    <h3 className="mb-4 text-center text-2xl font-medium text-text-white">
+                                <div className="relative z-10 mt-16 lg:mt-12 ml-14  lg:w-[380px] border border-text-border bg-bg-black-100 p-6 lg:p-9 shadow-2xl backdrop-blur-sm">
+                                    <h3 className="mb-4 text-center text-base lg:text-2xl font-medium text-text-white">
                                         Search
                                     </h3>
                                     <div className="bg-black-50 flex items-center gap-3 border border-text-border px-4 py-2.5">
@@ -127,17 +127,17 @@ export default function HowItWorks() {
                             {/* Left: Number + Card */}
                             <div className="relative flex flex-1 items-center justify-start">
                                 <div className="relative flex flex-1 items-center justify-start">
-                                    <div className="absolute top-10 -left-8 h-[209px] w-[418px] rounded-full">
+                                    <div className="absolute top-10 -left-8 h-44 w-[330px] lg:h-[209px] lg:w-[418px]  rounded-full">
                                         <img
                                             src="/assets/images/home/Ellipse 1328.png"
                                             alt="Ellipse 1328"
                                             className="h-full w-full"
                                         />
                                     </div>
-                                    <span className="absolute top-0 -left-15 z-0 font-poppins text-8xl font-bold text-text-border">
+                                    <span className="absolute top-2 lg:top-18 lg:top-14 -left-8 lg:-left-15 z-0 font-poppins text-7xl lg:text-8xl font-bold text-text-border">
                                         03
                                     </span>
-                                    <div className="relative z-10 mt-12 ml-20 w-[300px] border border-text-border bg-bg-black-100 p-9 shadow-2xl backdrop-blur-sm">
+                                    <div className="relative z-10 mt-2 lg:mt-12 ml-20 lg:w-[300px] border border-text-border bg-bg-black-100 p-9 shadow-2xl backdrop-blur-sm">
                                         <span className="cursor-pointer text-4xl transition-transform hover:scale-110">
                                             😮
                                         </span>
@@ -152,7 +152,7 @@ export default function HowItWorks() {
                             </div>
 
                             {/* Right: Text */}
-                           <div className="flex-1 md:pl-16">
+                           <div className="flex-1 md:pl-16 mt-20 md:mt-0">
                                 <h2 className="mb-3 font-poppins text-2xl font-medium text-text-white">
                                     Sit back and Enjoy
                                 </h2>

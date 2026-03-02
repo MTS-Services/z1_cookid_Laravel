@@ -1,5 +1,5 @@
 import { type FormEvent, type HTMLInputTypeAttribute, useEffect, useMemo, useState } from 'react'
-import { useForm, usePage } from '@inertiajs/react'
+import { useForm, usePage, router } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import type { SharedData } from '@/types'
@@ -142,7 +142,7 @@ export function AccountSection() {
             forceFormData: true,
 
             onSuccess: () => {
-                // clear uploader preview
+                router.reload({ only: ['auth'] })
                 setData('avatar', null)
                 setExistingFiles([])
                 toast.success('Profile updated successfully')

@@ -44,13 +44,13 @@ export default function CustomerFeedbackSection({
   const [activePage, setActivePage] = useState(1);
 
   return (
-    <div className="container mx-auto text-white p-6 ">
+    <div className="container mx-auto text-white p-4">
       <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
         Customer Feedback
       </h2>
 
       {/* Overall Rating + Distribution */}
-      <div className="p-6 mb-8">
+      <div className="lg:p-6 mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
           {/* Left - Big Rating */}
           <Card className="rounded-xl border border-[#f4e6b5]/50 bg-[#fff6d3] px-12 py-10 text-gray-900 shadow-[0_25px_70px_rgba(0,0,0,0.35)]">

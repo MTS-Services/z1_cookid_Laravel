@@ -23,7 +23,7 @@ export default function Index() {
             <div className="min-h-screen  text-white">
                 <div className="mx-auto max-w-7xl space-y-10 px-6 py-12">
                     <header className="space-y-3">
-                        <h1 className="text-4xl font-bold">
+                        <h1 className="text-2xl lg:text-4xl font-bold">
                             Hello John (not John? <span className="cursor-pointer text-blue-400" onClick={() => router.post(route('logout'))}>Log out</span>)
                         </h1>
                         <p className="text-slate-400">
@@ -32,7 +32,7 @@ export default function Index() {
                         </p>
                     </header>
 
-                    <div className="grid max-w-2xl gap-4 sm:grid-cols-3">
+                    <div className="grid grid-cols-2 max-w-2xl gap-4 sm:grid-cols-3">
                         {[
                             { key: 'bookings', label: 'Bookings', icon: <Calendar className="h-10 w-10" /> },
                             { key: 'wishlist', label: 'Wishlist', icon: <Heart className="h-10 w-10" /> },
@@ -43,14 +43,14 @@ export default function Index() {
                                 <button
                                     key={key}
                                     onClick={() => setSection(key as typeof section)}
-                                    className={`rounded-lg border p-6 text-center shadow-lg transition-all duration-300 cursor-pointer ${
+                                    className={`rounded-lg border p-4 lg:p-6 text-center shadow-lg transition-all duration-300 cursor-pointer ${
                                         isActive
                                             ? 'bg-linear-to-br from-navy to-navy border-transparent shadow-blue-500/25'
-                                            : 'border-[#292929] bg-[#292929]/50 hover:border-slate-700'
+                                            : 'border-[#292929] bg-bg-gray/50 hover:border-slate-700'
                                     }`}
                                 >
                                     <div className="mb-3 flex justify-center text-4xl text-white">{icon}</div>
-                                    <p className="text-lg font-semibold">{label}</p>
+                                    <p className="text-base lg:text-lg font-semibold">{label}</p>
                                 </button>
                             )
                         })}

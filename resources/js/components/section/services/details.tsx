@@ -164,7 +164,7 @@ export default function Details(): JSX.Element {
 
   return (
     <main className="min-h-screen text-white">
-      <section className="container mx-auto grid gap-10 px-5 py-16 lg:grid-cols-[minmax(0,520px)_1fr]">
+      <section className="container mx-auto grid grid-cols-1 gap-10 px-5 lg:py-16 lg:grid-cols-[minmax(0,520px)_1fr]">
         <div className="space-y-5 h-full">
           <div className="relative overflow-hidden rounded bg-linear-to-br from-black via-zinc-900 to-black p-2 shadow-[0_25px_80px_rgba(0,0,0,0.65)]">
             <Swiper

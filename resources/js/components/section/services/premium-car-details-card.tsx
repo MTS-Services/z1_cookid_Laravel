@@ -6,7 +6,7 @@ import { Link } from '@inertiajs/react';
 
 export default function PremiumCarDetailingCard() {
     return (
-        <div className="w-full p-6 text-white shadow-2xl">
+        <div className="w-full lg:p-6 text-white shadow-2xl">
             {/* Rating */}
             <div className="flex items-center gap-2 text-sm mb-4">
                 <div className="flex items-center text-yellow-400">

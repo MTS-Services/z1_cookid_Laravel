@@ -11,13 +11,13 @@ export default function Category({ categories }: { categories: Category[] }) {
             
         >
             {/* Content */}
-            <div className="relative z-10 container mt-20">
+            <div className="relative z-10 container mt-5 lg:mt-20 px-4">
                 <h2 className="mb-5 text-3xl font-medium text-text-white">
                     Browse By Category
                 </h2>
                 <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-4 items-center justify-between text-center">
                     {categories.map((item, index) => (
-                        <div className="w-full">
+                        <div className="w-full flex flex-col items-center">
                             <img
                                 src={item.image}
                                 alt="Car Wash"

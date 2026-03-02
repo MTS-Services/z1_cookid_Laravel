@@ -32,6 +32,7 @@ class ProfileController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'avatar' => ['nullable', 'file', 'mimes:jpeg,jpg,png', 'max:2048'],
         ]);
+        $validated['avatar'] = $request->file('avatar') ?? $user->avatar;
         $user->fill($validated);
 
         if ($user->isDirty('email')) {
@@ -57,7 +58,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return back()->with('status', 'profile-updated');
+        return redirect()->back()->with('status', 'profile-updated');
     }
     public function orderDetails()
     {

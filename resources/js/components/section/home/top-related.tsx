@@ -151,12 +151,12 @@ const service = [
 export default function TopRelated() {
     return (
         <div
-            className="py-10"
+            className="py-5 lg:py-10"
         >
             <div className="relative z-10 container flex h-full flex-col justify-center px-4">
                 {/* Card 1 */}
                 <div className="flex items-center justify-between mb-5">
-                    <h2 className="text-3xl font-medium text-text-white">
+                    <h2 className="text-xl lg:text-3xl font-medium text-text-white">
                         Top Rated Near You
                     </h2>
                     <Link className="rounded-lg bg-bg-nevy p-3 text-base font-medium text-text-gray-100">

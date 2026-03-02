@@ -2,7 +2,7 @@ import React from "react";
 export default function Banner() {
     return (
         <div
-            className="relative h-screen bg-cover bg-center bg-no-repeat"
+            className="relative h-[calc(100vh-145px)] bg-cover bg-center bg-no-repeat"
             style={{
                 backgroundImage: "url('/assets/images/banner/banner.jpg')",
             }}
@@ -28,56 +28,60 @@ export default function Banner() {
                 {/* Search Bar */}
                 <div className="flex max-w-3xl flex-col items-stretch gap-2 md:flex-row">
                     {/* Select Service */}
-                    <div className="relative">
-                        <select className="h-full cursor-pointer appearance-none border-r border-gray-200 bg-bg-white px-5 py-4 pr-10 text-sm font-medium text-text-gray focus:outline-none">
-                            <option value="">Select Service</option>
-                            <option value="carwash">Car Wash</option>
-                            <option value="detailing">Detailing</option>
-                            <option value="maintenance">Maintenance</option>
-                            <option value="polish">Polishing</option>
-                        </select>
-                        <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-blck">
-                            <svg
-                                className="h-4 w-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 9l-7 7-7-7"
-                                />
-                            </svg>
-                        </span>
+                    <div>
+                        <div className="relative inline-flex">
+                            <select className="h-full cursor-pointer appearance-none border-r border-gray-200 bg-bg-white px-5 py-4 pr-10 text-sm font-medium text-text-gray focus:outline-none">
+                                <option value="">Select Service</option>
+                                <option value="carwash">Car Wash</option>
+                                <option value="detailing">Detailing</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="polish">Polishing</option>
+                            </select>
+                            <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-black">
+                                <svg
+                                    className="h-4 w-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </span>
+                        </div>
                     </div>
 
                     {/* Vehicle Type */}
-                    <div className="relative">
-                        <select className="h-full cursor-pointer appearance-none border-r border-gray-200 bg-bg-white px-5 py-4 pr-10 text-sm font-medium text-text-gray focus:outline-none">
-                            <option value="">Vehicle Type</option>
-                            <option value="sedan">Sedan</option>
-                            <option value="suv">SUV</option>
-                            <option value="truck">Truck</option>
-                            <option value="van">Van</option>
-                            <option value="motorcycle">Motorcycle</option>
-                        </select>
-                        <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-black">
-                            <svg
-                                className="h-4 w-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 9l-7 7-7-7"
-                                />
-                            </svg>
-                        </span>
+                    <div>
+                        <div className="relative inline-flex">
+                            <select className="h-full cursor-pointer appearance-none border-r border-gray-200 bg-bg-white px-5 py-4 pr-10 text-sm font-medium text-text-gray focus:outline-none">
+                                <option value="">Vehicle Type</option>
+                                <option value="sedan">Sedan</option>
+                                <option value="suv">SUV</option>
+                                <option value="truck">Truck</option>
+                                <option value="van">Van</option>
+                                <option value="motorcycle">Motorcycle</option>
+                            </select>
+                            <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-black">
+                                <svg
+                                    className="h-4 w-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </span>
+                        </div>
                     </div>
 
                     {/* Location Input */}

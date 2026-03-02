@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Auth\Vendor\VendorAuthController;
 use App\Http\Controllers\Auth\Vendor\VendorOtpController;
+use App\Http\Controllers\Vendor\AccountController;
+use App\Http\Controllers\Vendor\PaymentController;
+use App\Http\Controllers\Vendor\PerformanceController;
 use App\Http\Controllers\Vendor\VendorDashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,4 +28,9 @@ Route::prefix('vendor/auth')->name('vendor.auth.')->group(function () {
 Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function () {
     Route::post('logout',       [VendorAuthController::class, 'logout'])->name('logout');
     Route::get('dashboard', [VendorDashboardController::class, 'index'])->name('dashboard');
+    Route::get('listing', [VendorDashboardController::class, 'listing'])->name('listing');
+    Route::get('orders', [VendorDashboardController::class, 'orders'])->name('orders');
+    Route::get('payments', [PaymentController::class, 'index'])->name('payments');
+    Route::get('performance', [PerformanceController::class, 'index'])->name('performance');
+    Route::get('account', [AccountController::class, 'index'])->name('account');
 });

@@ -1,17 +1,25 @@
+import { Button } from '@/components/ui/button';
 import { Link, router } from '@inertiajs/react';
-import { Bell, ChevronDown } from 'lucide-react';
+import { Bell, ChevronDown, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import React from 'react';
 
-interface Props {
-  activePage?: string;
-  subPage?: string
+interface VendorHeaderProps {
+  isCollapsed: boolean;
+  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function VendorHeader({ activePage, subPage }: Props) {
+function VendorHeader({ isCollapsed, setIsCollapsed }: VendorHeaderProps) {
   const [userMenuOpen, setUserMenuOpen] = React.useState(false);
 
   return (
-    <header className="bg-black border-b border-gray-800 py-4 flex items-center px-6 justify-end">
+    <header className="bg-black border-b border-text-border py-4 flex items-center px-6 justify-between">
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        {isCollapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
+      </Button>
 
       <div className="flex items-center gap-6">
         <button className="relative text-gray-300 hover:text-white">
@@ -21,7 +29,7 @@ function VendorHeader({ activePage, subPage }: Props) {
           </span>
         </button>
 
-        <div className="relative">
+        <div className="relative text-white">
           <button
             onClick={() => setUserMenuOpen(!userMenuOpen)}
             className="flex items-center gap-3 hover:bg-gray-800 px-3 py-2 rounded-lg transition-colors"
@@ -37,8 +45,8 @@ function VendorHeader({ activePage, subPage }: Props) {
           </button>
 
           {userMenuOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-lg shadow-xl py-2 z-50">
-              <a href="#" className="block px-4 py-2 text-sm hover:bg-gray-800">Profile</a>
+            <div className="absolute right-0 mt-2 w-48 bg-gray-900 text-white border border-gray-700 rounded-lg shadow-xl py-2 z-50">
+              {/* <a href="#" className="block px-4 py-2 text-sm hover:bg-gray-800">Profile</a> */}
               <a href="#" className="block px-4 py-2 text-sm hover:bg-gray-800">Settings</a>
               <button onClick={() => router.post(route('vendor.logout'))} className="block px-4 py-2 text-sm hover:bg-gray-800 w-full text-left text-white">Logout</button>
             </div>

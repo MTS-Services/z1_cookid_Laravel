@@ -31,10 +31,45 @@ export function WishlistSection() {
     return (
         <section className="space-y-6">
             <Card className="border border-[#292929]/80 bg-[#1c1c1c] shadow-2xl">
-                <div className="flex items-center justify-between border-b border-[#292929] px-6 py-4">
-                    <h2 className="text-xl font-semibold text-white">Wishlist</h2>
+                <div className="flex items-center justify-between border-b border-[#292929] px-4 py-4 sm:px-6">
+                    <h2 className="text-lg font-semibold text-white sm:text-xl">Wishlist</h2>
+                    <span className="text-xs uppercase tracking-[0.3em] text-slate-500">
+                        {wishlistItems.length} Items
+                    </span>
                 </div>
-                <div className="overflow-x-auto">
+
+                {/* Mobile Cards */}
+                <div className="divide-y divide-[#292929] md:hidden">
+                    {wishlistItems.map((item) => (
+                        <div key={item.id} className="flex flex-col gap-4 px-4 py-5">
+                            <div className="flex gap-4">
+                                <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-slate-700">
+                                    <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <p className="text-sm font-semibold text-white">{item.name}</p>
+                                    <p className="flex items-center gap-2 text-xs text-slate-400">
+                                        <LocateIcon className="h-3.5 w-3.5 text-blue-400" />
+                                        {item.address}
+                                    </p>
+                                    <span className="text-sm font-semibold text-white">${item.price}</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <Button className="flex w-full items-center justify-center gap-2 rounded-lg bg-navy px-4 py-2 text-sm font-semibold">
+                                    Book Now
+                                    <ShoppingCart className="h-4 w-4" />
+                                </Button>
+                                <button className="h-10 w-10 rounded-full border border-slate-700 text-slate-400 transition hover:border-white hover:text-white">
+                                    <X className="mx-auto h-4 w-4" />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Desktop Table */}
+                <div className="hidden overflow-x-auto md:block">
                     <table className="min-w-full text-left text-slate-200">
                         <thead>
                             <tr className="text-xs uppercase tracking-[0.15em] text-slate-400">
@@ -69,11 +104,9 @@ export function WishlistSection() {
                                                     <ShoppingCart className="h-4 w-4" />
                                                 </Button>
                                             </Link>
-                                            <div className="flex gap-2">
-                                                <button className="h-10 w-10 rounded-full border border-slate-700 text-slate-400 transition hover:border-white hover:text-white">
-                                                    <X className="mx-auto h-4 w-4" />
-                                                </button>
-                                            </div>
+                                            <button className="h-10 w-10 rounded-full border border-slate-700 text-slate-400 transition hover:border-white hover:text-white">
+                                                <X className="mx-auto h-4 w-4" />
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>

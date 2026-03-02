@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Enums\ActiveInactiveStatus;
 use App\Enums\OtpPurpose;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 
 class Vendor extends Authenticatable
 {
@@ -24,6 +25,7 @@ class Vendor extends Authenticatable
         'zip_code',
         'address',
         'government_id_path',
+        'profile_photo_path',
         'password',
         'otp_code',
         'otp_purpose',
@@ -31,6 +33,10 @@ class Vendor extends Authenticatable
         'otp_verified_at',
         'status',
         'email_verified_at',
+    ];
+
+    protected $appends = [
+        'profile_photo_url',
     ];
 
     protected $hidden = [
@@ -46,5 +52,14 @@ class Vendor extends Authenticatable
         'otp_verified_at' => 'datetime',
         'email_verified_at' => 'datetime',
     ];
-    
+
+    public function getProfilePhotoUrlAttribute(): ?string
+    {
+        if (! $this->profile_photo_path) {
+            return null;
+        }
+
+        return Storage::disk('public')->url($this->profile_photo_path);
+    }
+
 }

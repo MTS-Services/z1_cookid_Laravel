@@ -13,7 +13,12 @@ class VendorDashboardController extends Controller
     //    
     }
 
-    public function index(): Response
+    public function dashboard(): Response
+    {
+        return Inertia::render('vendor/dashboard');
+    }
+
+    public function notification(): Response
     {
         return Inertia::render('vendor/notification');
     }
@@ -21,9 +26,21 @@ class VendorDashboardController extends Controller
     {
         return Inertia::render('vendor/listing');
     }
+    public function listingCreate(): Response
+    {
+        return Inertia::render('vendor/listing-create');
+    }
     public function orders(): Response
     {
         return Inertia::render('vendor/orders');
+    }
+    public function orderDetails(): Response
+    {
+        return Inertia::render('vendor/order-details');
+    }
+    public function orderCandelledDetails(): Response
+    {
+        return Inertia::render('vendor/order-candelled-details');
     }
     
 }

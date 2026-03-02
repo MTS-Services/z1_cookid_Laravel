@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import Pagination from '@/components/ui/pagination'
 import VendorLayout from '@/layouts/vendor-layout'
+import { Link } from '@inertiajs/react'
 import { MapPin, Star, X } from 'lucide-react'
 import { useState } from 'react'
 
@@ -106,10 +107,12 @@ export default function Listing() {
                     </div>
                     <Button
                         className="flex items-center gap-2 bg-navy px-6 py-2 text-white"
-                        onClick={() => setIsWizardOpen(true)}
+                        // onClick={() => setIsWizardOpen(true)}
                     >
-                        New Listing
-                        <span className="text-lg">+</span>
+                        <Link href={route('vendor.listing.create')}>
+                            New Listing
+                            <span className="text-lg"> +</span>
+                        </Link>
                     </Button>
                 </header>
 

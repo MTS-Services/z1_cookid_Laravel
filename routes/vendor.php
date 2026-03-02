@@ -27,10 +27,15 @@ Route::prefix('vendor/auth')->name('vendor.auth.')->group(function () {
 
 Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function () {
     Route::post('logout',       [VendorAuthController::class, 'logout'])->name('logout');
-    Route::get('dashboard', [VendorDashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard', [VendorDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('notification', [VendorDashboardController::class, 'notification'])->name('notification');
     Route::get('listing', [VendorDashboardController::class, 'listing'])->name('listing');
+    Route::get('listing/create', [VendorDashboardController::class, 'listingCreate'])->name('listing.create');
     Route::get('orders', [VendorDashboardController::class, 'orders'])->name('orders');
+    Route::get('order-candelled-details', [VendorDashboardController::class, 'orderCandelledDetails'])->name('order-candelled-details');
+    Route::get('order-details', [VendorDashboardController::class, 'orderDetails'])->name('order-details');
     Route::get('payments', [PaymentController::class, 'index'])->name('payments');
     Route::get('performance', [PerformanceController::class, 'index'])->name('performance');
     Route::get('account', [AccountController::class, 'index'])->name('account');
+    Route::patch('account', [AccountController::class, 'update'])->name('account.update');
 });

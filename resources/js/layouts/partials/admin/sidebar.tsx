@@ -38,7 +38,7 @@ const adminNavItems: NavItemType[] = [
     },
     {
         title: "Customers",
-        href: '#',
+        href: route("admin.cm.customers.index"),
         icon: Users,
         slug: "customers",
     },

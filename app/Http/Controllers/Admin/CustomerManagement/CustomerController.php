@@ -18,7 +18,7 @@ class CustomerController extends Controller
         $query = User::query();
 
         $result = $this->dataTableService->process($query, $request, [
-            'searchable' => ['first_name', 'last_name', 'shop_name', 'email', 'phone', 'address'],
+            'searchable' => ['first_name', 'last_name', 'email', 'phone'],
             'sortable' => ['id', 'first_name', 'last_name', 'created_at'],
         ]);
 
@@ -30,15 +30,6 @@ class CustomerController extends Controller
             'search' => $result['search'],
             'sortBy' => $result['sort_by'],
             'sortOrder' => $result['sort_order'],
-        ]);
-    }
-
-    public function show(int $id): Response
-    {
-        $customer = User::findOrFail($id);
-
-        return Inertia::render('admin/customer-management/customers/show', [
-            'customer' => $customer,
         ]);
     }
 }

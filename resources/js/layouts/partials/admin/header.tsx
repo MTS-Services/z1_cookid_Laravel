@@ -55,14 +55,17 @@ export function AdminHeader({ isCollapsed, setIsCollapsed }: AdminHeaderProps) {
             </Button>
 
             <div className="ml-auto flex items-center space-x-3">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-white hover:bg-secondary hover:text-white"
-                    aria-label="Notifications"
-                >
-                    <BellIcon size={16} className="w-6 h-6" />
-                </Button>
+                <Link
+                    href={route('admin.notification')}>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-white hover:bg-secondary hover:text-white cursor-pointer"
+                        aria-label="Notifications"
+                    >
+                        <BellIcon size={16} className="w-6 h-6" />
+                    </Button>
+                </Link>
                 <Separator orientation="vertical" className="hidden h-6 bg-white! sm:block" />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>

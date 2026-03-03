@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enums\VendorStatus;
 use App\Models\Vendor;
-use App\Enums\ActiveInactiveStatus;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -25,10 +25,10 @@ class VendorSeeder extends Seeder
             'address' => '5th Avenue, Manhattan',
 
             // Placeholder for ID
-            'government_id_path' => 'vendor_ids/sample_id.png',
+            'government_id_path' => 'https://placehold.net/600x400.png',
 
-            'password' => Hash::make('password'), // Use a secure default for testing
-            'status' => ActiveInactiveStatus::ACTIVE,
+            'password' => Hash::make('vendor@dev.com'), // Use a secure default for testing
+            'status' => VendorStatus::Active,
             'email_verified_at' => now(),
             'otp_verified_at' => now(),
         ]);
@@ -46,10 +46,10 @@ class VendorSeeder extends Seeder
             'zip_code' => '90001',
             'address' => 'Melrose Avenue',
 
-            'government_id_path' => 'vendor_ids/sample_id_2.png',
+            'government_id_path' => 'https://placehold.net/600x400.png',
 
-            'password' => Hash::make('password'),
-            'status' => ActiveInactiveStatus::INACTIVE,
+            'password' => Hash::make('vendor1@dev.com'),
+            'status' => VendorStatus::Pending,
             'email_verified_at' => now(),
             'otp_verified_at' => now(),
         ]);

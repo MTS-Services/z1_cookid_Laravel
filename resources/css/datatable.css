@@ -1,14 +1,14 @@
 /* DataTable CSS Variables - Customize colors here */
 :root {
     /* Light Mode */
-    --datatable-bg: #ffffff;
-    --datatable-border: #e5e7eb;
-    --datatable-header-bg: #f9fafb;
-    --datatable-row-hover: #f3f4f6;
-    --datatable-text: #111827;
-    --datatable-text-muted: #6b7280;
-    --datatable-primary: #3b82f6;
-    --datatable-primary-hover: #2563eb;
+    --datatable-bg: #434343;
+    --datatable-border: #767676;
+    --datatable-header-bg: #292929;
+    --datatable-row-hover: #292929;
+    --datatable-text: #ffffff;
+    --datatable-text-muted: #77878F;
+    --datatable-primary: #2D60C8;
+    --datatable-primary-hover: #2A4FA3;
     --datatable-shadow: rgba(0, 0, 0, 0.1);
 }
 
@@ -19,10 +19,10 @@
     --datatable-border: #374151;
     --datatable-header-bg: #111827;
     --datatable-row-hover: #374151;
-    --datatable-text: #f9fafb;
+    --datatable-text: #ffffff;
     --datatable-text-muted: #9ca3af;
-    --datatable-primary: #3b82f6;
-    --datatable-primary-hover: #2563eb;
+    --datatable-primary: #2D60C8;
+    --datatable-primary-hover: #2A4FA3;
     --datatable-shadow: rgba(0, 0, 0, 0.3);
 }
 
@@ -113,7 +113,7 @@
 }
 
 .datatable-filter-clear:hover {
-    color: var(--datatable-text);
+    color: var(--text-white);
 }
 
 /* Per Page */
@@ -124,7 +124,7 @@
 }
 
 .datatable-perpage-label {
-    color: var(--datatable-text-muted);
+    color: var(--text-white);
     font-size: 0.875rem;
 }
 
@@ -132,14 +132,14 @@
     min-width: 150px;
     background-color: var(--datatable-bg);
     border: 1px solid var(--datatable-border);
-    color: var(--datatable-text);
+    color: var(--text-white);
 }
 
 .datatable-select-small {
     width: 80px;
     background-color: var(--datatable-bg);
     border: 1px solid var(--datatable-border);
-    color: var(--datatable-text);
+    color: var(--text-white);
 }
 
 /* Table Wrapper */
@@ -162,7 +162,7 @@
     padding: 1rem;
     text-align: left;
     font-weight: 600;
-    color: var(--datatable-text);
+    color: var(--text-white);
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -218,14 +218,14 @@
 
 .datatable-cell {
     padding: 1rem;
-    color: var(--datatable-text);
+    color: var(--text-white);
     font-size: 0.875rem;
 }
 
 .datatable-cell-center {
     padding: 3rem 1rem;
     text-align: center;
-    color: var(--datatable-text-muted);
+    color: var(--text-white);
 }
 
 /* Loading & Empty States */
@@ -235,7 +235,7 @@
     align-items: center;
     justify-content: center;
     padding: 2rem;
-    color: var(--datatable-text-muted);
+    color: var(--text-white);
     font-size: 0.875rem;
 }
 
@@ -264,7 +264,7 @@
 }
 
 .datatable-info {
-    color: var(--datatable-text-muted);
+    color: var(--text-white);
     font-size: 0.875rem;
 }
 

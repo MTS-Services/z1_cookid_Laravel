@@ -74,6 +74,23 @@ export interface User {
     [key: string]: unknown;
 }
 
+export interface Vendor {
+    id: number;
+    first_name: string;
+    last_name: string;
+    shop_name: string;
+    email: string;
+    phone: string;
+    address?: string | null;
+    region_state?: string | null;
+    city?: string | null;
+    zip_code?: string | null;
+    status: string;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown;
+}
+
 export interface ExternalListingSubmission {
     id: number;
     user_id: number;

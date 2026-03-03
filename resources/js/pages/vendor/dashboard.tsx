@@ -34,17 +34,17 @@ const orders = [
 export default function Dashboard() {
     return (
         <VendorLayout activeSlug="dashboard">
-            <div className="space-y-6 text-white bg-[#0F1012] p-6 min-h-screen">
+            <div className="space-y-6 text-white p-6 min-h-screen">
 
                 {/* Header Section */}
                 <div className="flex justify-between items-start">
                     <div>
-                        <h1 className="text-xl font-semibold text-blue-500">Dashboard Overview</h1>
+                        <h1 className="text-xl font-semibold text-white">Dashboard Overview</h1>
                         <p className="text-sm text-gray-500">Monitor your customer service performance</p>
                     </div>
                     <div className="flex flex-col items-end">
                         <span className="text-[10px] text-gray-500 uppercase tracking-wider">Last 30 days overview</span>
-                        <button className="mt-1 flex items-center gap-2 bg-[#1A1C1E] border border-gray-800 px-3 py-1.5 rounded-lg text-xs">
+                        <button className="mt-1 flex items-center gap-2 bg-bg-gray border border-gray-800 px-3 py-1.5 rounded-lg text-xs">
                             <Calendar size={14} className="text-gray-400" />
                             Last 30 days
                             <span className="text-gray-500">▼</span>
@@ -55,7 +55,7 @@ export default function Dashboard() {
                 {/* Stats Grid */}
                 <div className="grid gap-4 md:grid-cols-3">
                     {stats.map((stat) => (
-                        <div key={stat.label} className="bg-[#1A1C1E] border border-gray-800/50 p-5 rounded-xl">
+                        <div key={stat.label} className="bg-bg-gray border border-gray-800/50 p-5 rounded-xl">
                             <div className="flex justify-between items-start">
                                 <div>
                                     <p className="text-xs text-gray-400 mb-1">{stat.label}</p>
@@ -73,7 +73,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Sales Performance Chart Section */}
-                <div className="bg-[#1A1C1E] border border-gray-800/50 p-6 rounded-xl">
+                <div className="bg-bg-gray border border-gray-800/50 p-6 rounded-xl">
                     <div className="flex justify-between items-center mb-8">
                         <h2 className="text-lg font-medium">Sales Performance</h2>
                         <select className="bg-transparent border border-gray-800 text-xs px-3 py-1 rounded-md outline-none">
@@ -108,7 +108,7 @@ export default function Dashboard() {
                         </svg>
 
                         {/* Months Labels */}
-                        <div className="flex justify-between mt-4 px-2">
+                        <div className="flex justify-between mt-2 px-2">
                             {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map(m => (
                                 <span key={m} className="text-[10px] text-gray-500">{m}</span>
                             ))}
@@ -117,12 +117,12 @@ export default function Dashboard() {
                 </div>
 
                 {/* Recent Orders Table */}
-                <div className="bg-[#1A1C1E] border border-gray-800/50 rounded-xl overflow-hidden">
+                <div className="bg-bg-gray border border-gray-800/50 rounded-xl overflow-hidden">
                     <div className="p-6">
                         <h2 className="text-lg font-medium">Recent Orders</h2>
                     </div>
                     <table className="w-full text-left text-sm">
-                        <thead className="bg-[#141517] text-gray-500 text-[11px] uppercase tracking-wider">
+                        <thead className="bg-[#141517] text-muted text-[11px] uppercase tracking-wider">
                             <tr>
                                 <th className="px-6 py-4 font-normal">Order ID</th>
                                 <th className="px-6 py-4 font-normal">Buyer</th>
@@ -140,8 +140,8 @@ export default function Dashboard() {
                                     <td className="px-6 py-4 font-semibold">{order.amount}</td>
                                     <td className="px-6 py-4">
                                         <span className={`px-3 py-1 rounded-full text-[10px] border ${order.status === 'Delivered' ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-500' :
-                                                order.status === 'Shipped' ? 'bg-blue-500/10 border-blue-500/50 text-blue-500' :
-                                                    'bg-gray-500/10 border-gray-500/50 text-gray-300'
+                                            order.status === 'Shipped' ? 'bg-blue-500/10 border-blue-500/50 text-blue-500' :
+                                                'bg-gray-500/10 border-gray-500/50 text-gray-300'
                                             }`}>
                                             {order.status}
                                         </span>
@@ -154,8 +154,8 @@ export default function Dashboard() {
                             ))}
                         </tbody>
                     </table>
-                    <div className="p-4 flex justify-between items-center bg-[#141517] border-t border-gray-800">
-                        <span className="text-xs text-gray-500">Showing 1 to 7 of 7 results</span>
+                    <div className="p-4 flex justify-between items-center border-t border-gray-800">
+                        <span className="text-xs text-muted">Showing 1 to 7 of 7 results</span>
                         <div className="flex gap-2">
                             <button className="px-4 py-1.5 border border-gray-800 rounded-lg text-xs hover:bg-gray-800">Previous</button>
                             <button className="px-4 py-1.5 border border-gray-800 rounded-lg text-xs hover:bg-gray-800">Next</button>
@@ -163,6 +163,6 @@ export default function Dashboard() {
                     </div>
                 </div>
             </div>
-        </VendorLayout>
+        </ VendorLayout>
     )
 }

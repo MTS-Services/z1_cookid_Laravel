@@ -99,6 +99,10 @@
     --color-border-gray: var(--border-gray);
     --color-navy: var(--navy);
 
+    --color-card-dark: var(--card-dark);
+    --color-card-darker: var(--card-darker);
+    --color-accent-blue: var(--accent-blue);
+    --color-accent-blue-dark: var(--accent-blue-dark);
 
 }
 
@@ -107,7 +111,7 @@
     --foreground: #121711;
 
     --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
+    --card-foreground: #575757;
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
 
@@ -118,7 +122,7 @@
     --secondary-foreground: #121711;
 
     --muted: #F3F3F3;
-    --muted-foreground: #606064;
+    --muted-foreground: #E6E6E6;
 
     --accent: #FAF5FF;
     --accent-foreground: #1F3A68;
@@ -127,7 +131,7 @@
     --destructive-foreground: #FEF2F2;
 
     --border: #F3F3F3;
-    --input: #F3F3F3;
+    --input: #e6e6e6bd;
     --ring: #2467E3;
 
     --chart-1: #9747FF;
@@ -192,6 +196,11 @@
     --navy: #2A4FA3;
 
     --border-gray: #767676;
+
+    --card-dark: #1F1F25;
+    --card-darker: #15151b;
+    --accent-blue: #2D60C8;
+    --accent-blue-dark: #1F3C8B;
 }
 
 @utility container {

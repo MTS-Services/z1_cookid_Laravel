@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\UserType;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
-use App\Models\User;
 use App\Services\DataTableService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,17 +13,9 @@ class AdminController extends Controller
 {
     public function __construct(protected DataTableService $dataTableService) {}
 
-    public function dashboard(): Response
+    public function notification(): Response
     {
-        $stats = [
-            'users' => User::count(),
-            'users_last_7_days' => User::where('created_at', '>=', now()->subDays(7))->count(),
-        ];
-
-
-        return Inertia::render('admin/dashboard', [
-            'stats' => $stats,
-        ]);
+        return Inertia::render('admin/notification');
     }
 
     public function index(): Response

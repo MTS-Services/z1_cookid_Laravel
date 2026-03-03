@@ -18,7 +18,7 @@ class VendorAccountUpdateRequest extends FormRequest
         $vendorId = $this->user('vendor')?->id;
 
         return [
-            'profile_photo' => [
+            'avatar' => [
                 'nullable',
                 'image',
                 'mimes:jpeg,jpg,png,webp',
@@ -57,7 +57,7 @@ class VendorAccountUpdateRequest extends FormRequest
 
             'password' => [
                 'nullable',
-                'confirmed', // ✅ requires password_confirmation
+                'confirmed',
                 Password::min(8)
                     ->letters()
                     ->mixedCase()
@@ -72,10 +72,8 @@ class VendorAccountUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'current_password.required_with' =>
-            'Please confirm your current password to set a new one.',
-            'password.confirmed' =>
-            'Password confirmation does not match.',
+            'current_password.required_with' => 'Please confirm your current password to set a new one.',
+            'password.confirmed' => 'Password confirmation does not match.',
         ];
     }
 }

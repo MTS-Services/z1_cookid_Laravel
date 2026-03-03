@@ -24,7 +24,7 @@ return new class extends Migration
 
             // File Upload
             $table->string('government_id_path')->nullable();
-            $table->string('profile_photo_path')->nullable();
+            $table->string('avatar')->nullable();
 
             $table->string('password');
             $table->rememberToken();

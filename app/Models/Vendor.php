@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\OtpPurpose;
+use App\Enums\VendorStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Enums\ActiveInactiveStatus;
-use App\Enums\OtpPurpose;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Storage;
 
 class Vendor extends Authenticatable
 {
@@ -25,7 +24,7 @@ class Vendor extends Authenticatable
         'zip_code',
         'address',
         'government_id_path',
-        'profile_photo_path',
+        'avatar',
         'password',
         'otp_code',
         'otp_purpose',
@@ -36,7 +35,7 @@ class Vendor extends Authenticatable
     ];
 
     protected $appends = [
-        'profile_photo_url',
+        'avatar_url',
     ];
 
     protected $hidden = [
@@ -46,20 +45,22 @@ class Vendor extends Authenticatable
     ];
 
     protected $casts = [
-        'status' => ActiveInactiveStatus::class,
+        'status' => VendorStatus::class,
         'otp_purpose' => OtpPurpose::class,
         'otp_expires_at' => 'datetime',
         'otp_verified_at' => 'datetime',
         'email_verified_at' => 'datetime',
     ];
 
-    public function getProfilePhotoUrlAttribute(): ?string
+    public function getAvatarUrlAttribute(): ?string
     {
-        if (! $this->profile_photo_path) {
-            return null;
+        if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
+            return $this->avatar;
+        }
+        if (! $this->avatar) {
+            return asset('no-user-image-icon.png');
         }
 
-        return Storage::disk('public')->url($this->profile_photo_path);
+        return asset('storage/vendor_avatars/'.$this->avatar);
     }
-
 }

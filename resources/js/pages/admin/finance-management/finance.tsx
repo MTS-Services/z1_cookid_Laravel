@@ -10,6 +10,7 @@ import {
   WithdrawFundsModal,
   WithdrawalSuccessModal,
 } from '@/components/section/vendors/payments/withdrwal-modal'
+import AdminLayout from '@/layouts/admin-layout'
 
 const payoutStats = [
   {
@@ -93,7 +94,7 @@ export default function Payment() {
     setIsAccountSuccessOpen(true)
   }
   return (
-    <VendorLayout activeSlug="vendor.payments">
+    <AdminLayout activeSlug="vendor.payments">
       <section className="space-y-8 text-white">
         <header>
           <h1 className="text-2xl font-semibold text-white">Payments &amp; Earnings</h1>
@@ -262,6 +263,6 @@ export default function Payment() {
         title="Account Added Successfully!"
         description={`Your payout account (${accountEmail}) is ready to receive funds.`}
       />
-    </VendorLayout>
+    </AdminLayout>
   )
 }

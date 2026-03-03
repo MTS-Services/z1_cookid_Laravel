@@ -195,7 +195,7 @@ export function DataTable<T extends Record<string, unknown>>({
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                {[5, 10, 15, 30, 50, 100].map((value) => (
+                                {[2, 5, 10, 15, 30, 50, 100].map((value) => (
                                     <SelectItem key={value} value={String(value)}>
                                         {value}
                                     </SelectItem>

@@ -26,7 +26,7 @@ const adminNavItems: NavItemType[] = [
     },
     {
         title: "Vendor Management",
-        href: '#',
+        href: route("admin.vm.vendors.index"),
         icon: Building2,
         slug: "vendor-management",
     },
@@ -50,7 +50,7 @@ const adminNavItems: NavItemType[] = [
     },
     {
         title: "Finances",
-        href: '#',
+        href: route('admin.fm.index'),
         icon: DollarSign,
         slug: "finances",
     },

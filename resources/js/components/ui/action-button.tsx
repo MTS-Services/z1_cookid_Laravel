@@ -9,31 +9,38 @@ interface Props {
   IconNode?: LucideIcon
   className?: string
   children?: React.ReactNode
-  variant?: string
   rightIcon?: any
-
+  onClick?: () => void
 }
-function ActionButton({ href, IconNode = Plus, className, children, rightIcon, }: Props) {
-  return (
-    <>
-      <Link href={href || '#'}>
-        <Button className={cn('px-4 py-3 h-auto bg-primary hover:bg-secondary', className)}>
-          {rightIcon ? (
-            <>
-              {children || 'Create'}
-              <Icon iconNode={rightIcon} />
-            </>
-          ) : (
-            <>
-              <Icon iconNode={IconNode} />
-              {children || 'Create'}
-            </>
-          )}
 
-        </Button>
-      </Link>
-    </>
+function ActionButton({ href, IconNode = Plus, className, children, rightIcon, onClick }: Props) {
+  const content = (
+    <Button
+      onClick={onClick}
+      className={cn(
+        'px-4 py-3 h-auto bg-(--color-accent-blue) hover:bg-(--color-accent-blue-dark) cursor-pointer rounded',
+        className,
+      )}
+    >
+      {rightIcon ? (
+        <>
+          {children || 'Create'}
+          <Icon iconNode={rightIcon} />
+        </>
+      ) : (
+        <>
+          <Icon iconNode={IconNode} />
+          {children || 'Create'}
+        </>
+      )}
+    </Button>
   )
+
+  if (href) {
+    return <Link href={href}>{content}</Link>
+  }
+
+  return content
 }
 
 export { ActionButton }

@@ -99,6 +99,10 @@
     --color-border-gray: var(--border-gray);
     --color-navy: var(--navy);
 
+    --color-card-dark: var(--card-dark);
+    --color-card-darker: var(--card-darker);
+    --color-accent-blue: var(--accent-blue);
+    --color-accent-blue-dark: var(--accent-blue-dark);
 
 }
 
@@ -192,6 +196,11 @@
     --navy: #2A4FA3;
 
     --border-gray: #767676;
+
+    --card-dark: #1F1F25;
+    --card-darker: #15151b;
+    --accent-blue: #2D60C8;
+    --accent-blue-dark: #1F3C8B;
 }
 
 @utility container {

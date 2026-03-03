@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Enums\ActiveInactiveStatus;
+use App\Enums\VendorStatus;
 use App\Enums\OtpPurpose;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
@@ -46,7 +46,7 @@ class Vendor extends Authenticatable
     ];
 
     protected $casts = [
-        'status' => ActiveInactiveStatus::class,
+        'status' => VendorStatus::class,
         'otp_purpose' => OtpPurpose::class,
         'otp_expires_at' => 'datetime',
         'otp_verified_at' => 'datetime',

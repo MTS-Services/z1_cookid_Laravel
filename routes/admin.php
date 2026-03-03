@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\FinanceManagement\FinanceController;
 use App\Http\Controllers\Admin\UserManagement\UserController;
+use App\Http\Controllers\Admin\VendorManagement\VendorController;
 use App\Http\Controllers\Auth\Admin\AdminAuthController;
 use App\Http\Controllers\Auth\Admin\AdminOtpController;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +42,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/pending-verification', [UserController::class, 'pendingVerification'])->name('user.pending-verification');
             Route::get('/user/verify/{id}', [UserController::class, 'verified'])->name('user.verify');
             Route::post('/user/license-verify/{id}/{status}', [UserController::class, 'licenseVerify'])->name('user.license-verify');
+        });
+        
+        Route::group(['prefix' => 'finance-management', 'as' => 'fm.'], function () {
+            Route::get('/finance', [FinanceController::class, 'index'])->name('index');
+        });
+
+        Route::group(['prefix' => 'vendor-management', 'as' => 'vm.'], function () {
+            Route::get('/vendors', [VendorController::class, 'index'])->name('vendors.index');
+            Route::get('/vendors/{id}', [VendorController::class, 'show'])->name('vendors.show');
+            Route::post('/vendors/{id}/approve', [VendorController::class, 'approve'])->name('vendors.approve');
+            Route::post('/vendors/{id}/reject', [VendorController::class, 'reject'])->name('vendors.reject');
         });
     });
 });

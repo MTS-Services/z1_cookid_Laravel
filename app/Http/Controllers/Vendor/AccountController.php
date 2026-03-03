@@ -31,7 +31,7 @@ class AccountController extends Controller
     | Password Update
     |--------------------------------------------------------------------------
     */
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         } else {
             unset($validated['password']);
@@ -44,17 +44,20 @@ class AccountController extends Controller
     | Profile Photo Upload
     |--------------------------------------------------------------------------
     */
-        if ($request->hasFile('profile_photo')) {
+        if ($validated['avatar']) {
 
-            if ($vendor->profile_photo_path) {
-                Storage::disk('public')->delete($vendor->profile_photo_path);
+            if ($vendor->avatar && Storage::disk('public')->exists('vendor_avatars/'.$vendor->avatar)) {
+                Storage::disk('public')->delete('vendor_avatars/'.$vendor->avatar);
             }
 
-            $validated['profile_photo_path'] =
-                $request->file('profile_photo')
-                ->store('vendor_profile_photos', 'public');
+            // Store new image
+            $file = $request->file('avatar');
+            $imageName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+            $file->storeAs('vendor_avatars', $imageName, 'public');
 
-            unset($validated['profile_photo']);
+            $validated['avatar'] = $imageName;
+        } else {
+            $validated['avatar'] = $vendor->avatar;
         }
 
         /*
@@ -64,8 +67,6 @@ class AccountController extends Controller
     */
         $vendor->update($validated);
 
-        return redirect()
-            ->route('vendor.account')
-            ->with('success', 'Account settings updated successfully.');
+        return redirect()->route('vendor.account');
     }
 }

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Auth\Vendor;
 
-use App\Http\Controllers\Controller;
-use App\Models\Vendor;
 use App\Enums\ActiveInactiveStatus;
 use App\Enums\OtpPurpose;
+use App\Http\Controllers\Controller;
 use App\Mail\Otp\VendorOtpMail;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +19,6 @@ use Inertia\Inertia;
 
 class VendorAuthController extends Controller
 {
-
     /*
     |--------------------------------------------------------------------------
     | Show Login
@@ -30,6 +29,7 @@ class VendorAuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('vendor.dashboard');
         }
+
         return Inertia::render('vendor/auth/login');
     }
 
@@ -92,18 +92,18 @@ class VendorAuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'first_name'    => ['required', 'string', 'max:255'],
-            'last_name'     => ['required', 'string', 'max:255'],
-            'email'         => ['required', 'email', 'unique:vendors,email'],
-            'phone'         => ['required', 'string', 'max:20'],
-            'shop_name'     => ['required', 'string', 'max:255'],
-            'region_state'  => ['nullable', 'string'],
-            'city'          => ['nullable', 'string'],
-            'zip_code'      => ['nullable', 'string'],
-            'address'       => ['nullable', 'string'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:vendors,email'],
+            'phone' => ['required', 'string', 'max:20'],
+            'shop_name' => ['required', 'string', 'max:255'],
+            'region_state' => ['nullable', 'string'],
+            'city' => ['nullable', 'string'],
+            'zip_code' => ['nullable', 'string'],
+            'address' => ['nullable', 'string'],
             // Design requires JPEG/PNG max 100MB
             'government_id' => ['nullable', 'file', 'mimes:jpeg,png', 'max:102400'],
-            'password'      => [
+            'password' => [
                 'required',
                 'string',
                 Password::min(8)
@@ -112,7 +112,7 @@ class VendorAuthController extends Controller
                     ->numbers()
                     ->symbols(),
             ],
-            'terms'         => ['accepted'], // For the checkbox in design
+            'terms' => ['accepted'], // For the checkbox in design
         ]);
 
         $governmentIdPath = null;
@@ -125,18 +125,18 @@ class VendorAuthController extends Controller
 
         try {
             $vendor = Vendor::create([
-                'first_name'         => $validated['first_name'],
-                'last_name'          => $validated['last_name'],
-                'email'              => $validated['email'],
-                'phone'              => $validated['phone'],
-                'shop_name'          => $validated['shop_name'],
-                'region_state'       => $validated['region_state'],
-                'city'               => $validated['city'],
-                'zip_code'           => $validated['zip_code'],
-                'address'            => $validated['address'],
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+                'shop_name' => $validated['shop_name'],
+                'region_state' => $validated['region_state'],
+                'city' => $validated['city'],
+                'zip_code' => $validated['zip_code'],
+                'address' => $validated['address'],
                 'government_id_path' => $governmentIdPath,
-                'password'           => Hash::make($validated['password']),
-                'status'             => ActiveInactiveStatus::INACTIVE,
+                'password' => Hash::make($validated['password']),
+                'status' => ActiveInactiveStatus::INACTIVE,
             ]);
 
             $otp = random_int(100000, 999999);
@@ -188,7 +188,7 @@ class VendorAuthController extends Controller
             ]);
         }
 
-        if ($vendor->status !== ActiveInactiveStatus::ACTIVE) {
+        if ($vendor->status->value !== ActiveInactiveStatus::ACTIVE->value) {
             throw ValidationException::withMessages([
                 'email' => 'Account is not active.',
             ]);
@@ -197,6 +197,7 @@ class VendorAuthController extends Controller
             // Auth::login($vendor);
             auth()->guard('vendor')->login($vendor);
             $request->session()->regenerate();
+
             return redirect()->intended(route('vendor.dashboard'));
         }
 
@@ -227,7 +228,7 @@ class VendorAuthController extends Controller
     {
         $request->validate([
             'email' => ['required', 'email'],
-            'otp'   => ['required'],
+            'otp' => ['required'],
         ]);
 
         $vendor = Vendor::where('email', $request->email)->first();

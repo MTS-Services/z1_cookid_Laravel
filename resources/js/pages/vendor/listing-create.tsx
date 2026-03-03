@@ -1,313 +1,168 @@
-import { Button } from '@/components/ui/button'
 import VendorLayout from '@/layouts/vendor-layout'
-import { useMemo, useRef, useState } from 'react'
+import { Eye, DollarSign, ShoppingCart, LayoutGrid, Calendar } from 'lucide-react'
 
-export default function ListingCreate() {
-    const totalSteps = 3
-    const [currentStep, setCurrentStep] = useState(1)
-    const [formData, setFormData] = useState({
-        serviceTitle: '',
-        description: '',
-        duration: '2+ Hours',
-        carType: '',
-        category: 'Car Wash',
-        location: '',
-        features: '',
-        price: '',
-        coverImage: null as File | null,
-        galleryImages: [] as File[],
-    })
+const stats = [
+    {
+        label: 'Active Listings',
+        value: '3',
+        change: '+12% vs last month',
+        icon: LayoutGrid,
+    },
+    {
+        label: 'Total Revenue',
+        value: '$1438.00',
+        change: '+8% vs last month',
+        icon: DollarSign,
+    },
+    {
+        label: 'Pending Orders',
+        value: '67',
+        change: '-5% vs last month',
+        icon: ShoppingCart,
+    },
+]
 
-    const [coverPreview, setCoverPreview] = useState<string | null>(null)
-    const [galleryPreviews, setGalleryPreviews] = useState<string[]>([])
-    const galleryInputRef = useRef<HTMLInputElement | null>(null)
+const orders = [
+    { id: '#ord-001', buyer: 'Arlene McCoy', amount: '$219.78', status: 'Confirmed', delivery: '07/02/2026' },
+    { id: '#ord-002', buyer: 'Cody Fisher', amount: '$219.78', status: 'Shipped', delivery: '07/02/2026' },
+    { id: '#ord-003', buyer: 'Jacob Jones', amount: '$219.78', status: 'Delivered', delivery: '07/02/2026' },
+    { id: '#ord-004', buyer: 'Jenny Wilson', amount: '$219.78', status: 'Confirmed', delivery: '07/02/2026' },
+    { id: '#ord-005', buyer: 'Guy Hawkins', amount: '$219.78', status: 'Confirmed', delivery: '07/02/2026' },
+    { id: '#ord-006', buyer: 'Robert Fox', amount: '$219.78', status: 'Confirmed', delivery: '07/02/2026' },
+]
 
-    const coverLabel = useMemo(() => {
-        if (!formData.coverImage) {
-            return 'Choose file'
-        }
-
-        return formData.coverImage.name.length > 18
-            ? `${formData.coverImage.name.slice(0, 18)}...`
-            : formData.coverImage.name
-    }, [formData.coverImage])
-
-    const progress = (currentStep / totalSteps) * 100
-
-    const handleNext = () => {
-        if (currentStep < totalSteps) {
-            setCurrentStep((prev) => prev + 1)
-        }
-    }
-
-    const handleBack = () => {
-        if (currentStep > 1) {
-            setCurrentStep((prev) => prev - 1)
-        }
-    }
-
-    const handlePublish = () => {
-        console.log('Publishing listing', formData)
-    }
-
-    const handleCoverChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0] ?? null
-        setFormData((prev) => ({
-            ...prev,
-            coverImage: file,
-        }))
-
-        if (file) {
-            const previewUrl = URL.createObjectURL(file)
-            setCoverPreview(previewUrl)
-        } else {
-            setCoverPreview(null)
-        }
-    }
-
-    const handleGalleryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = Array.from(event.target.files ?? [])
-
-        if (!files.length) {
-            return
-        }
-
-        setFormData((prev) => ({
-            ...prev,
-            galleryImages: [...prev.galleryImages, ...files],
-        }))
-
-        setGalleryPreviews((prev) => [...prev, ...files.map((file) => URL.createObjectURL(file))])
-
-        event.target.value = ''
-    }
-
-    const handleGalleryButtonClick = () => {
-        galleryInputRef.current?.click()
-    }
-
+export default function Dashboard() {
     return (
-        <VendorLayout activeSlug="listing">
-            <section className="space-y-8">
-                <header className="space-y-2">
-                    <p className="text-sm uppercase tracking-[0.3em] text-slate-400">Create listing</p>
-                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <h1 className="text-2xl font-semibold text-white">New Service Experience</h1>
-                            <p className="text-sm text-slate-400">Craft a compelling listing so customers instantly understand your value.</p>
-                        </div>
-                        <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-200">
-                            Step {currentStep} of {totalSteps}
-                        </span>
+        <VendorLayout activeSlug="dashboard">
+            <div className="space-y-6 text-white p-6 min-h-screen">
+
+                {/* Header Section */}
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h1 className="text-xl font-semibold text-white">Dashboard Overview</h1>
+                        <p className="text-sm text-gray-500">Monitor your customer service performance</p>
                     </div>
-                </header>
-
-                <div className="rounded-3xl border border-white/5 bg-bg-gray p-6 shadow-[0_40px_80px_rgba(0,0,0,0.6)]">
-                    <div className="mb-8 h-2 rounded-full bg-white/10">
-                        <div
-                            className="h-full rounded-full bg-linear-to-r from-[#4AB1F1] via-[#566CEC] to-[#D46BFF]"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
-
-                    {currentStep === 1 && (
-                        <div className="space-y-6 text-white">
-                            <div className="text-sm text-slate-400">
-                                <h2 className="text-xl font-semibold text-white">Describe the experience</h2>
-                                <p>Include vivid details so car owners know exactly what they are booking.</p>
-                            </div>
-                            <label className="space-y-2 text-sm font-medium">
-                                <span>Service Title</span>
-                                <input
-                                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
-                                    placeholder="Elite Auto Detailing"
-                                    value={formData.serviceTitle}
-                                    onChange={(e) => setFormData({ ...formData, serviceTitle: e.target.value })}
-                                />
-                            </label>
-                            <label className="space-y-2 text-sm font-medium">
-                                <span>Description</span>
-                                <textarea
-                                    rows={5}
-                                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
-                                    placeholder="Share your proven process, what’s special, and outcomes customers can expect..."
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                />
-                            </label>
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <label className="space-y-2 text-sm font-medium">
-                                    <span>Service Duration</span>
-                                    <select
-                                        className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
-                                        value={formData.duration}
-                                        onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                                    >
-                                        <option>2+ Hours</option>
-                                        <option>Half-Day</option>
-                                        <option>Full-Day</option>
-                                    </select>
-                                </label>
-                                <label className="space-y-2 text-sm font-medium">
-                                    <span>Car Type</span>
-                                    <select
-                                        className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
-                                        value={formData.carType}
-                                        onChange={(e) => setFormData({ ...formData, carType: e.target.value })}
-                                    >
-                                        <option value="">Select</option>
-                                        <option>Sedan</option>
-                                        <option>SUV</option>
-                                        <option>Luxury</option>
-                                    </select>
-                                </label>
-                                <label className="space-y-2 text-sm font-medium">
-                                    <span>Car Category</span>
-                                    <select
-                                        className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
-                                        value={formData.category}
-                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    >
-                                        <option>Car Wash</option>
-                                        <option>Detailing</option>
-                                        <option>Maintenance</option>
-                                    </select>
-                                </label>
-                            </div>
-                        </div>
-                    )}
-
-                    {currentStep === 2 && (
-                        <div className="space-y-6 text-white">
-                            <div className="text-sm text-slate-400">
-                                <h2 className="text-xl font-semibold text-white">Location & value props</h2>
-                                <p>Help shoppers understand where you operate and what’s included.</p>
-                            </div>
-                            <label className="space-y-2 text-sm font-medium">
-                                <span>Store Location</span>
-                                <input
-                                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
-                                    placeholder="Downtown San Francisco"
-                                    value={formData.location}
-                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                />
-                            </label>
-                            <label className="space-y-2 text-sm font-medium">
-                                <span>Features</span>
-                                <textarea
-                                    rows={5}
-                                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
-                                    placeholder="Hand wash, ceramic finish, premium products, lounge access..."
-                                    value={formData.features}
-                                    onChange={(e) => setFormData({ ...formData, features: e.target.value })}
-                                />
-                            </label>
-                            <label className="space-y-2 text-sm font-medium">
-                                <span>Base Price</span>
-                                <input
-                                    type="number"
-                                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
-                                    placeholder="120"
-                                    value={formData.price}
-                                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                />
-                            </label>
-                        </div>
-                    )}
-
-                    {currentStep === 3 && (
-                        <div className="space-y-8 text-white">
-                            <div className="text-sm text-slate-400">
-                                <h2 className="text-xl font-semibold text-white">Visual verification</h2>
-                                <p>Upload proof of quality so shoppers trust what they see.</p>
-                            </div>
-                            <div className="w-full max-w-sm">
-                                <p className="text-sm font-medium">Cover Image</p>
-                                <label
-                                    htmlFor="cover-upload"
-                                    className="mt-3 flex h-48 cursor-pointer items-center justify-center rounded-2xl border border-dashed border-white/15 bg-black/30 text-center text-slate-400 transition hover:border-white/30"
-                                >
-                                    {coverPreview ? (
-                                        <img
-                                            src={coverPreview}
-                                            alt="Cover preview"
-                                            className="h-full w-full rounded-2xl object-cover"
-                                        />
-                                    ) : (
-                                        <div>
-                                            <p className="font-semibold text-white">Upload Cover Image</p>
-                                            <p className="text-xs">JPEG/PNG up to 10MB</p>
-                                            <span className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-white">
-                                                {coverLabel}
-                                            </span>
-                                        </div>
-                                    )}
-                                    <input
-                                        id="cover-upload"
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={handleCoverChange}
-                                    />
-                                </label>
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium">Gallery Images</p>
-                                <div className="mt-4 flex flex-wrap gap-4">
-                                    {galleryPreviews.length
-                                        ? galleryPreviews.map((preview, index) => (
-                                              <div
-                                                  key={`${preview}-${index}`}
-                                                  className="h-20 w-28 rounded-xl border border-white/10 bg-cover bg-center"
-                                                  style={{ backgroundImage: `url(${preview})` }}
-                                              />
-                                          ))
-                                        : [1, 2, 3, 4].map((item) => (
-                                              <div
-                                                  key={item}
-                                                  className="h-20 w-28 rounded-xl border border-white/10 bg-cover bg-center"
-                                                  style={{ backgroundImage: `url(/assets/images/service/gallery-${item}.jpg)` }}
-                                              />
-                                          ))}
-                                    <button
-                                        type="button"
-                                        onClick={handleGalleryButtonClick}
-                                        className="flex h-20 w-20 items-center justify-center rounded-xl border border-dashed border-white/20 text-2xl text-slate-400 transition hover:border-white/40"
-                                    >
-                                        +
-                                    </button>
-                                    <input
-                                        ref={galleryInputRef}
-                                        id="gallery-upload"
-                                        type="file"
-                                        accept="image/*"
-                                        multiple
-                                        className="hidden"
-                                        onChange={handleGalleryChange}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-end">
-                        {currentStep > 1 && (
-                            <Button variant="secondary" className="bg-black/40 text-white" onClick={handleBack}>
-                                Back
-                            </Button>
-                        )}
-                        {currentStep < totalSteps ? (
-                            <Button className="bg-navy" onClick={handleNext}>
-                                Next Step
-                            </Button>
-                        ) : (
-                            <Button className="bg-navy" onClick={handlePublish}>
-                                Publish Listing
-                            </Button>
-                        )}
+                    <div className="flex flex-col items-end">
+                        <span className="text-[10px] text-gray-500 uppercase tracking-wider">Last 30 days overview</span>
+                        <button className="mt-1 flex items-center gap-2 bg-bg-gray border border-gray-800 px-3 py-1.5 rounded-lg text-xs">
+                            <Calendar size={14} className="text-gray-400" />
+                            Last 30 days
+                            <span className="text-gray-500">▼</span>
+                        </button>
                     </div>
                 </div>
-            </section>
+
+                {/* Stats Grid */}
+                <div className="grid gap-4 md:grid-cols-3">
+                    {stats.map((stat) => (
+                        <div key={stat.label} className="bg-bg-gray border border-gray-800/50 p-5 rounded-xl">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="text-xs text-gray-400 mb-1">{stat.label}</p>
+                                    <h3 className="text-2xl font-bold">{stat.value}</h3>
+                                </div>
+                                <div className="bg-[#26292B] p-2 rounded-lg">
+                                    <stat.icon size={20} className="text-gray-300" />
+                                </div>
+                            </div>
+                            <p className={`text-[10px] mt-2 ${stat.change.startsWith('+') ? 'text-blue-400' : 'text-red-400'}`}>
+                                {stat.change}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Sales Performance Chart Section */}
+                <div className="bg-bg-gray border border-gray-800/50 p-6 rounded-xl">
+                    <div className="flex justify-between items-center mb-8">
+                        <h2 className="text-lg font-medium">Sales Performance</h2>
+                        <select className="bg-transparent border border-gray-800 text-xs px-3 py-1 rounded-md outline-none">
+                            <option>This year</option>
+                        </select>
+                    </div>
+
+                    <div className="relative h-64 w-full">
+                        {/* Tooltip Example */}
+                        <div className="absolute left-[28%] top-[15%] z-10">
+                            <div className="bg-blue-600 px-3 py-1 rounded text-[10px] font-bold shadow-lg">Jun 2023</div>
+                            <div className="bg-[#0F1012] border border-gray-800 px-4 py-1 text-xs font-bold mt-1">$21,500</div>
+                            <div className="w-px h-40 bg-gray-700/50 absolute left-1/2 -z-10 mt-1 border-dashed border-l"></div>
+                        </div>
+
+                        {/* Chart Area */}
+                        <svg className="w-full h-full" viewBox="0 0 1000 200" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.4" />
+                                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+                                </linearGradient>
+                            </defs>
+                            <path
+                                d="M0,80 Q100,20 200,90 T400,60 T600,100 T800,40 T1000,80 L1000,200 L0,200 Z"
+                                fill="url(#chartGradient)"
+                            />
+                            <path
+                                d="M0,80 Q100,20 200,90 T400,60 T600,100 T800,40 T1000,80"
+                                fill="none" stroke="#3b82f6" strokeWidth="3"
+                            />
+                        </svg>
+
+                        {/* Months Labels */}
+                        <div className="flex justify-between mt-2 px-2">
+                            {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map(m => (
+                                <span key={m} className="text-[10px] text-gray-500">{m}</span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Recent Orders Table */}
+                <div className="bg-bg-gray border border-gray-800/50 rounded-xl overflow-hidden">
+                    <div className="p-6">
+                        <h2 className="text-lg font-medium">Recent Orders</h2>
+                    </div>
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-[#141517] text-muted text-[11px] uppercase tracking-wider">
+                            <tr>
+                                <th className="px-6 py-4 font-normal">Order ID</th>
+                                <th className="px-6 py-4 font-normal">Buyer</th>
+                                <th className="px-6 py-4 font-normal">Amount</th>
+                                <th className="px-6 py-4 font-normal">Status</th>
+                                <th className="px-6 py-4 font-normal">Delivery date</th>
+                                <th className="px-6 py-4 font-normal">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-800">
+                            {orders.map((order) => (
+                                <tr key={order.id} className="hover:bg-white/[0.02] transition-colors">
+                                    <td className="px-6 py-4 text-gray-400">{order.id}</td>
+                                    <td className="px-6 py-4">{order.buyer}</td>
+                                    <td className="px-6 py-4 font-semibold">{order.amount}</td>
+                                    <td className="px-6 py-4">
+                                        <span className={`px-3 py-1 rounded-full text-[10px] border ${order.status === 'Delivered' ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-500' :
+                                            order.status === 'Shipped' ? 'bg-blue-500/10 border-blue-500/50 text-blue-500' :
+                                                'bg-gray-500/10 border-gray-500/50 text-gray-300'
+                                            }`}>
+                                            {order.status}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-gray-400">{order.delivery}</td>
+                                    <td className="px-6 py-4">
+                                        <button className="text-gray-400 hover:text-white"><Eye size={18} /></button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <div className="p-4 flex justify-between items-center border-t border-gray-800">
+                        <span className="text-xs text-muted">Showing 1 to 7 of 7 results</span>
+                        <div className="flex gap-2">
+                            <button className="px-4 py-1.5 border border-gray-800 rounded-lg text-xs hover:bg-gray-800">Previous</button>
+                            <button className="px-4 py-1.5 border border-gray-800 rounded-lg text-xs hover:bg-gray-800">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </VendorLayout>
     )
 }

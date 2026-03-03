@@ -3,8 +3,11 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CommissionController;
 use App\Http\Controllers\Admin\CustomerManagement\CustomerController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FinanceManagement\FinanceController;
+use App\Http\Controllers\Admin\OrderManagement\OrderController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\ServiceManagement\ServiceController;
 use App\Http\Controllers\Admin\UserManagement\UserController;
 use App\Http\Controllers\Admin\VendorManagement\VendorController;
 use App\Http\Controllers\Auth\Admin\AdminAuthController;
@@ -24,7 +27,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     Route::middleware('admin')->group(function () {
-        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+        Route::get('/notification', [AdminController::class, 'notification'])->name('notification');
         Route::get('/all', [AdminController::class, 'index'])->name('index');
         Route::get('/view/detail/{id}', [AdminController::class, 'viewAdmin'])->name('view.detail');
         Route::get('/create', [AdminController::class, 'createAdmin'])->name('create');
@@ -62,10 +66,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/vendors/{id}/approve', [VendorController::class, 'approve'])->name('vendors.approve');
             Route::post('/vendors/{id}/reject', [VendorController::class, 'reject'])->name('vendors.reject');
         });
+
+        Route::group(['prefix' => 'service-management', 'as' => 'sm.'], function () {
+            Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+            Route::get('/services/{service}', [ServiceController::class, 'show'])->name('services.show');
+            Route::post('/services/{service}/approve', [ServiceController::class, 'approve'])->name('services.approve');
+            Route::post('/services/{service}/cancel', [ServiceController::class, 'cancel'])->name('services.cancel');
+        });
+
         Route::group(['prefix' => 'customer-management', 'as' => 'cm.'], function () {
             Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
             Route::get('/customers/{id}', [CustomerController::class, 'show'])->name('customers.show');
         });
+
+        Route::group(['prefix' => 'order-management', 'as' => 'om.'], function () {
+            Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        });
+
         Route::get('/commission', [CommissionController::class, 'commission'])->name('commission');
     });
 });

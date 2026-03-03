@@ -29,9 +29,8 @@ class ProfileController extends Controller
 
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $admin = $request->user();
+        $admin = auth('admin')->user();
         $validated = $request->validated();
-
         $admin->first_name = $validated['first_name'];
         $admin->last_name = $validated['last_name'] ?? '';
         $admin->email = $validated['email'];
@@ -43,7 +42,6 @@ class ProfileController extends Controller
 
         $admin->save();
 
-        return redirect()->route('admin.profile.index')
-            ->with('success', 'Profile updated successfully.');
+        return redirect()->route('admin.profile.index');
     }
 }

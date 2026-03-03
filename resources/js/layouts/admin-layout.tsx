@@ -40,7 +40,7 @@ export default function AdminLayout({ children, activeSlug }: AdminLayoutProps) 
                 <AdminSidebar isCollapsed={isCollapsed} activeSlug={activeSlug} />
                 <div className="flex flex-1 flex-col overflow-hidden">
                     <AdminHeader isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-                    <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-6">
+                    <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-6 text-white">
                         {children}
                     </main>
 

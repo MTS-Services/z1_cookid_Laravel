@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { PasswordInput } from '@/components/ui/password-input';
+import { toast } from 'sonner';
 
 interface AdminProfile {
     first_name: string;
@@ -43,6 +44,7 @@ export default function AdminProfileIndex({ admin, flash }: Props) {
             preserveScroll: true,
             onSuccess: () => {
                 setIsEditing(false);
+                toast.success('Profile updated successfully');
                 reset('current_password', 'password', 'password_confirmation');
             },
         });
@@ -77,11 +79,6 @@ export default function AdminProfileIndex({ admin, flash }: Props) {
                     <p className="mt-1 text-sm text-muted">
                         Manage your account settings and preferences
                     </p>
-                    {flash?.success && (
-                        <p className="mt-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-600 dark:text-emerald-400">
-                            {flash.success}
-                        </p>
-                    )}
                 </header>
 
                 <Card className="bg-bg-gray border-0 p-4">
@@ -213,7 +210,7 @@ export default function AdminProfileIndex({ admin, flash }: Props) {
                             )}
 
                             <div className="flex gap-3 pt-2">
-                                {isEditing ? (
+                                {isEditing && (
                                     <>
                                         <Button type="submit" disabled={processing}>
                                             {processing ? 'Saving...' : 'Save'}
@@ -227,13 +224,16 @@ export default function AdminProfileIndex({ admin, flash }: Props) {
                                             Cancel
                                         </Button>
                                     </>
-                                ) : (
-                                    <Button type="button" onClick={handleEdit}>
-                                        Edit
-                                    </Button>
                                 )}
                             </div>
                         </form>
+                        {
+                            !isEditing && (
+                                <Button type="button" onClick={handleEdit}>
+                                    Edit
+                                </Button>
+                            )
+                        }
                     </CardContent>
                 </Card>
             </div>

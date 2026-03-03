@@ -32,7 +32,7 @@ const adminNavItems: NavItemType[] = [
     },
     {
         title: "Service Management",
-        href: '#',
+        href: route("admin.sm.services.index"),
         icon: Boxes,
         slug: "service-management",
     },
@@ -44,7 +44,7 @@ const adminNavItems: NavItemType[] = [
     },
     {
         title: "Orders",
-        href: '#',
+        href: route("admin.om.orders.index"),
         icon: ClipboardList,
         slug: "orders",
     },

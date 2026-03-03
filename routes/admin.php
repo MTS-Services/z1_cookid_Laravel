@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\CommissionController;
+use App\Http\Controllers\Admin\CustomerManagement\CustomerController;
 use App\Http\Controllers\Admin\FinanceManagement\FinanceController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserManagement\UserController;
 use App\Http\Controllers\Admin\VendorManagement\VendorController;
 use App\Http\Controllers\Auth\Admin\AdminAuthController;
@@ -31,6 +34,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/delete/{id}', [AdminController::class, 'deleteAdmin'])->name('delete');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
+        Route::controller(ProfileController::class)->prefix('profile')->name('profile.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::patch('/', 'update')->name('update');
+        });
+
         Route::group(['prefix' => 'users', 'as' => 'um.'], function () {
             Route::get('/users', [UserController::class, 'index'])->name('users.index');
             Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
@@ -43,7 +51,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/user/verify/{id}', [UserController::class, 'verified'])->name('user.verify');
             Route::post('/user/license-verify/{id}/{status}', [UserController::class, 'licenseVerify'])->name('user.license-verify');
         });
-        
+
         Route::group(['prefix' => 'finance-management', 'as' => 'fm.'], function () {
             Route::get('/finance', [FinanceController::class, 'index'])->name('index');
         });
@@ -54,5 +62,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/vendors/{id}/approve', [VendorController::class, 'approve'])->name('vendors.approve');
             Route::post('/vendors/{id}/reject', [VendorController::class, 'reject'])->name('vendors.reject');
         });
+        Route::group(['prefix' => 'customer-management', 'as' => 'cm.'], function () {
+            Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+            Route::get('/customers/{id}', [CustomerController::class, 'show'])->name('customers.show');
+        });
+        Route::get('/commission', [CommissionController::class, 'commission'])->name('commission');
     });
 });

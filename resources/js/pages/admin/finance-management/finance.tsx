@@ -94,7 +94,7 @@ export default function Payment() {
     setIsAccountSuccessOpen(true)
   }
   return (
-    <AdminLayout activeSlug="vendor.payments">
+    <AdminLayout activeSlug="finances">
       <section className="space-y-8 text-white">
         <header>
           <h1 className="text-2xl font-semibold text-white">Payments &amp; Earnings</h1>

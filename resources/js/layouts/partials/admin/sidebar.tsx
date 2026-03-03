@@ -56,13 +56,13 @@ const adminNavItems: NavItemType[] = [
     },
     {
         title: "Commission",
-        href: '#',
+        href: route('admin.commission'),
         icon: Percent,
         slug: "commission",
     },
     {
         title: "Settings",
-        href: '#',
+        href: route('admin.profile.index'),
         icon: Settings,
         slug: "settings",
     },

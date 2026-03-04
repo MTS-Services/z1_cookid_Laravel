@@ -126,17 +126,13 @@ const LoginPage: FC = () => {
                     </div>
 
                     {/* Google */}
-                    <button
-                        type="button"
-                        className="w-full flex items-center justify-center gap-3 border border-gray-700 hover:border-gray-500 bg-gray-800 hover:bg-gray-700 text-white py-3 rounded-lg transition-colors cursor-pointer"
-                    >
+                    <a href='/auth/google/vendor' className="cursor-pointer">
                         <img
                             src="https://www.google.com/favicon.ico"
                             alt="Google"
-                            className="w-5 h-5"
+                            className="w-12 h-12"
                         />
-                        Continue with Google
-                    </button>
+                    </a>
                 </div>
             </div>
         </AuthLayout>

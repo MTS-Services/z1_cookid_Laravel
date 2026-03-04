@@ -19,7 +19,7 @@ const LoginPage: FC = () => {
     };
 
     return (
-        <AuthLayout title="Login" description="Login to your account">
+        <AuthLayout title="Login">
             <div className="w-full flex justify-center">
                 <div className="w-lg bg-gray-900 border border-gray-800 rounded-xl p-8 shadow-2xl">
 
@@ -126,7 +126,7 @@ const LoginPage: FC = () => {
                     </div>
 
                     {/* Google */}
-                    <a href="" className="cursor-pointer">
+                    <a href='/auth/google/user' className="cursor-pointer">
                         <img
                             src="https://www.google.com/favicon.ico"
                             alt="Google"

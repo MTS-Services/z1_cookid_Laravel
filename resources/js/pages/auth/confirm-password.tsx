@@ -7,9 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
-import { store } from '@/routes/password/confirm';
 
-export default function ConfirmPassword() {
+export default function ConfirmPassword({ email }: { email: string }) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -21,9 +20,28 @@ export default function ConfirmPassword() {
                 <h2 className="text-2xl font-semibold text-center text-white">
                     Reset Password
                 </h2>
-                <Form {...store.form()} resetOnSuccess={['password']}>
+                <Form action={route('user.auth.forgot-password-reset.store')} method="post">
                     {({ processing, errors }) => (
                         <div className="mt-8 space-y-6">
+                            {/* Hidden email field */}
+                            <input type="hidden" name="email" value={email} />
+
+                            {/* Email display */}
+                            <div>
+                                <Label htmlFor="email-display" className="mb-2 block text-sm text-gray-300">
+                                    Email
+                                </Label>
+                                <div className="relative">
+                                    <Input
+                                        id="email-display"
+                                        type="email"
+                                        value={email}
+                                        disabled
+                                        className="w-full rounded-lg border border-gray-700 bg-gray-700 px-4 py-3 text-sm text-gray-400 cursor-not-allowed"
+                                    />
+                                </div>
+                            </div>
+
                             <div>
                                 <Label htmlFor="password" className="mb-2 block text-sm text-gray-300">
                                     Password

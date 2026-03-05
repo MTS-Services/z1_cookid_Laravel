@@ -1,13 +1,11 @@
 <?php
 
+use App\Http\Controllers\Auth\User\ForgetPassword;
 use App\Http\Controllers\Auth\User\UserAuthController;
 use App\Http\Controllers\Auth\User\UserOtpController;
-use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
-
-
 
 // ─── User Auth ───────────────────────────────────────────
 // Route::get('google',          [GoogleController::class, 'redirect'])->name('google');
@@ -17,16 +15,16 @@ Route::name('user.auth.')->group(function () {
     Route::post('/login', [UserAuthController::class, 'store'])->name('login.post');
     Route::get('/register', [UserAuthController::class, 'register'])->name('register');
     Route::post('/register', [UserAuthController::class, 'registerStore'])->name('register.post');
-    Route::get('/forgot-password', [UserAuthController::class, 'forgotPassword'])->name('forgot-password');
-    Route::post('/forgot-password/otp-verify', [UserAuthController::class, 'forgotPasswordOtpVerify'])->name('forgot-password.otp-verify');
-    Route::get('/forgot-password/reset', [UserAuthController::class, 'forgotPasswordReset'])->name('forgot-password.reset');
-    Route::post('/forgot-password', [UserAuthController::class, 'forgotPasswordStore'])->name('forgot-password.post');
+    // Forgot Password
+    Route::get('/forgot-password', [ForgetPassword::class, 'forgotPassword'])->name('forgot-password');
+    Route::post('/forgot-password/otp-verify', [ForgetPassword::class, 'forgotPasswordOtpVerify'])->name('forgot-password.otp-verify');
+    Route::get('/forgot-password/reset', [ForgetPassword::class, 'forgotPasswordReset'])->name('forgot-password.reset');
+    Route::post('/forgot-password/reset', [ForgetPassword::class, 'forgotPasswordResetStore'])->name('forgot-password-reset.store');
 
     Route::get('/otp-verify', [UserOtpController::class, 'showOtpVerify'])->name('otp-verify');
     Route::post('/otp/verify', [UserOtpController::class, 'verify'])->name('otp.verify');
     Route::post('/otp/resend', [UserOtpController::class, 'resend'])->name('otp.resend');
 });
-
 
 Route::get('/account/pending-verification', [UserController::class, 'accountPending'])->name('user.pending-verification');
 Route::middleware(['auth'])->prefix('account')->name('user.')->group(function () {

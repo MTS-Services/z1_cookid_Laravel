@@ -6,5 +6,5 @@ enum OtpPurpose: string
 {
     case LOGIN = 'login';
     case REGISTER = 'register';
-    case RESET_PASSWORD = 'reset_password';
+    case PASSWORD_RESET = 'password_reset';
 }

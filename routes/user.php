@@ -17,6 +17,10 @@ Route::name('user.auth.')->group(function () {
     Route::post('/login', [UserAuthController::class, 'store'])->name('login.post');
     Route::get('/register', [UserAuthController::class, 'register'])->name('register');
     Route::post('/register', [UserAuthController::class, 'registerStore'])->name('register.post');
+    Route::get('/forgot-password', [UserAuthController::class, 'forgotPassword'])->name('forgot-password');
+    Route::post('/forgot-password/otp-verify', [UserAuthController::class, 'forgotPasswordOtpVerify'])->name('forgot-password.otp-verify');
+    Route::get('/forgot-password/reset', [UserAuthController::class, 'forgotPasswordReset'])->name('forgot-password.reset');
+    Route::post('/forgot-password', [UserAuthController::class, 'forgotPasswordStore'])->name('forgot-password.post');
 
     Route::get('/otp-verify', [UserOtpController::class, 'showOtpVerify'])->name('otp-verify');
     Route::post('/otp/verify', [UserOtpController::class, 'verify'])->name('otp.verify');

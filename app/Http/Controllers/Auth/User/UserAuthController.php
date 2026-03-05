@@ -140,4 +140,46 @@ class UserAuthController extends Controller
 
         return redirect()->route('frontend.home');
     }
+    public function forgotPassword()
+    {
+        return Inertia::render('auth/forgot-password');
+    }
+    
+    public function forgotPasswordOtpVerify(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return redirect()->back()->with('error', 'User not found');
+        }
+
+        $otp = rand(100000, 999999);
+        $expiresAt = now()->addMinutes(5);
+
+        $user->update([
+            'otp_code' => $otp,
+            'otp_purpose' => OtpPurpose::PASSWORD_RESET,
+            'otp_expires_at' => $expiresAt,
+        ]);
+
+        Mail::to($user->email)->send(new UserOtpMail($user, $otp));
+        $request->session()->put('user_email', $user->email);
+
+        return redirect()->route('user.auth.otp-verify', [
+            'email' => $user->email,
+            'expires_at' => $expiresAt->toIso8601String(),
+        ]);
+    }
+    public function forgotPasswordReset()
+    {
+        return Inertia::render('auth/confirm-password');
+    }
+    public function forgotPasswordStore(Request $request)
+    {
+        return redirect()->route('user.auth.forgot-password');
+    }
 }

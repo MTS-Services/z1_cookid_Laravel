@@ -41,6 +41,9 @@ class UserOtpController extends Controller
         ]);
 
         $user = User::where('email', $validated['email'])->first();
+        if($user->otp_purpose->value === OtpPurpose::PASSWORD_RESET->value) {
+            return redirect()->route('user.auth.forgot-password.reset');
+        }
 
         if (! $user) {
             throw ValidationException::withMessages([

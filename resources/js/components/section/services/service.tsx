@@ -305,7 +305,7 @@ const ServiceMarketplace = () => {
                             <p className="text-xl">No services match your criteria.</p>
                             <button
                                 onClick={() => { setSelectedService('Select Service'); setSelectedVehicle('Vehicle Type'); setSearchLocation(''); setSidebarCategory('All'); setSidebarLocation('All'); }}
-                                className="mt-4 text-blue-500 hover:underline"
+                                className="mt-4 text-navy hover:underline"
                             >
                                 Reset all filters
                             </button>

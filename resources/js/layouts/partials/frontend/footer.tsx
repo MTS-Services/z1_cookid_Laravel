@@ -67,7 +67,7 @@ const FrontendFooter: React.FC = () => {
                         <div className="">
                             <h3 className="relative mb-4 font-poppins text-xl inline-block">
                                 Company
-                                <span className="absolute bottom-0 left-0 h-[3px] w-1/2 rounded-full bg-gradient-to-r from-blue-500 via-blue-800 to-transparent" />
+                                <span className="absolute bottom-0 left-0 h-[3px] w-1/2 rounded-full bg-gradient-to-r from-navy via-blue-800 to-transparent" />
                             </h3>
                             <ul className="space-y-2">
                                 <li>
@@ -93,7 +93,7 @@ const FrontendFooter: React.FC = () => {
                         <div className="">
                             <h3 className="relative mb-4 font-poppins text-xl inline-block">
                                 Customers
-                                <span className="absolute bottom-0 left-0 h-[3px] w-1/2 rounded-full bg-gradient-to-r from-blue-500 via-blue-800 to-transparent" />
+                                <span className="absolute bottom-0 left-0 h-[3px] w-1/2 rounded-full bg-gradient-to-r from-navy via-blue-800 to-transparent" />
                             </h3>
                             <ul className="space-y-2">
                                 <li>
@@ -127,7 +127,7 @@ const FrontendFooter: React.FC = () => {
                         <div className="">
                             <h3 className="relative mb-4 font-poppins text-xl inline-block">
                                 Providers
-                                <span className="absolute bottom-0 left-0 h-[3px] w-1/2 rounded-full bg-gradient-to-r from-blue-500 via-blue-800 to-transparent" />
+                                <span className="absolute bottom-0 left-0 h-[3px] w-1/2 rounded-full bg-gradient-to-r from-navy via-blue-800 to-transparent" />
                             </h3>
                             <ul className="space-y-2">
                                 <li>

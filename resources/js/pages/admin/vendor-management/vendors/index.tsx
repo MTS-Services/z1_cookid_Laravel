@@ -108,7 +108,7 @@ export default function VendorManagementIndex({
                                 });
                             }
                         }}
-                        className="rounded p-1.5 text-blue-600 hover:bg-blue-600/10 dark:text-blue-400 dark:hover:bg-blue-400/10"
+                        className="rounded p-1.5 text-navy hover:bg-navy/10 dark:text-blue-400 dark:hover:bg-blue-400/10"
                         aria-label="Decline"
                     >
                         <X className="h-5 w-5" />
@@ -122,7 +122,7 @@ export default function VendorManagementIndex({
                                 });
                             }
                         }}
-                        className="rounded p-1.5 text-blue-600 hover:bg-blue-600/10 dark:text-blue-400 dark:hover:bg-blue-400/10"
+                        className="rounded p-1.5 text-navy hover:bg-navy/10 dark:text-blue-400 dark:hover:bg-blue-400/10"
                         aria-label="Approve"
                     >
                         <Check className="h-5 w-5" />
@@ -150,7 +150,7 @@ export default function VendorManagementIndex({
                             href={route('admin.vm.vendors.index', { tab: key })}
                             className={`pb-3 text-sm font-medium transition-colors ${
                                 tab === key
-                                    ? 'border-b-2 border-blue-600 text-blue-600'
+                                    ? 'border-b-2 border-navy text-navy'
                                     : 'text-white hover:text-gray-400'
                             }`}
                         >

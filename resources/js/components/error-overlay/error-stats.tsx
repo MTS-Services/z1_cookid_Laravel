@@ -29,7 +29,7 @@ export function ErrorStats() {
         [ErrorSeverity.Info]: {
             icon: Info,
             label: 'Info',
-            color: 'text-blue-600 dark:text-blue-400',
+            color: 'text-navy dark:text-blue-400',
         },
     };
 

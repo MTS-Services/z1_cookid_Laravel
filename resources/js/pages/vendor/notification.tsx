@@ -61,7 +61,7 @@ const NotificationsPage: FC = () => {
     <VendorLayout activeSlug="home">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold">Notifications</h2>
-        <button className="flex items-center gap-2 text-sm text-blue-500 hover:text-blue-400">
+        <button className="flex items-center gap-2 text-sm text-navy hover:text-blue-400">
           <Check size={16} />
           Mark All Read
         </button>
@@ -86,7 +86,7 @@ const NotificationsPage: FC = () => {
                 <p className="text-sm text-gray-500 mt-1">{notif.time}</p>
               </div>
               {!notif.isRead && (
-                <button className="text-xs text-blue-500 hover:text-blue-400 whitespace-nowrap">
+                <button className="text-xs text-navy hover:text-blue-400 whitespace-nowrap">
                   Mark Read
                 </button>
               )}

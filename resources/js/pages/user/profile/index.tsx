@@ -45,7 +45,7 @@ export default function Index() {
                                     onClick={() => setSection(key as typeof section)}
                                     className={`rounded-lg border p-4 lg:p-6 text-center shadow-lg transition-all duration-300 cursor-pointer ${
                                         isActive
-                                            ? 'bg-linear-to-br from-navy to-navy border-transparent shadow-blue-500/25'
+                                            ? 'bg-linear-to-br from-navy to-navy border-transparent shadow-navy/25'
                                             : 'border-[#292929] bg-bg-gray/50 hover:border-slate-700'
                                     }`}
                                 >

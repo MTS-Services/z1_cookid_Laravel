@@ -180,7 +180,7 @@ export default function Listing() {
                             </div>
                             <div className="h-2 rounded-full bg-white/10">
                                 <div
-                                    className="h-full rounded-full bg-linear-to-r from-blue-400 to-blue-600"
+                                    className="h-full rounded-full bg-linear-to-r from-blue-400 to-navy"
                                     style={{ width: `${progress}%` }}
                                 />
                             </div>

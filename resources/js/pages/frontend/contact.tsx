@@ -111,12 +111,12 @@ export default function Contact() {
                                         <textarea
                                             rows={4}
                                             placeholder={placeholder}
-                                            className="mt-1 w-full border-0 border-b border-[#40508f] bg-transparent pb-2 text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:outline-none"
+                                            className="mt-1 w-full border-0 border-b border-[#40508f] bg-transparent pb-2 text-slate-900 placeholder:text-slate-400 focus:border-navy focus:outline-none"
                                         />
                                     ) : (
                                         <input
                                             placeholder={placeholder}
-                                            className="mt-1 w-full border-0 border-b border-[#40508f] bg-transparent pb-2 text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:outline-none"
+                                            className="mt-1 w-full border-0 border-b border-[#40508f] bg-transparent pb-2 text-slate-900 placeholder:text-slate-400 focus:border-navy focus:outline-none"
                                         />
                                     )}
                                 </label>

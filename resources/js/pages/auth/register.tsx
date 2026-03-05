@@ -42,7 +42,7 @@ const RegisterPage: FC = () => {
                                     type="text"
                                     value={data.first_name}
                                     onChange={e => setData('first_name', e.target.value)}
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition"
+                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:border-navy focus:ring-2 focus:ring-navy/30 transition"
                                     required
                                 />
                                 {errors.first_name && (
@@ -58,7 +58,7 @@ const RegisterPage: FC = () => {
                                     type="text"
                                     value={data.last_name}
                                     onChange={e => setData('last_name', e.target.value)}
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition"
+                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:border-navy focus:ring-2 focus:ring-navy/30 transition"
                                     required
                                 />
                                 {errors.last_name && (
@@ -76,7 +76,7 @@ const RegisterPage: FC = () => {
                                 type="email"
                                 value={data.email}
                                 onChange={e => setData('email', e.target.value)}
-                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition"
+                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:border-navy focus:ring-2 focus:ring-navy/30 transition"
                                 required
                             />
                             {errors.email && (
@@ -94,7 +94,7 @@ const RegisterPage: FC = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     value={data.password}
                                     onChange={e => setData('password', e.target.value)}
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition pr-11"
+                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:border-navy focus:ring-2 focus:ring-navy/30 transition pr-11"
                                     required
                                 />
                                 <button
@@ -120,7 +120,7 @@ const RegisterPage: FC = () => {
                                     type={showConfirmPassword ? 'text' : 'password'}
                                     value={data.password_confirmation}
                                     onChange={e => setData('password_confirmation', e.target.value)}
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition pr-11"
+                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:border-navy focus:ring-2 focus:ring-navy/30 transition pr-11"
                                     required
                                 />
                                 <button
@@ -142,7 +142,7 @@ const RegisterPage: FC = () => {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="w-full bg-[#2D60C8] hover:bg-blue-700 disabled:opacity-50 text-white py-3.5 rounded-lg font-medium transition-colors cursor-pointer"
+                            className="w-full bg-[#2D60C8] hover:bg-navy disabled:opacity-50 text-white py-3.5 rounded-lg font-medium transition-colors cursor-pointer"
                         >
                             {processing ? 'Creating account...' : 'Register →'}
                         </button>
@@ -152,7 +152,7 @@ const RegisterPage: FC = () => {
                         Already have an account?{' '}
                         <Link
                             href={route('user.auth.login')}
-                            className="text-blue-500 hover:text-blue-400 hover:underline"
+                            className="text-navy hover:text-blue-400 hover:underline"
                         >
                             Login
                         </Link>

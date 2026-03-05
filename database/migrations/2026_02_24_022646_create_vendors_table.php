@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\VendorStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,10 +12,10 @@ return new class extends Migration
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
             $table->string('first_name');
-            $table->string('last_name');
+            $table->string('last_name')->nullable();
             $table->string('email')->unique();
-            $table->string('phone');
-            $table->string('shop_name');
+            $table->string('phone')->nullable();
+            $table->string('shop_name')->nullable();
 
             // Detailed Location Fields
             $table->string('region_state')->nullable();
@@ -22,17 +23,21 @@ return new class extends Migration
             $table->string('zip_code')->nullable();
             $table->text('address')->nullable();
 
-            // File Upload
-            $table->string('government_id_path')->nullable();
+            // Google OAuth
+            $table->string('google_id')->nullable()->unique();
+            $table->string('provider')->nullable();
             $table->string('avatar')->nullable();
 
-            $table->string('password');
+            // File Upload
+            $table->string('government_id_path')->nullable();
+
+            $table->string('password')->nullable();
             $table->rememberToken();
             $table->string('otp_code')->nullable();
             $table->enum('otp_purpose', ['login', 'register', 'reset_password'])->nullable();
             $table->timestamp('otp_expires_at')->nullable();
             $table->timestamp('otp_verified_at')->nullable();
-            $table->enum('status', ['active', 'inactive', 'banned'])->default('inactive');
+            $table->string('status')->default(VendorStatus::Pending->value);
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
         });

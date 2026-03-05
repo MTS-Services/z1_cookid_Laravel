@@ -176,7 +176,7 @@ export default function ServiceShowPage({ service }: Props) {
                             type="button"
                             disabled={!canModerate}
                             onClick={handleApprove}
-                            className="flex items-center justify-center gap-2 rounded-full bg-blue-600 px-6 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-blue-600/40"
+                            className="flex items-center justify-center gap-2 rounded-full bg-navy px-6 py-2 text-sm font-medium text-white hover:bg-navy disabled:cursor-not-allowed disabled:bg-navy/40"
                         >
                             Approved
                         </Button>

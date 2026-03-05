@@ -205,7 +205,7 @@ export function AccountSection() {
                                         onChange={(event) =>
                                             setData(key, event.target.value)
                                         }
-                                        className="w-full rounded-lg border border-[#292929] bg-slate-950/60 px-4 py-3 text-white focus:border-blue-500 focus:outline-none"
+                                        className="w-full rounded-lg border border-[#292929] bg-slate-950/60 px-4 py-3 text-white focus:border-navy focus:outline-none"
                                     />
 
                                     {errors[key] && (

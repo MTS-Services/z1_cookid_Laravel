@@ -38,7 +38,7 @@ const LoginPage: FC = () => {
                                 type="email"
                                 value={data.email}
                                 onChange={e => setData('email', e.target.value)}
-                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition"
+                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-navy focus:ring-2 focus:ring-navy/30 transition"
                                 required
                             />
                             {errors.email && (
@@ -56,7 +56,7 @@ const LoginPage: FC = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     value={data.password}
                                     onChange={e => setData('password', e.target.value)}
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/30 transition pr-11"
+                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-navy focus:ring-2 focus:ring-navy/30 transition pr-11"
                                     required
                                 />
                                 <button
@@ -79,14 +79,14 @@ const LoginPage: FC = () => {
                                     type="checkbox"
                                     checked={data.remember}
                                     onChange={e => setData('remember', e.target.checked)}
-                                    className="w-4 h-4 accent-blue-600"
+                                    className="w-4 h-4 accent-navy"
                                 />
                                 Keep me logged in
                             </label>
 
                             <Link
                                 href="/forgot-password"
-                                className="text-blue-500 hover:text-blue-400 hover:underline"
+                                className="text-navy hover:text-blue-400 hover:underline"
                             >
                                 Forgot password?
                             </Link>
@@ -96,7 +96,7 @@ const LoginPage: FC = () => {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3.5 rounded-lg font-medium transition-colors cursor-pointer"
+                            className="w-full bg-navy hover:bg-navy disabled:opacity-50 text-white py-3.5 rounded-lg font-medium transition-colors cursor-pointer"
                         >
                             {processing ? 'Logging in...' : 'Login →'}
                         </button>
@@ -107,7 +107,7 @@ const LoginPage: FC = () => {
                         Don’t have an account?{' '}
                         <Link
                             href={route('vendor.auth.register')}
-                            className="text-blue-500 hover:text-blue-400 hover:underline"
+                            className="text-navy hover:text-blue-400 hover:underline"
                         >
                             Sign up
                         </Link>

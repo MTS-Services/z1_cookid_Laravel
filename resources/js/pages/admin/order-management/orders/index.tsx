@@ -200,7 +200,7 @@ export default function AdminOrdersIndex({
                             href={route('admin.om.orders.index', { tab: key })}
                             className={`pb-3 text-sm font-medium transition-colors ${
                                 tab === key
-                                    ? 'border-b-2 border-blue-600 text-blue-600'
+                                    ? 'border-b-2 border-navy text-navy'
                                     : 'text-white hover:text-gray-400'
                             }`}
                         >

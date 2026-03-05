@@ -47,7 +47,7 @@ export default function Pagination({
           transition-all duration-200
           ${currentPage === 1
                         ? 'bg-gray-800/50 text-gray-600 cursor-not-allowed'
-                        : 'bg-gray-800/80 hover:bg-blue-600/30 text-blue-400 hover:text-blue-300 border border-blue-900/40 hover:border-blue-600/60'
+                        : 'bg-gray-800/80 hover:bg-navy/30 text-blue-400 hover:text-navy/50 border border-blue-900/40 hover:border-navy/60'
                     }
         `}
                 aria-label="Previous page"
@@ -64,7 +64,7 @@ export default function Pagination({
             flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium
             transition-all duration-200
             ${page === currentPage
-                            ? 'bg-blue-600 text-white border-2 border-transparent shadow-lg shadow-blue-500/20 scale-110'
+                            ? 'bg-navy text-white border-2 border-transparent shadow-lg shadow-navy/20 scale-110'
                             : 'bg-gray-800/70 text-gray-300 hover:bg-gray-700/90 border border-gray-700 hover:border-gray-500'
                         }
           `}
@@ -82,7 +82,7 @@ export default function Pagination({
           transition-all duration-200
           ${currentPage === totalPages
                         ? 'bg-gray-800/50 text-gray-600 cursor-not-allowed'
-                        : 'bg-gray-800/80 hover:bg-blue-600/30 text-blue-400 hover:text-blue-300 border border-blue-900/40 hover:border-blue-600/60'
+                        : 'bg-gray-800/80 hover:bg-navy/30 text-blue-400 hover:text-navy/50 border border-blue-900/40 hover:border-navy/60'
                     }
         `}
                 aria-label="Next page"

@@ -84,7 +84,7 @@ export default function Dashboard() {
           <div className="relative h-64 w-full">
             {/* Tooltip Example */}
             <div className="absolute left-[28%] top-[15%] z-10">
-              <div className="bg-blue-600 px-3 py-1 rounded text-[10px] font-bold shadow-lg">Jun 2023</div>
+              <div className="bg-navy px-3 py-1 rounded text-[10px] font-bold shadow-lg">Jun 2023</div>
               <div className="bg-[#0F1012] border border-gray-800 px-4 py-1 text-xs font-bold mt-1">$21,500</div>
               <div className="w-px h-40 bg-gray-700/50 absolute left-1/2 -z-10 mt-1 border-dashed border-l"></div>
             </div>
@@ -140,7 +140,7 @@ export default function Dashboard() {
                   <td className="px-6 py-4 font-semibold">{order.amount}</td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-[10px] border ${order.status === 'Delivered' ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-500' :
-                      order.status === 'Shipped' ? 'bg-blue-500/10 border-blue-500/50 text-blue-500' :
+                      order.status === 'Shipped' ? 'bg-navy/10 border-navy/50 text-navy' :
                         'bg-gray-500/10 border-gray-500/50 text-gray-300'
                       }`}>
                       {order.status}

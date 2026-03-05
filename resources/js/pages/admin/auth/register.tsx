@@ -183,7 +183,7 @@ export default function Register() {
                             <input
                                 type="checkbox"
                                 id="rememberMe"
-                                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-secondary"
+                                className="h-4 w-4 rounded border-gray-300 text-navy focus:ring-secondary"
                             />
                             <label
                                 htmlFor="rememberMe"

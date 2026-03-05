@@ -68,7 +68,7 @@ export default function ServiceReview() {
 
                     <Section title="Service Details">
                         <div className="space-y-3 rounded-xl border border-slate-800 bg-slate-900/60 p-5">
-                            <p className="text-lg font-semibold text-blue-300">{orderDetails.service.title}</p>
+                            <p className="text-lg font-semibold text-navy/50">{orderDetails.service.title}</p>
                             <p className="text-sm text-slate-300">{orderDetails.service.description}</p>
                             <div className="flex flex-col gap-3 text-sm text-slate-300 md:flex-row md:items-center md:gap-8">
                                 <span>

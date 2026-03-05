@@ -100,8 +100,8 @@ const statusConfig: Record<
     },
     in_progress: {
         label: 'In Progress',
-        badgeClassName: 'border-blue-500/50 bg-blue-500/10 text-blue-400',
-        cardBorderClassName: 'border-t-2 border-blue-500',
+        badgeClassName: 'border-navy/50 bg-navy/10 text-blue-400',
+        cardBorderClassName: 'border-t-2 border-navy',
     },
     completed: {
         label: 'Completed',

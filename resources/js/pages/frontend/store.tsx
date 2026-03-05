@@ -125,7 +125,7 @@ export default function Store() {
         <FrontendLayout activePage="frontend.store">
             <section className="container mx-auto px-6 py-16">
                 <div className="mx-auto max-w-4xl text-center text-white">
-                    {/* <div className="mx-auto mb-6 h-28 w-28 rounded-full bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 p-0.75">
+                    {/* <div className="mx-auto mb-6 h-28 w-28 rounded-full bg-linear-to-br from-navy via-purple-500 to-pink-500 p-0.75">
                         <div className="flex h-full w-full items-center justify-center rounded-full bg-gray-950">
                             <span className="text-4xl font-semibold">M</span>
                         </div>
@@ -196,7 +196,7 @@ export default function Store() {
                                     </div>
                                     <div className="flex items-center justify-between text-sm text-gray-400">
                                         <span>{service.reviews} reviews</span>
-                                        <button className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-500">
+                                        <button className="rounded-full bg-navy px-4 py-2 text-sm font-semibold text-white transition hover:bg-navy">
                                             See Details
                                         </button>
                                     </div>

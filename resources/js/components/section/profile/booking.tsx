@@ -159,7 +159,7 @@ export function BookingsSection() {
                             onClick={() => setActiveTab(tab)}
                             className={`rounded-md px-6 py-2 text-sm font-semibold transition-all duration-300 ${
                                 isActive
-                                    ? 'bg-navy text-white shadow-lg shadow-blue-500/30'
+                                    ? 'bg-navy text-white shadow-lg shadow-navy/30'
                                     : 'border border-text-border bg-bg-gray/50 text-white/80 hover:text-white'
                             }`}
                         >
@@ -265,7 +265,7 @@ export function BookingsSection() {
                         onClick={() => setPage(p)}
                         className={`h-10 w-10 rounded-full text-sm font-semibold transition ${
                             p === page
-                                ? 'bg-navy text-white shadow-lg shadow-blue-500/30'
+                                ? 'bg-navy text-white shadow-lg shadow-navy/30'
                                 : 'border border-[#292929] text-slate-400 hover:text-white'
                         }`}
                     >

@@ -109,7 +109,7 @@ const OtpVerifyPage: FC<OtpVerifyProps> = ({ email, expires_at }) => {
                                     onPaste={i === 0 ? handlePaste : undefined}
                                     onChange={(e) => handleChange(e.target.value, i)}
                                     onKeyDown={(e) => handleKeyDown(e, i)}
-                                    className="w-12 h-14 text-center text-xl font-bold bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                                    className="w-12 h-14 text-center text-xl font-bold bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-navy focus:ring-1 focus:ring-navy transition-all"
                                 />
                             ))}
                         </div>
@@ -119,7 +119,7 @@ const OtpVerifyPage: FC<OtpVerifyProps> = ({ email, expires_at }) => {
                         <button
                             type="submit"
                             disabled={processing || data.otp.length < 6}
-                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:text-gray-400 py-3 rounded-lg font-semibold transition"
+                            className="w-full bg-navy hover:bg-navy disabled:bg-gray-700 disabled:text-gray-400 py-3 rounded-lg font-semibold transition"
                         >
                             {processing ? 'Verifying...' : 'Verify Account'}
                         </button>
@@ -129,7 +129,7 @@ const OtpVerifyPage: FC<OtpVerifyProps> = ({ email, expires_at }) => {
                         <button
                             onClick={resendOtp}
                             disabled={timer > 0 || processing}
-                            className="text-sm font-medium text-blue-500 hover:text-blue-400 disabled:text-gray-600 transition"
+                            className="text-sm font-medium text-navy hover:text-blue-400 disabled:text-gray-600 transition"
                         >
                             {timer > 0
                                 ? `Resend available in ${formatTime(timer)}`

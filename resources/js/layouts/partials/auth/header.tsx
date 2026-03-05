@@ -20,7 +20,7 @@ function AuthHeader({ activePage, subPage }: Props) {
 
     const linkClass = (routeName: string) =>
         `block py-2 text-lg transition-colors ${route().current(routeName)
-            ? "text-blue-500 font-semibold"
+            ? "text-navy font-semibold"
             : "text-gray-300 hover:text-white"
         }`;
 

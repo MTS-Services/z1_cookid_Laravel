@@ -109,7 +109,7 @@ export default function SearchPage() {
                                 {chips.map((chip) => (
                                     <span
                                         key={chip}
-                                        className="rounded-full border border-blue-500/40 bg-slate-900/80 px-4 py-1 text-xs font-semibold text-blue-300"
+                                        className="rounded-full border border-navy/40 bg-slate-900/80 px-4 py-1 text-xs font-semibold text-navy/50"
                                     >
                                         {chip}
                                     </span>
@@ -150,7 +150,7 @@ export default function SearchPage() {
                                     </span>
                                     <div className="mt-auto flex items-center justify-between">
                                         <span className="text-2xl font-semibold">{service.price}</span>
-                                        <button className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-500">
+                                        <button className="rounded-full bg-navy px-4 py-2 text-sm font-semibold text-white transition hover:bg-navy">
                                             See Details
                                         </button>
                                     </div>

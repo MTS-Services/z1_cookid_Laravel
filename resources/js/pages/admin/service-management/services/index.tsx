@@ -169,7 +169,7 @@ export default function ServiceManagementIndex({
                                         });
                                     }
                                 }}
-                                className="rounded-full bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-500"
+                                className="rounded-full bg-navy px-3 py-1.5 text-xs font-medium text-white hover:bg-navy"
                             >
                                 <span className="inline-flex items-center gap-1">
                                     <Check className="h-3 w-3" />
@@ -222,7 +222,7 @@ export default function ServiceManagementIndex({
                             href={route('admin.sm.services.index', { tab: key })}
                             className={`pb-3 text-sm font-medium transition-colors ${
                                 tab === key
-                                    ? 'border-b-2 border-blue-600 text-blue-400'
+                                    ? 'border-b-2 border-navy text-blue-400'
                                     : 'text-white hover:text-gray-400'
                             }`}
                         >

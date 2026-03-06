@@ -26,6 +26,7 @@ class User extends Authenticatable
         'otp_verified_at',
         'status',
         'email_verified_at',
+        'password',
     ];
 
     protected $casts = [

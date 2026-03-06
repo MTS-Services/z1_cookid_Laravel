@@ -16,7 +16,7 @@ export default function ConfirmPassword({ email }: { email: string }) {
         <AuthLayout title="Reset Password">
             <Head title="Reset password" />
 
-            <div className="mx-auto w-full rounded-xl border border-gray-800 bg-gray-900 p-8 shadow-2xl">
+            <div className="min-w-xs md:w-md rounded-xl border border-gray-800 bg-gray-900 p-8 shadow-2xl">
                 <h2 className="text-2xl font-semibold text-center text-white">
                     Reset Password
                 </h2>

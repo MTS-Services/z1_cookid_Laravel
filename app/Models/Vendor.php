@@ -23,7 +23,7 @@ class Vendor extends Authenticatable
         'city',
         'zip_code',
         'address',
-        'government_id_path',
+        'government_issue_license',
         'avatar',
         'password',
         'otp_code',
@@ -44,6 +44,7 @@ class Vendor extends Authenticatable
 
     protected $appends = [
         'avatar_url',
+        'license_url',
     ];
 
     protected $hidden = [
@@ -70,5 +71,16 @@ class Vendor extends Authenticatable
         }
 
         return asset('storage/vendor_avatars/'.$this->avatar);
+    }
+    public function getLicenseUrlAttribute(): ?string
+    {
+        if (filter_var($this->government_issue_license, FILTER_VALIDATE_URL)) {
+            return $this->government_issue_license;
+        }
+        if (! $this->government_issue_license) {
+            return null;
+        }
+
+        return asset('storage/'.$this->government_issue_license);
     }
 }

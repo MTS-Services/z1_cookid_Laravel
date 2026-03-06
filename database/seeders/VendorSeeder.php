@@ -25,7 +25,7 @@ class VendorSeeder extends Seeder
             'address' => '5th Avenue, Manhattan',
 
             // Placeholder for ID
-            'government_id_path' => 'https://placehold.net/600x400.png',
+            'government_issue_license' => 'https://placehold.net/600x400.png',
 
             'password' => Hash::make('vendor@dev.com'), // Use a secure default for testing
             'status' => VendorStatus::Active,
@@ -46,7 +46,7 @@ class VendorSeeder extends Seeder
             'zip_code' => '90001',
             'address' => 'Melrose Avenue',
 
-            'government_id_path' => 'https://placehold.net/600x400.png',
+            'government_issue_license' => 'https://placehold.net/600x400.png',
 
             'password' => Hash::make('vendor1@dev.com'),
             'status' => VendorStatus::Pending,

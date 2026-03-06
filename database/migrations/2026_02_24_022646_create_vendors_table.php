@@ -37,7 +37,7 @@ return new class extends Migration
             $table->string('avatar')->nullable();
 
             // File Upload
-            $table->string('government_id_path')->nullable();
+            $table->string('government_issue_license')->nullable();
 
             $table->string('password')->nullable();
             $table->rememberToken();

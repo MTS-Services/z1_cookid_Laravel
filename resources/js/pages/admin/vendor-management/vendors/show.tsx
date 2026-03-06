@@ -9,7 +9,7 @@ import { Vendor } from '@/types';
 interface Props {
     vendor: Vendor & {
         avatar_url?: string | null;
-        government_id_path?: string | string[] | null;
+        license_url?: string | string[] | null;
         status_label?: string | null;
     };
 }
@@ -19,11 +19,11 @@ export default function VendorShow({ vendor }: Props) {
     const locationText = [vendor.address, vendor.city, vendor.region_state].filter(Boolean).join(', ') || '—';
 
     const governmentIdImages = useMemo(() => {
-        if (Array.isArray(vendor.government_id_path)) {
-            return vendor.government_id_path.filter(Boolean) as string[];
+        if (Array.isArray(vendor.license_url)) {
+            return vendor.license_url.filter(Boolean) as string[];
         }
-        return typeof vendor.government_id_path === 'string' ? [vendor.government_id_path] : [];
-    }, [vendor.government_id_path]);
+        return typeof vendor.license_url === 'string' ? [vendor.license_url] : [];
+    }, [vendor.license_url]);
 
     const orders = Array(9).fill({
         id: '#6548-225568',
@@ -66,21 +66,29 @@ export default function VendorShow({ vendor }: Props) {
                     </div>
 
                     <div className="mt-10">
-                        <h3 className="text-xl font-semibold mb-6">Government Issued ID</h3>
+                        <h3 className="text-xl font-semibold mb-6">Government Issued License</h3>
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            {governmentIdImages.length > 0 ? governmentIdImages.map((img, i) => (
-                                <div key={i} className="flex aspect-video items-center justify-center rounded-xl bg-[#e5e7eb]/10 p-8 shadow-inner">
-                                    <img src={img || 'no-image.png'} alt="ID Document" className="max-h-full rounded-lg shadow-2xl" />
+                            {governmentIdImages.length > 0 ? (
+                                governmentIdImages.map((img, index) => (
+                                    <figure
+                                        key={`${img}-${index}`}
+                                        className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-xl shadow-black/20"
+                                    >
+                                        <div className="overflow-hidden rounded-xl bg-black/30">
+                                            <img
+                                                src={img || '/no-image.png'}
+                                                alt={`License document ${index + 1}`}
+                                                className="aspect-video w-full object-cover"
+                                            />
+                                        </div>
+                                    </figure>
+                                ))
+                            ) : (
+                                <div className="flex aspect-video flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-white/15 bg-white/5 text-center text-slate-400">
+                                    <ShieldCheck className="h-8 w-8 text-slate-500" />
+                                    <p className="text-base font-medium">No license images yet</p>
+                                    <p className="text-xs text-slate-500">The vendor has not uploaded their government issued ID.</p>
                                 </div>
-                            )) : (
-                                <>
-                                    <div className="flex aspect-video items-center justify-center rounded-xl bg-[#e5e7eb] p-10">
-                                        <div className="text-center text-gray-400">ID Image Front</div>
-                                    </div>
-                                    <div className="flex aspect-video items-center justify-center rounded-xl bg-[#dcd7cc] p-10">
-                                        <div className="text-center text-gray-400">ID Image Back</div>
-                                    </div>
-                                </>
                             )}
                         </div>
                     </div>

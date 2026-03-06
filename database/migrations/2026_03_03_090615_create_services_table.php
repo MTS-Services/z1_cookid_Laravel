@@ -1,11 +1,15 @@
 <?php
 
+use App\Traits\AuditColumnsTrait;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    use SoftDeletes, AuditColumnsTrait;
+    
     public function up(): void
     {
         Schema::create('services', function (Blueprint $table) {
@@ -25,6 +29,8 @@ return new class extends Migration
             $table->json('gallery_images')->nullable();
 
             $table->timestamps();
+            $table->softDeletes();
+            $this->addMorphedAuditColumns($table);
         });
     }
 

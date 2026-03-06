@@ -6,6 +6,7 @@ use App\Enums\ActiveInactiveStatus;
 use App\Enums\OtpPurpose;
 use App\Http\Controllers\Controller;
 use App\Mail\Otp\VendorOtpMail;
+use App\Mail\VendorWelcomeMail;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -194,9 +195,10 @@ class VendorAuthController extends Controller
             ]);
         }
         if ($vendor->otp_verified_at) {
-            // Auth::login($vendor);
             auth()->guard('vendor')->login($vendor);
             $request->session()->regenerate();
+
+            Mail::to($vendor->email)->send(new VendorWelcomeMail($vendor));
 
             return redirect()->intended(route('vendor.dashboard'));
         }

@@ -6,6 +6,7 @@ use App\Enums\ActiveInactiveStatus;
 use App\Enums\OtpPurpose;
 use App\Http\Controllers\Controller;
 use App\Mail\Otp\VendorOtpMail;
+use App\Mail\VendorWelcomeMail;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -73,10 +74,10 @@ class VendorOtpController extends Controller
         }
 
         Auth::guard('vendor')->login($vendor);
-        // Regenerate the session to prevent fixation
         $request->session()->regenerate();
 
-        // Use intended() to ensure Inertia handles the redirect smoothly
+        Mail::to($vendor->email)->send(new VendorWelcomeMail($vendor));
+
         return redirect()->intended(route('vendor.dashboard'));
     }
 

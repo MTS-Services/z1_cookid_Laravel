@@ -32,6 +32,14 @@ class Vendor extends Authenticatable
         'otp_verified_at',
         'status',
         'email_verified_at',
+
+        'creater_id',
+        'updater_id',
+        'deleter_id',
+        
+        'creater_type',
+        'updater_type',
+        'deleter_type',
     ];
 
     protected $appends = [

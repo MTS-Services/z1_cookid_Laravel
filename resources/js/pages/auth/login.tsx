@@ -85,7 +85,7 @@ const LoginPage: FC = () => {
                             </label>
 
                             <Link
-                                href="/forgot-password"
+                                href={route('user.auth.forgot-password')}
                                 className="text-navy hover:text-blue-400 hover:underline"
                             >
                                 Forgot password?

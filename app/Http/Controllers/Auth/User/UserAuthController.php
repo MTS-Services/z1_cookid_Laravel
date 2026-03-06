@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Validation\ValidationException;
 
 class UserAuthController extends Controller
 {
@@ -23,6 +23,7 @@ class UserAuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('user.profile');
         }
+
         return Inertia::render('auth/login');
     }
 
@@ -49,6 +50,7 @@ class UserAuthController extends Controller
         if ($user->otp_verified_at) {
             Auth::login($user);
             $request->session()->regenerate();
+
             return redirect()->intended(route('user.profile'));
         }
 
@@ -79,9 +81,9 @@ class UserAuthController extends Controller
     {
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
-            'last_name'  => ['required', 'string', 'max:255'],
-            'phone'      => ['nullable', 'string', 'max:20'],
-            'email'      => [
+            'last_name' => ['required', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'email' => [
                 'required',
                 'email',
                 'max:255',
@@ -93,23 +95,24 @@ class UserAuthController extends Controller
 
         // Upload avatar
         if ($request->hasFile('avatar')) {
-            $avatarName = time() . '_' . uniqid() . '.' . $request->avatar->extension();
+            $avatarName = time().'_'.uniqid().'.'.$request->avatar->extension();
             $request->avatar->storeAs('user_avatars', $avatarName);
         }
 
         $user = User::create([
             'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
-            'phone'      => $request->phone,
-            'email'      => $request->email,
-            'avatar'     => $avatarName ?? null,
-            'status'     => ActiveInactiveStatus::INACTIVE,
-            'password'   => Hash::make($request->password),
+            'last_name' => $request->last_name,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'avatar' => $avatarName ?? null,
+            'status' => ActiveInactiveStatus::INACTIVE,
+            'password' => Hash::make($request->password),
         ]);
-        
+
         if ($user->otp_verified_at) {
             Auth::login($user);
             $request->session()->regenerate();
+
             return redirect()->intended(route('user.dashboard'));
         }
 

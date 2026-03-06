@@ -169,7 +169,7 @@ export function AccountSection() {
                     <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
 
                         {/* Avatar Upload */}
-                        <div className="grid gap-2 w-36 lg:mr-6">
+                        <div className="grid gap-2 w-full max-w-64 lg:mr-6">
                             <Label htmlFor="avatar">Image</Label>
 
                             <FileUpload

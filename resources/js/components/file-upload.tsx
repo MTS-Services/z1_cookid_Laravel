@@ -275,7 +275,9 @@ export default function FileUpload({
                             'scale-[1.02] border-primary bg-accent/50',
                         disabled && 'cursor-not-allowed opacity-50',
                         error && 'border-red-500',
-                        !multiple && filePreviews.length === 0 ? 'p-12' : 'p-6',
+                        !multiple && filePreviews.length === 0
+                            ? 'p-6 sm:p-8 lg:p-12'
+                            : 'p-4 sm:p-6',
                     )}
                 >
                     <input
@@ -331,14 +333,14 @@ export default function FileUpload({
                     {/* Existing Files */}
                     {existingFiles.length > 0 && (
                         <div className="mb-4">
-                            <h3 className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <h3 className="mb-3 text-sm font-medium text-muted-foreground dark:text-gray-300">
                                 Existing Files
                             </h3>
                             <div
                                 className={cn(
                                     'grid gap-4',
                                     multiple
-                                        ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+                                        ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
                                         : 'grid-cols-1',
                                 )}
                             >
@@ -377,7 +379,7 @@ export default function FileUpload({
 
                                             {/* File Info */}
                                             <div className="p-2">
-                                                <p className="truncate text-xs font-medium dark:text-gray-200">
+                                                <p className="truncate text-xs font-medium dark:text-gray-200 text-black">
                                                     {file.name ||
                                                         file.path
                                                             .split('/')
@@ -421,7 +423,7 @@ export default function FileUpload({
                     {filePreviews.length > 0 && (
                         <div>
                             {existingFiles.length > 0 && (
-                                <h3 className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <h3 className="mb-3 text-sm font-medium text-muted-foreground dark:text-gray-300">
                                     New Files
                                 </h3>
                             )}
@@ -429,7 +431,7 @@ export default function FileUpload({
                                 className={cn(
                                     'grid gap-4',
                                     multiple
-                                        ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+                                        ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
                                         : 'grid-cols-1',
                                 )}
                             >
@@ -462,7 +464,7 @@ export default function FileUpload({
 
                                             {/* File Info */}
                                             <div className="p-2">
-                                                <p className="truncate text-xs font-medium dark:text-gray-200">
+                                                <p className="truncate text-xs font-medium dark:text-gray-200 text-black">
                                                     {preview.file.name}
                                                 </p>
                                                 <p className="text-xs text-muted-foreground dark:text-gray-400">

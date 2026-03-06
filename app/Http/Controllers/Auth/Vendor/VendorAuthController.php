@@ -6,6 +6,7 @@ use App\Enums\ActiveInactiveStatus;
 use App\Enums\OtpPurpose;
 use App\Http\Controllers\Controller;
 use App\Mail\Otp\VendorOtpMail;
+use App\Mail\VendorWelcomeMail;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -102,7 +103,7 @@ class VendorAuthController extends Controller
             'zip_code' => ['nullable', 'string'],
             'address' => ['nullable', 'string'],
             // Design requires JPEG/PNG max 100MB
-            'government_id' => ['nullable', 'file', 'mimes:jpeg,png', 'max:102400'],
+            'government_issue_license' => ['nullable', 'file', 'mimes:jpeg,png', 'max:102400'],
             'password' => [
                 'required',
                 'string',
@@ -117,8 +118,8 @@ class VendorAuthController extends Controller
 
         $governmentIdPath = null;
 
-        if ($request->hasFile('government_id')) {
-            $governmentIdPath = $request->file('government_id')->store('vendor_ids', 'public');
+        if ($request->hasFile('government_issue_license')) {
+            $governmentIdPath = $request->file('government_issue_license')->store('vendor_ids', 'public');
         }
 
         DB::beginTransaction();
@@ -134,9 +135,8 @@ class VendorAuthController extends Controller
                 'city' => $validated['city'],
                 'zip_code' => $validated['zip_code'],
                 'address' => $validated['address'],
-                'government_id_path' => $governmentIdPath,
+                'government_issue_license' => $governmentIdPath,
                 'password' => Hash::make($validated['password']),
-                'status' => ActiveInactiveStatus::INACTIVE,
             ]);
 
             $otp = random_int(100000, 999999);
@@ -194,9 +194,10 @@ class VendorAuthController extends Controller
             ]);
         }
         if ($vendor->otp_verified_at) {
-            // Auth::login($vendor);
             auth()->guard('vendor')->login($vendor);
             $request->session()->regenerate();
+
+            Mail::to($vendor->email)->send(new VendorWelcomeMail($vendor));
 
             return redirect()->intended(route('vendor.dashboard'));
         }

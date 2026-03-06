@@ -6,6 +6,7 @@ use App\Enums\ActiveInactiveStatus;
 use App\Enums\OtpPurpose;
 use App\Http\Controllers\Controller;
 use App\Mail\Otp\UserOtpMail;
+use App\Mail\UserWelcomeMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -50,6 +51,8 @@ class UserAuthController extends Controller
         if ($user->otp_verified_at) {
             Auth::login($user);
             $request->session()->regenerate();
+
+            Mail::to($user->email)->send(new UserWelcomeMail($user));
 
             return redirect()->intended(route('user.profile'));
         }

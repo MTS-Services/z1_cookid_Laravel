@@ -89,8 +89,15 @@ export default function ServiceShowPage({ service }: Props) {
 
             <div className="space-y-6">
                 {/* Vendor header block */}
-                <section className="rounded-3xl border border-white/5 bg-bg-gray/90 p-5 shadow-[0_25px_70px_rgba(0,0,0,0.45)]">
+                <section className="p-5">
                     <div className="flex flex-col gap-2 text-sm text-gray-200">
+                        <div className="h-24 w-24 overflow-hidden rounded-full ring-2 ring-white/5">
+                            <img
+                                src={service.vendor?.avatar_url ?? '/user.png'}
+                                alt="Shop Logo"
+                                className="h-full w-full object-cover"
+                            />
+                        </div>
                         <h2 className="text-base font-semibold text-white">
                             {service.vendor?.shop_name ?? 'Maktech Store'}
                         </h2>
@@ -118,12 +125,12 @@ export default function ServiceShowPage({ service }: Props) {
                     </div>
 
                     {/* Images row */}
-                    <div className="overflow-hidden rounded-2xl bg-black">
-                        <div className="grid gap-2 md:grid-cols-[3fr,2fr]">
+                    <div className="overflow-hidden">
+                        <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
                             <img
                                 src={heroImage}
                                 alt={service.service_name}
-                                className="h-64 w-full object-cover md:h-72"
+                                className="h-full w-full object-cover rounded-md"
                             />
                             <div className="flex flex-col gap-2">
                                 {galleryImages.slice(0, 2).map((src, index) => (
@@ -131,7 +138,7 @@ export default function ServiceShowPage({ service }: Props) {
                                         key={index}
                                         src={src}
                                         alt={`${service.service_name} ${index + 1}`}
-                                        className="h-32 w-full object-cover md:h-36"
+                                        className="h-full w-full object-cover rounded-md"
                                     />
                                 ))}
                             </div>

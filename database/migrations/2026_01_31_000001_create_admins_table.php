@@ -1,14 +1,19 @@
 <?php
 
+use App\Traits\AuditColumnsTrait;
+use App\Enums\ActiveInactiveStatus;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    use SoftDeletes, AuditColumnsTrait;
     public function up(): void
     {
         Schema::create('admins', function (Blueprint $table) {
+            $table->unsignedBigInteger('sort_order')->index()->default(0);
             $table->id();
             $table->string('first_name');
             $table->string('last_name');
@@ -21,8 +26,11 @@ return new class extends Migration
             $table->string('otp_purpose')->nullable(); // login|register|reset_password
             $table->timestamp('otp_expires_at')->nullable();
             $table->timestamp('otp_verified_at')->nullable();
-            $table->enum('status', ['active', 'inactive', 'banned'])->default('active');
+            $table->string('status')->default(ActiveInactiveStatus::ACTIVE->value);
+            
             $table->timestamps();
+            $table->softDeletes();
+            $this->addAdminAuditColumns($table);
         });
     }
 

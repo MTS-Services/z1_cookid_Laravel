@@ -4,8 +4,23 @@ namespace {{ namespace }};
 
 {{ factoryImport }}
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class {{ class }} extends Model
 {
-    {{ factory }}
+    use SoftDeletes;
+    
+    protected $fillable = [
+        
+
+        'creater_id',
+        'updater_id',
+        'deleter_id',
+        
+        'creater_type',
+        'updater_type',
+        'deleter_type',
+
+    ];
 }

@@ -27,6 +27,14 @@ class User extends Authenticatable
         'status',
         'email_verified_at',
         'password',
+
+        'creater_id',
+        'updater_id',
+        'deleter_id',
+        
+        'creater_type',
+        'updater_type',
+        'deleter_type',
     ];
 
     protected $casts = [

@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\UserManagement\UserController;
 use App\Http\Controllers\Admin\VendorManagement\VendorController;
 use App\Http\Controllers\Auth\Admin\AdminAuthController;
 use App\Http\Controllers\Auth\Admin\AdminOtpController;
+use App\Http\Controllers\Auth\Admin\ForgetPassword;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -20,6 +21,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
         Route::get('/register', [AdminAuthController::class, 'register'])->name('register');
         Route::post('/register', [AdminAuthController::class, 'registerStore'])->name('register.post');
+
+        Route::get('/forgot-password', [ForgetPassword::class, 'forgotPassword'])->name('forgot-password');
+        Route::post('/forgot-password/otp-verify', [ForgetPassword::class, 'forgotPasswordOtpVerify'])->name('forgot-password.otp-verify');
+        Route::get('/forgot-password/reset', [ForgetPassword::class, 'forgotPasswordReset'])->name('forgot-password.reset');
+        Route::post('/forgot-password/reset', [ForgetPassword::class, 'forgotPasswordResetStore'])->name('forgot-password-reset.store');
 
         Route::get('/otp-verify', [AdminOtpController::class, 'showOtpVerify'])->name('otp-verify');
         Route::post('/otp/verify', [AdminOtpController::class, 'verify'])->name('otp.verify');

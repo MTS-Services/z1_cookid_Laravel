@@ -39,7 +39,7 @@ export default function VendorLayout({ children, activeSlug }: VendorLayoutProps
         <VendorSidebar isCollapsed={isCollapsed} activeSlug={activeSlug} />
         <div className="flex flex-1 flex-col overflow-hidden">
           <VendorHeader isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-          <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-6 text-white">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-6 text-white bg-dark-gray">
             {children}
           </main>
 

@@ -1,15 +1,23 @@
 <?php
 
 use App\Enums\VendorStatus;
+use App\Traits\AuditColumnsTrait;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    use SoftDeletes, AuditColumnsTrait;
+
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('vendors', function (Blueprint $table) {
+            $table->unsignedBigInteger('sort_order')->index()->default(0);
             $table->id();
             $table->string('first_name');
             $table->string('last_name')->nullable();
@@ -29,17 +37,20 @@ return new class extends Migration
             $table->string('avatar')->nullable();
 
             // File Upload
-            $table->string('government_id_path')->nullable();
+            $table->string('government_issue_license')->nullable();
 
             $table->string('password')->nullable();
             $table->rememberToken();
             $table->string('otp_code')->nullable();
-            $table->enum('otp_purpose', ['login', 'register', 'reset_password'])->nullable();
+            $table->string('otp_purpose')->nullable();
             $table->timestamp('otp_expires_at')->nullable();
             $table->timestamp('otp_verified_at')->nullable();
             $table->string('status')->default(VendorStatus::Pending->value);
             $table->timestamp('email_verified_at')->nullable();
+           
             $table->timestamps();
+            $table->softDeletes();
+            $this->addAdminAuditColumns($table);
         });
     }
 

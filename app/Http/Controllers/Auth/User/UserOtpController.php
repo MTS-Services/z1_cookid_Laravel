@@ -6,6 +6,7 @@ use App\Enums\ActiveInactiveStatus;
 use App\Enums\OtpPurpose;
 use App\Http\Controllers\Controller;
 use App\Mail\Otp\UserOtpMail;
+use App\Mail\UserWelcomeMail;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -62,13 +63,15 @@ class UserOtpController extends Controller
             'otp_expires_at' => null,
             'otp_verified_at' => now(),
         ]);
-        
-        if($user->otp_purpose->value === OtpPurpose::PASSWORD_RESET->value) {
+
+        if ($user->otp_purpose->value === OtpPurpose::PASSWORD_RESET->value) {
             return redirect()->route('user.auth.forgot-password.reset');
         }
 
         Auth::login($user);
         $request->session()->regenerate();
+
+        Mail::to($user->email)->send(new UserWelcomeMail($user));
 
         return redirect()->intended(route('user.profile'));
     }

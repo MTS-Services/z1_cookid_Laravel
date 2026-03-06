@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ActiveInactiveStatus;
+use App\Enums\OtpPurpose;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -29,20 +30,22 @@ class Admin extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        'otp_code'
+        'otp_code',
     ];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'otp_expires_at'    => 'datetime',
-        'otp_verified_at'   => 'datetime',
+        'otp_expires_at' => 'datetime',
+        'otp_verified_at' => 'datetime',
     ];
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'status' => ActiveInactiveStatus::class,
+            'otp_purpose' => OtpPurpose::class,
         ];
     }
 
@@ -62,6 +65,6 @@ class Admin extends Authenticatable
             return asset('no-user-image-icon.png');
         }
 
-        return asset('storage/user_images/' . $this->image);
+        return asset('storage/user_images/'.$this->image);
     }
 }

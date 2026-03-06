@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Auth\Vendor;
 
-use App\Http\Controllers\Controller;
-use App\Models\Vendor;
-use App\Enums\OtpPurpose;
 use App\Enums\ActiveInactiveStatus;
+use App\Enums\OtpPurpose;
+use App\Http\Controllers\Controller;
 use App\Mail\Otp\VendorOtpMail;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -25,7 +25,7 @@ class VendorOtpController extends Controller
         // Find the vendor to get the actual database expiration time
         $vendor = Vendor::where('email', $email)->first();
 
-        if (!$email || !$vendor) {
+        if (! $email || ! $vendor) {
             return redirect()->route('vendor.auth.login')
                 ->with('error', 'Please enter your email first.');
         }
@@ -44,19 +44,19 @@ class VendorOtpController extends Controller
     {
         $request->validate([
             'email' => ['required', 'email'],
-            'otp'   => ['required', 'digits:6'],
+            'otp' => ['required', 'digits:6'],
         ]);
 
         $vendor = Vendor::where('email', $request->email)->first();
 
-        if (!$vendor) {
+        if (! $vendor) {
             throw ValidationException::withMessages(['email' => 'Vendor not found.']);
         }
 
-        $isValid = $vendor->otp_code && hash_equals((string)$vendor->otp_code, (string)$request->otp);
-        $isExpired = !$vendor->otp_expires_at || $vendor->otp_expires_at->isPast();
+        $isValid = $vendor->otp_code && hash_equals((string) $vendor->otp_code, (string) $request->otp);
+        $isExpired = ! $vendor->otp_expires_at || $vendor->otp_expires_at->isPast();
 
-        if (!$isValid || $isExpired) {
+        if (! $isValid || $isExpired) {
             throw ValidationException::withMessages([
                 'otp' => 'The provided OTP is invalid or has expired.',
             ]);
@@ -67,6 +67,10 @@ class VendorOtpController extends Controller
             'otp_expires_at' => null,
             'otp_verified_at' => now(),
         ]);
+
+        if ($vendor->otp_purpose?->value === \App\Enums\OtpPurpose::PASSWORD_RESET->value) {
+            return redirect()->route('vendor.auth.forgot-password.reset');
+        }
 
         Auth::guard('vendor')->login($vendor);
         // Regenerate the session to prevent fixation
@@ -85,7 +89,7 @@ class VendorOtpController extends Controller
 
         $vendor = Vendor::where('email', $request->email)->first();
 
-        if (!$vendor || $vendor->status !== ActiveInactiveStatus::ACTIVE) {
+        if (! $vendor || $vendor->status !== ActiveInactiveStatus::ACTIVE) {
             throw ValidationException::withMessages(['email' => 'Account is inactive or not found.']);
         }
 
@@ -94,7 +98,7 @@ class VendorOtpController extends Controller
 
         $vendor->update([
             'otp_code' => $otp,
-            'otp_purpose' => OtpPurpose::LOGIN,
+            'otp_purpose' => $vendor->otp_purpose ?? OtpPurpose::LOGIN,
             'otp_expires_at' => $expiresAt,
         ]);
 
@@ -103,7 +107,7 @@ class VendorOtpController extends Controller
         // Redirect back with the new expiry timestamp in the query params
         return redirect()->route('vendor.auth.otp-verify', [
             'email' => $vendor->email,
-            'expires_at' => $expiresAt->toIso8601String()
+            'expires_at' => $expiresAt->toIso8601String(),
         ])->with('message', 'A new OTP has been sent.');
     }
 }

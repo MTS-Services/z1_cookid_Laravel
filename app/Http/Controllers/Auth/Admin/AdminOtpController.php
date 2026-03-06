@@ -63,6 +63,10 @@ class AdminOtpController extends Controller
             'otp_verified_at' => now(),
         ]);
 
+        if ($admin->otp_purpose?->value === OtpPurpose::PASSWORD_RESET->value) {
+            return redirect()->route('admin.forgot-password.reset');
+        }
+
         Auth::guard('admin')->login($admin);
         $request->session()->regenerate();
 
@@ -88,7 +92,7 @@ class AdminOtpController extends Controller
 
         $admin->update([
             'otp_code' => $otp,
-            'otp_purpose' => OtpPurpose::LOGIN,
+            'otp_purpose' => $admin->otp_purpose ?? OtpPurpose::LOGIN,
             'otp_expires_at' => $expiresAt,
         ]);
 

@@ -34,7 +34,7 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->rememberToken();
             $table->string('otp_code')->nullable();
-            $table->enum('otp_purpose', ['login', 'register', 'reset_password'])->nullable();
+            $table->string('otp_purpose')->nullable();
             $table->timestamp('otp_expires_at')->nullable();
             $table->timestamp('otp_verified_at')->nullable();
             $table->string('status')->default(VendorStatus::Pending->value);

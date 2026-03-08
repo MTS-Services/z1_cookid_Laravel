@@ -23,13 +23,13 @@ const adminNavItems: NavItemType[] = [
         children: [
             {
                 title: "Category",
-                href: '#',
+                href: route("vendor.lm.category.index"),
                 icon: List,
                 slug: "category",
             },
             {
                 title: "Listing",
-                href: route("vendor.lm.listing"),
+                href: route("vendor.lm.listing.index"),
                 icon: List,
                 slug: "listing",
             },

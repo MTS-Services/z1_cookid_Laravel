@@ -43,8 +43,24 @@ Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function (
 
     // Listing Management
     Route::prefix('listing-management')->name('lm.')->group(function () {
-        Route::get('listing', [ListingController::class, 'index'])->name('listing');
-        Route::get('listing/create', [ListingController::class, 'create'])->name('listing.create');
-        Route::get('category', [CategoryController::class, 'index'])->name('category');
+        Route::controller(ListingController::class)->prefix('listing')->name('listing.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('create', 'create')->name('create');
+            Route::post('store', 'store')->name('store');
+            Route::get('{listing}', 'show')->name('show');
+            Route::get('{listing}/edit', 'edit')->name('edit');
+            Route::patch('{listing}', 'update')->name('update');
+            Route::delete('{listing}', 'destroy')->name('destroy');
+        });
+
+        Route::controller(CategoryController::class)
+            ->prefix('category')
+            ->name('category.')
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/', 'store')->name('store');
+                Route::post('{category}', 'update')->name('update');
+                Route::delete('{category}', 'destroy')->name('destroy');
+            });
     });
 });

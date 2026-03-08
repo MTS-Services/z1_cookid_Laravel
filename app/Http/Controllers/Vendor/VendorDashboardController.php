@@ -10,7 +10,7 @@ class VendorDashboardController extends Controller
 {
     public function __construct()
     {
-    //    
+        //
     }
 
     public function dashboard(): Response
@@ -22,25 +22,19 @@ class VendorDashboardController extends Controller
     {
         return Inertia::render('vendor/notification');
     }
-    public function listing(): Response
-    {
-        return Inertia::render('vendor/listing');
-    }
-    public function listingCreate(): Response
-    {
-        return Inertia::render('vendor/listing-create');
-    }
+
     public function orders(): Response
     {
         return Inertia::render('vendor/orders');
     }
+
     public function orderDetails(): Response
     {
         return Inertia::render('vendor/order-details');
     }
+
     public function orderCandelledDetails(): Response
     {
         return Inertia::render('vendor/order-candelled-details');
     }
-    
 }

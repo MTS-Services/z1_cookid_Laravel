@@ -96,13 +96,13 @@ export const NavItem = React.memo<NavItemProps>(({
                         disabled={item.disabled}
                         className={cn(
                             'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium',
-                            'text-foreground transition-all duration-200',
-                            'bg-primary/15 hover:bg-secondary hover:text-white',
+                            'text-white transition-all duration-200',
+                            'bg-dark-gray hover:bg-secondary hover:text-white',
                             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                             'w-full text-left',
                             isCollapsed ? 'justify-center px-2' : '',
                             level > 0 && !isCollapsed && 'ml-4',
-                            itemIsActive && 'bg-secondary text-white hover:bg-primary',
+                            itemIsActive && 'bg-secondary text-white hover:bg-dark-gray',
                             item.disabled && 'opacity-50 cursor-not-allowed hover:bg-transparent',
                             item.className
                         )}
@@ -124,8 +124,8 @@ export const NavItem = React.memo<NavItemProps>(({
 
                         {/* Active indicator */}
                         {isCollapsed && itemIsActive && (
-                            <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full">
-                                <div className="absolute inset-0 bg-primary rounded-full animate-ping" />
+                            <div className="absolute -top-1 -right-1 w-2 h-2 bg-dark-gray rounded-full">
+                                <div className="absolute inset-0 bg-dark-gray rounded-full animate-ping" />
                             </div>
                         )}
                     </CollapsibleTrigger>
@@ -186,7 +186,7 @@ export const NavItem = React.memo<NavItemProps>(({
                 'w-full',
                 isCollapsed ? 'justify-center px-2' : '',
                 level > 0 && !isCollapsed && 'ml-4',
-                itemIsActive && 'bg-secondary text-white hover:bg-primary',
+                itemIsActive && 'bg-secondary text-white hover:bg-dark-gray',
                 item.disabled && 'opacity-50 cursor-not-allowed pointer-events-none',
                 item.className
             )}
@@ -203,14 +203,14 @@ export const NavItem = React.memo<NavItemProps>(({
 
             {/* Active indicators */}
             {isCollapsed && itemIsActive && (
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full">
-                    <div className="absolute inset-0 bg-primary rounded-full animate-ping" />
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-dark-gray rounded-full">
+                    <div className="absolute inset-0 bg-dark-gray rounded-full animate-ping" />
                 </div>
             )}
 
             {!isCollapsed && itemIsActive && (
-                <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0">
-                    <div className="absolute w-1.5 h-1.5 bg-primary rounded-full animate-ping" />
+                <div className="w-1.5 h-1.5 bg-secondary rounded-full flex-shrink-0">
+                    <div className="absolute w-1.5 h-1.5 bg-dark-gray rounded-full animate-ping" />
                 </div>
             )}
         </Link>

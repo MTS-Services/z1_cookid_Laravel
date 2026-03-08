@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { type NavItemType, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import * as React from 'react';
-import { LayoutGrid, BarChart2, DollarSign, Home, List, Settings, ShoppingBag } from 'lucide-react'
+import { LayoutGrid, BarChart2, DollarSign, Home, List, Settings, ShoppingBag, Tags, CarFront, ClipboardList } from 'lucide-react'
 
 
 // Navigation configuration
@@ -16,10 +16,30 @@ const adminNavItems: NavItemType[] = [
         slug: "home",
     },
     {
-        title: "Listing",
-        href: route("vendor.listing"),
+        title: "Listing Management",
+        href: '#',
         icon: List,
         slug: "listing",
+        children: [
+            {
+                title: "Category",
+                href: route("vendor.lm.category.index"),
+                icon: Tags,
+                slug: "category",
+            },
+            {
+                title: "Car Types",
+                href: route("vendor.lm.car-type.index"),
+                icon: CarFront,
+                slug: "car-type",
+            },
+            {
+                title: "Listing",
+                href: route("vendor.lm.listing.index"),
+                icon: ClipboardList,
+                slug: "listing",
+            },
+        ],
     },
     {
         title: "Orders",

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ActiveInactiveStatus;
 use App\Models\Admin;
 use App\Models\Service;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -8,11 +9,11 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 
-it('shows requested services tab by default', function () {
+it('shows all services tab by default', function () {
     $admin = Admin::factory()->create();
 
-    Service::factory()->count(2)->create(['status' => 'requested']);
-    Service::factory()->count(2)->create(['status' => 'completed']);
+    Service::factory()->count(2)->create(['status' => ActiveInactiveStatus::ACTIVE]);
+    Service::factory()->count(2)->create(['status' => ActiveInactiveStatus::INACTIVE]);
 
     actingAs($admin, 'admin');
 
@@ -22,19 +23,19 @@ it('shows requested services tab by default', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('admin/service-management/services/index')
-            ->where('tab', 'requested')
+            ->where('tab', 'all')
         );
 });
 
-it('can approve and cancel a service request', function () {
+it('can activate and deactivate a service', function () {
     $admin = Admin::factory()->create();
-    $service = Service::factory()->create(['status' => 'requested']);
+    $service = Service::factory()->create(['status' => ActiveInactiveStatus::INACTIVE]);
 
     actingAs($admin, 'admin');
 
     post(route('admin.sm.services.approve', $service));
-    expect($service->refresh()->status)->toBe('in_progress');
+    expect($service->refresh()->status)->toBe(ActiveInactiveStatus::ACTIVE);
 
     post(route('admin.sm.services.cancel', $service));
-    expect($service->refresh()->status)->toBe('cancelled');
+    expect($service->refresh()->status)->toBe(ActiveInactiveStatus::INACTIVE);
 });

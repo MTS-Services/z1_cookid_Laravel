@@ -1,8 +1,24 @@
+import TipTapEditor from '@/components/ui/tip-tap-editor'
+import { store } from '@/actions/App/Http/Controllers/Vendor/ListingManagement/ListingController'
 import { Button } from '@/components/ui/button'
+import InputError from '@/components/input-error'
 import VendorLayout from '@/layouts/vendor-layout'
-import { useMemo, useRef, useState } from 'react'
+import { router, usePage } from '@inertiajs/react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+
+interface CategoryOption {
+    id: number
+    name: string
+}
+
+interface ListingCreateProps {
+    categories: CategoryOption[]
+    carTypes: CategoryOption[]
+    errors?: Partial<Record<string, string>>
+}
 
 export default function ListingCreate() {
+    const { categories, carTypes, errors = {} } = usePage().props as unknown as ListingCreateProps
     const totalSteps = 3
     const [currentStep, setCurrentStep] = useState(1)
     const [formData, setFormData] = useState({
@@ -10,7 +26,7 @@ export default function ListingCreate() {
         description: '',
         duration: '2+ Hours',
         carType: '',
-        category: 'Car Wash',
+        category: '',
         location: '',
         features: '',
         price: '',
@@ -34,6 +50,17 @@ export default function ListingCreate() {
 
     const progress = (currentStep / totalSteps) * 100
 
+    useEffect(() => {
+        const keys = Object.keys(errors)
+        if (keys.length === 0) return
+        const step1Fields = ['serviceTitle', 'description', 'duration', 'carType', 'category']
+        const step2Fields = ['location', 'features', 'price']
+        const firstKey = keys[0]?.replace(/\.\d+$/, '') ?? ''
+        if (step1Fields.includes(firstKey)) setCurrentStep(1)
+        else if (step2Fields.includes(firstKey)) setCurrentStep(2)
+        else setCurrentStep(3)
+    }, [errors])
+
     const handleNext = () => {
         if (currentStep < totalSteps) {
             setCurrentStep((prev) => prev + 1)
@@ -47,7 +74,25 @@ export default function ListingCreate() {
     }
 
     const handlePublish = () => {
-        console.log('Publishing listing', formData)
+        const fd = new FormData()
+        fd.append('serviceTitle', formData.serviceTitle)
+        fd.append('description', formData.description)
+        fd.append('duration', formData.duration)
+        fd.append('carType', formData.carType)
+        fd.append('category', formData.category)
+        fd.append('location', formData.location)
+        fd.append('features', formData.features)
+        fd.append('price', formData.price)
+        if (formData.coverImage) {
+            fd.append('image', formData.coverImage)
+        }
+        formData.galleryImages.forEach((file, i) => {
+            fd.append(`gallery_images[${i}]`, file)
+        })
+        router.post(store.url(), fd, {
+            preserveScroll: true,
+            forceFormData: true,
+        })
     }
 
     const handleCoverChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,6 +169,7 @@ export default function ListingCreate() {
                                     value={formData.serviceTitle}
                                     onChange={(e) => setFormData({ ...formData, serviceTitle: e.target.value })}
                                 />
+                                <InputError message={errors.serviceTitle} className="mt-1 text-red-400" />
                             </label>
                             <label className="space-y-2 text-sm font-medium">
                                 <span>Description</span>
@@ -134,6 +180,7 @@ export default function ListingCreate() {
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                 />
+                                <InputError message={errors.description} className="mt-1 text-red-400" />
                             </label>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <label className="space-y-2 text-sm font-medium">
@@ -147,6 +194,7 @@ export default function ListingCreate() {
                                         <option>Half-Day</option>
                                         <option>Full-Day</option>
                                     </select>
+                                    <InputError message={errors.duration} className="mt-1 text-red-400" />
                                 </label>
                                 <label className="space-y-2 text-sm font-medium">
                                     <span>Car Type</span>
@@ -156,10 +204,13 @@ export default function ListingCreate() {
                                         onChange={(e) => setFormData({ ...formData, carType: e.target.value })}
                                     >
                                         <option value="">Select</option>
-                                        <option>Sedan</option>
-                                        <option>SUV</option>
-                                        <option>Luxury</option>
+                                        {carTypes.map((ct) => (
+                                            <option key={ct.id} value={ct.id}>
+                                                {ct.name}
+                                            </option>
+                                        ))}
                                     </select>
+                                    <InputError message={errors.carType} className="mt-1 text-red-400" />
                                 </label>
                                 <label className="space-y-2 text-sm font-medium">
                                     <span>Car Category</span>
@@ -168,10 +219,14 @@ export default function ListingCreate() {
                                         value={formData.category}
                                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                     >
-                                        <option>Car Wash</option>
-                                        <option>Detailing</option>
-                                        <option>Maintenance</option>
+                                        <option value="">Select</option>
+                                        {categories.map((c) => (
+                                            <option key={c.id} value={c.id}>
+                                                {c.name}
+                                            </option>
+                                        ))}
                                     </select>
+                                    <InputError message={errors.category} className="mt-1 text-red-400" />
                                 </label>
                             </div>
                         </div>
@@ -191,17 +246,22 @@ export default function ListingCreate() {
                                     value={formData.location}
                                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                 />
+                                <InputError message={errors.location} className="mt-1 text-red-400" />
                             </label>
-                            <label className="space-y-2 text-sm font-medium">
-                                <span>Features</span>
-                                <textarea
-                                    rows={5}
-                                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
-                                    placeholder="Hand wash, ceramic finish, premium products, lounge access..."
+                            <div className="space-y-2">
+                                <TipTapEditor
+                                    label="Features"
                                     value={formData.features}
-                                    onChange={(e) => setFormData({ ...formData, features: e.target.value })}
+                                    onChange={(html) => setFormData((prev) => ({ ...prev, features: html }))}
+                                    placeholder="Hand wash, ceramic finish, premium products, lounge access..."
+                                    variant="dark"
+                                    compact
+                                    minHeight={200}
+                                    maxLength={5000}
+                                    error={errors.features}
                                 />
-                            </label>
+                                <InputError message={errors.features} className="mt-1 text-red-400" />
+                            </div>
                             <label className="space-y-2 text-sm font-medium">
                                 <span>Base Price</span>
                                 <input
@@ -211,6 +271,7 @@ export default function ListingCreate() {
                                     value={formData.price}
                                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                                 />
+                                <InputError message={errors.price} className="mt-1 text-red-400" />
                             </label>
                         </div>
                     )}
@@ -250,9 +311,17 @@ export default function ListingCreate() {
                                         onChange={handleCoverChange}
                                     />
                                 </label>
+                                <InputError message={errors.image} className="mt-1 text-red-400" />
                             </div>
                             <div>
                                 <p className="text-sm font-medium">Gallery Images</p>
+                                <InputError
+                                    message={
+                                        errors.gallery_images ??
+                                        Object.entries(errors).find(([k]) => k.startsWith('gallery_images'))?.[1]
+                                    }
+                                    className="mt-1 text-red-400"
+                                />
                                 <div className="mt-4 flex flex-wrap gap-4">
                                     {galleryPreviews.length
                                         ? galleryPreviews.map((preview, index) => (

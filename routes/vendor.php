@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\Vendor\ForgetPassword;
 use App\Http\Controllers\Auth\Vendor\VendorAuthController;
 use App\Http\Controllers\Auth\Vendor\VendorOtpController;
 use App\Http\Controllers\Vendor\AccountController;
+use App\Http\Controllers\Vendor\ListingManagement\CategoryController;
+use App\Http\Controllers\Vendor\ListingManagement\ListingController;
 use App\Http\Controllers\Vendor\PaymentController;
 use App\Http\Controllers\Vendor\PerformanceController;
 use App\Http\Controllers\Vendor\VendorDashboardController;
@@ -31,8 +33,6 @@ Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function (
     Route::post('logout', [VendorAuthController::class, 'logout'])->name('logout');
     Route::get('dashboard', [VendorDashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('notification', [VendorDashboardController::class, 'notification'])->name('notification');
-    Route::get('listing', [VendorDashboardController::class, 'listing'])->name('listing');
-    Route::get('listing/create', [VendorDashboardController::class, 'listingCreate'])->name('listing.create');
     Route::get('orders', [VendorDashboardController::class, 'orders'])->name('orders');
     Route::get('order-candelled-details', [VendorDashboardController::class, 'orderCandelledDetails'])->name('order-candelled-details');
     Route::get('order-details', [VendorDashboardController::class, 'orderDetails'])->name('order-details');
@@ -40,4 +40,11 @@ Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function (
     Route::get('performance', [PerformanceController::class, 'index'])->name('performance');
     Route::get('account', [AccountController::class, 'index'])->name('account');
     Route::patch('account', [AccountController::class, 'update'])->name('account.update');
+
+    // Listing Management
+    Route::prefix('listing-management')->name('lm.')->group(function () {
+        Route::get('listing', [ListingController::class, 'index'])->name('listing');
+        Route::get('listing/create', [ListingController::class, 'create'])->name('listing.create');
+        Route::get('category', [CategoryController::class, 'index'])->name('category');
+    });
 });

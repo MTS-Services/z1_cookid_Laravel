@@ -16,10 +16,24 @@ const adminNavItems: NavItemType[] = [
         slug: "home",
     },
     {
-        title: "Listing",
-        href: route("vendor.listing"),
+        title: "Listing Management",
+        href: '#',
         icon: List,
         slug: "listing",
+        children: [
+            {
+                title: "Category",
+                href: '#',
+                icon: List,
+                slug: "category",
+            },
+            {
+                title: "Listing",
+                href: route("vendor.lm.listing"),
+                icon: List,
+                slug: "listing",
+            },
+        ],
     },
     {
         title: "Orders",

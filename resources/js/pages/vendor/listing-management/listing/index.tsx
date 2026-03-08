@@ -109,7 +109,7 @@ export default function Listing() {
                         className="flex items-center gap-2 bg-navy px-6 py-2 text-white"
                         // onClick={() => setIsWizardOpen(true)}
                     >
-                        <Link href={route('vendor.listing.create')}>
+                        <Link href={route('vendor.lm.listing.create')}>
                             New Listing
                             <span className="text-lg"> +</span>
                         </Link>

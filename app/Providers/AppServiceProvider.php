@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Auth\WhenIWorkUserProvider;
+use App\Models\Service;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -27,6 +29,12 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->registerAuthProviders();
+        $this->registerListingBinding();
+    }
+
+    protected function registerListingBinding(): void
+    {
+        Route::bind('listing', fn (string $value): Service => Service::findOrFail($value));
     }
 
     protected function registerAuthProviders(): void

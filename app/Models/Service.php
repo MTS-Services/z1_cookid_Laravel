@@ -17,6 +17,8 @@ class Service extends Model
         'description',
         'car_type_id',
         'duration',
+        'location',
+        'features',
         'price',
         'image',
         'average_rating',
@@ -30,6 +32,8 @@ class Service extends Model
         'deleter_id',
         'deleter_type',
     ];
+
+    protected $appends = ['image_url'];
 
     protected function casts(): array
     {
@@ -64,5 +68,17 @@ class Service extends Model
     public function inclusions(): HasMany
     {
         return $this->hasMany(ServiceInclusion::class);
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        if (! $this->image) {
+            return asset('no-user-image-icon.png');
+        }
+        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
+        }
+
+        return asset('storage/service_images/'.$this->image);
     }
 }

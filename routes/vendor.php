@@ -49,7 +49,7 @@ Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function (
             Route::post('store', 'store')->name('store');
             Route::get('{listing}', 'show')->name('show');
             Route::get('{listing}/edit', 'edit')->name('edit');
-            Route::patch('{listing}', 'update')->name('update');
+            Route::post('{listing}', 'update')->name('update');
             Route::delete('{listing}', 'destroy')->name('destroy');
         });
 

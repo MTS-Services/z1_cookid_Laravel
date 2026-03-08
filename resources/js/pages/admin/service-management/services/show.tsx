@@ -10,6 +10,7 @@ type ServiceStatus = 'active' | 'inactive';
 interface Vendor {
     id: number;
     shop_name: string;
+    avatar_url: string;
     address?: string;
     city?: string;
     region_state?: string;

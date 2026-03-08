@@ -1,4 +1,5 @@
-import { create, store } from '@/actions/App/Http/Controllers/Vendor/ListingManagement/ListingController'
+import TipTapEditor from '@/components/ui/tip-tap-editor'
+import { store } from '@/actions/App/Http/Controllers/Vendor/ListingManagement/ListingController'
 import { Button } from '@/components/ui/button'
 import InputError from '@/components/input-error'
 import VendorLayout from '@/layouts/vendor-layout'
@@ -247,17 +248,20 @@ export default function ListingCreate() {
                                 />
                                 <InputError message={errors.location} className="mt-1 text-red-400" />
                             </label>
-                            <label className="space-y-2 text-sm font-medium">
-                                <span>Features</span>
-                                <textarea
-                                    rows={5}
-                                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none"
-                                    placeholder="Hand wash, ceramic finish, premium products, lounge access..."
+                            <div className="space-y-2">
+                                <TipTapEditor
+                                    label="Features"
                                     value={formData.features}
-                                    onChange={(e) => setFormData({ ...formData, features: e.target.value })}
+                                    onChange={(html) => setFormData((prev) => ({ ...prev, features: html }))}
+                                    placeholder="Hand wash, ceramic finish, premium products, lounge access..."
+                                    variant="dark"
+                                    compact
+                                    minHeight={200}
+                                    maxLength={5000}
+                                    error={errors.features}
                                 />
                                 <InputError message={errors.features} className="mt-1 text-red-400" />
-                            </label>
+                            </div>
                             <label className="space-y-2 text-sm font-medium">
                                 <span>Base Price</span>
                                 <input

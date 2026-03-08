@@ -23,6 +23,8 @@ return new class extends Migration
             $table->text('description');
             $table->foreignId('car_type_id')->constrained('car_types')->cascadeOnDelete();
             $table->string('duration');
+            $table->string('location');
+            $table->longText('features')->nullable();
             $table->decimal('price', 10, 2);
             $table->string('image')->nullable();
             $table->decimal('average_rating', 3, 2)->nullable();

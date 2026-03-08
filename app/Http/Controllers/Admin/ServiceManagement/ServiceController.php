@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\ServiceManagement;
 
+use App\Enums\ActiveInactiveStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use App\Services\DataTableService;
@@ -16,16 +17,17 @@ class ServiceController extends Controller
 
     public function index(Request $request): Response
     {
-        $tab = $request->string('tab', 'requested')->toString();
+        $tab = $request->string('tab', 'all')->toString();
 
         $query = Service::query()
-            ->with('vendor')
-            ->when($tab === 'requested', fn ($q) => $q->where('status', 'requested'));
+            ->with(['vendor', 'category', 'carType'])
+            ->when($tab === 'active', fn ($q) => $q->where('status', ActiveInactiveStatus::ACTIVE))
+            ->when($tab === 'inactive', fn ($q) => $q->where('status', ActiveInactiveStatus::INACTIVE));
 
         $result = $this->dataTableService->process($query, $request, [
-            'searchable' => ['service_name', 'area', 'city', 'status'],
+            'searchable' => ['title', 'location', 'status'],
             'filterable' => ['status'],
-            'sortable' => ['id', 'service_name', 'price', 'status', 'created_at'],
+            'sortable' => ['id', 'title', 'price', 'status', 'created_at'],
         ]);
 
         return Inertia::render('admin/service-management/services/index', [
@@ -42,7 +44,7 @@ class ServiceController extends Controller
 
     public function show(Service $service): Response
     {
-        $service->load('vendor');
+        $service->load(['vendor', 'category', 'carType', 'images', 'inclusions']);
 
         return Inertia::render('admin/service-management/services/show', [
             'service' => $service,
@@ -52,18 +54,18 @@ class ServiceController extends Controller
     public function approve(Service $service): RedirectResponse
     {
         $service->update([
-            'status' => 'in_progress',
+            'status' => ActiveInactiveStatus::ACTIVE,
         ]);
 
-        return back()->with('success', 'Service request approved.');
+        return back()->with('success', 'Service activated.');
     }
 
     public function cancel(Service $service): RedirectResponse
     {
         $service->update([
-            'status' => 'cancelled',
+            'status' => ActiveInactiveStatus::INACTIVE,
         ]);
 
-        return back()->with('success', 'Service request cancelled.');
+        return back()->with('success', 'Service deactivated.');
     }
 }

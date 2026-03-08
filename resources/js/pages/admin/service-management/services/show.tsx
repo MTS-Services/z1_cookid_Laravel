@@ -5,7 +5,7 @@ import { Check, X } from 'lucide-react';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 
-type ServiceStatus = 'requested' | 'in_progress' | 'completed' | 'cancelled';
+type ServiceStatus = 'active' | 'inactive';
 
 interface Vendor {
     id: number;
@@ -17,18 +17,38 @@ interface Vendor {
     phone?: string;
 }
 
+interface ServiceImage {
+    id: number;
+    image: string;
+    sort_order: number;
+}
+
+interface ServiceInclusion {
+    id: number;
+    section_label?: string | null;
+    item: string;
+    sort_order: number;
+}
+
 interface Service {
     id: number;
-    service_name: string;
-    area: string;
-    city?: string;
+    title: string;
+    slug: string;
+    description: string;
+    location: string;
+    duration: string;
     price: number;
+    image?: string | null;
+    image_url?: string | null;
+    average_rating?: number | null;
+    total_reviews?: number;
     status: ServiceStatus | string;
-    short_description?: string | null;
-    description?: string | null;
-    hero_image?: string | null;
-    gallery_images?: unknown;
+    features?: string | null;
     vendor?: Vendor | null;
+    category?: { id: number; name: string } | null;
+    car_type?: { id: number; name: string } | null;
+    images?: ServiceImage[];
+    inclusions?: ServiceInclusion[];
 }
 
 interface Props {
@@ -44,18 +64,19 @@ export default function ServiceShowPage({ service }: Props) {
 
     const location = locationParts.join(', ');
 
-    const canModerate = service.status === 'requested';
+    const canActivate = service.status === 'inactive';
+    const canDeactivate = service.status === 'active';
 
-    const handleApprove = () => {
-        if (confirm('Approve this service request?')) {
+    const handleActivate = () => {
+        if (confirm('Activate this service?')) {
             router.visit(route('admin.sm.services.approve', service.id), {
                 method: 'post',
             });
         }
     };
 
-    const handleCancel = () => {
-        if (confirm('Cancel this service request?')) {
+    const handleDeactivate = () => {
+        if (confirm('Deactivate this service?')) {
             router.visit(route('admin.sm.services.cancel', service.id), {
                 method: 'post',
             });
@@ -63,33 +84,23 @@ export default function ServiceShowPage({ service }: Props) {
     };
 
     const heroImage =
-        service.hero_image ||
+        service.image_url ||
         'https://images.pexels.com/photos/4870705/pexels-photo-4870705.jpeg?auto=compress&cs=tinysrgb&w=1600';
 
-    const rawGallery = service.gallery_images;
-
-    let galleryImages: string[] = [];
-
-    if (Array.isArray(rawGallery)) {
-        galleryImages = rawGallery.filter((item): item is string => typeof item === 'string' && item.length > 0);
-    } else if (typeof rawGallery === 'string' && rawGallery.length > 0) {
-        galleryImages = [rawGallery];
-    }
-
-    if (galleryImages.length === 0) {
-        galleryImages = [
-            heroImage,
-            'https://images.pexels.com/photos/4870709/pexels-photo-4870709.jpeg?auto=compress&cs=tinysrgb&w=1600',
-        ];
-    }
+    const galleryImages =
+        (service.images?.length ?? 0) > 0
+            ? service.images!.map((img) =>
+                  img.image.startsWith('http') ? img.image : `/storage/service_images/${img.image}`,
+              )
+            : [heroImage];
 
     return (
         <AdminLayout activeSlug="service-management">
-            <Head title={`${service.service_name} - Service Details`} />
+            <Head title={`${service.title} - Service Details`} />
 
             <div className="space-y-6">
                 {/* Vendor header block */}
-                <section className="p-5">
+                <section className="p-5 flex justify-between">
                     <div className="flex flex-col gap-2 text-sm text-gray-200">
                         <div className="h-24 w-24 overflow-hidden rounded-full ring-2 ring-white/5">
                             <img
@@ -113,6 +124,15 @@ export default function ServiceShowPage({ service }: Props) {
                             </p>
                         )}
                     </div>
+                    <div>
+                        <Button
+                            type="button"
+                            onClick={() => router.get('/admin/service-management/services')}
+                            className="flex items-center justify-center gap-2 rounded-full bg-navy px-6 py-2 text-sm font-medium text-white hover:bg-navy disabled:cursor-not-allowed disabled:bg-navy/80"
+                        >
+                            Back
+                        </Button>
+                    </div>
                 </section>
 
                 {/* Main service details card */}
@@ -120,7 +140,7 @@ export default function ServiceShowPage({ service }: Props) {
                     <div>
                         <h1 className="text-lg font-semibold text-white">Service Details</h1>
                         <p className="mt-1 text-sm text-text-mute-foreground">
-                            {service.service_name}
+                            {service.title}
                         </p>
                     </div>
 
@@ -129,7 +149,7 @@ export default function ServiceShowPage({ service }: Props) {
                         <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
                             <img
                                 src={heroImage}
-                                alt={service.service_name}
+                                alt={service.title}
                                 className="h-full w-full object-cover rounded-md"
                             />
                             <div className="flex flex-col gap-2">
@@ -137,7 +157,7 @@ export default function ServiceShowPage({ service }: Props) {
                                     <img
                                         key={index}
                                         src={src}
-                                        alt={`${service.service_name} ${index + 1}`}
+                                        alt={`${service.title} ${index + 1}`}
                                         className="h-full w-full object-cover rounded-md"
                                     />
                                 ))}
@@ -147,29 +167,54 @@ export default function ServiceShowPage({ service }: Props) {
 
                     {/* Tags row */}
                     <div className="flex flex-wrap gap-6">
-                        <div className="space-y-1">
-                            <p className="text-xs uppercase tracking-wide text-text-mute-foreground">
-                                Service
-                            </p>
-                            <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white">
-                                WASH
-                            </span>
-                        </div>
+                        {service.category && (
+                            <div className="space-y-1">
+                                <p className="text-xs uppercase tracking-wide text-text-mute-foreground">
+                                    Category
+                                </p>
+                                <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white">
+                                    {service.category.name}
+                                </span>
+                            </div>
+                        )}
+                        {service.car_type && (
+                            <div className="space-y-1">
+                                <p className="text-xs uppercase tracking-wide text-text-mute-foreground">
+                                    Car Type
+                                </p>
+                                <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white">
+                                    {service.car_type.name}
+                                </span>
+                            </div>
+                        )}
                         <div className="space-y-1">
                             <p className="text-xs uppercase tracking-wide text-text-mute-foreground">
                                 Location
                             </p>
                             <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white">
-                                {[service.area, service.city].filter(Boolean).join(', ') || 'Downtown'}
+                                {service.location || '—'}
+                            </span>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-xs uppercase tracking-wide text-text-mute-foreground">
+                                Duration
+                            </p>
+                            <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white">
+                                {service.duration || '—'}
+                            </span>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-xs uppercase tracking-wide text-text-mute-foreground">
+                                Price
+                            </p>
+                            <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white">
+                                ${Number(service.price).toFixed(2)}
                             </span>
                         </div>
                     </div>
 
                     {/* Description */}
                     <div className="space-y-3 text-sm leading-relaxed text-gray-200">
-                        <h2 className="text-base font-semibold text-white">
-                            {service.short_description || 'Showcase Properties from a New Perspective'}
-                        </h2>
                         {service.description && (
                             <p className="text-text-mute-foreground whitespace-pre-line">
                                 {service.description}
@@ -177,24 +222,41 @@ export default function ServiceShowPage({ service }: Props) {
                         )}
                     </div>
 
+                    {/* Inclusions */}
+                    {service.inclusions && service.inclusions.length > 0 && (
+                        <div className="space-y-3">
+                            <h2 className="text-base font-semibold text-white">Inclusions</h2>
+                            <ul className="list-inside list-disc space-y-1 text-text-mute-foreground">
+                                {service.inclusions
+                                    .sort((a, b) => a.sort_order - b.sort_order)
+                                    .map((inc) => (
+                                        <li key={inc.id}>
+                                            {inc.section_label ? `${inc.section_label}: ` : ''}
+                                            {inc.item}
+                                        </li>
+                                    ))}
+                            </ul>
+                        </div>
+                    )}
+
                     {/* Actions aligned to bottom */}
                     <div className="flex flex-wrap gap-3 pt-2">
                         <Button
                             type="button"
-                            disabled={!canModerate}
-                            onClick={handleApprove}
-                            className="flex items-center justify-center gap-2 rounded-full bg-navy px-6 py-2 text-sm font-medium text-white hover:bg-navy disabled:cursor-not-allowed disabled:bg-navy/40"
+                            disabled={!canActivate}
+                            onClick={handleActivate}
+                            className="flex items-center justify-center gap-2 rounded-full bg-navy px-6 py-2 text-sm font-medium text-white hover:bg-navy disabled:cursor-not-allowed disabled:bg-navy/80"
                         >
-                            Approved
+                            Activate
                         </Button>
                         <Button
                             type="button"
-                            disabled={!canModerate}
+                            disabled={!canDeactivate}
                             variant="outline"
-                            onClick={handleCancel}
-                            className="flex items-center justify-center gap-2 rounded-full border-gray-500/70 bg-transparent px-6 py-2 text-sm font-medium text-gray-200 hover:bg-white/5 disabled:cursor-not-allowed disabled:border-gray-700/40 disabled:text-gray-500"
+                            onClick={handleDeactivate}
+                            className="flex items-center justify-center gap-2 rounded-full border-gray-500/70 bg-transparent px-6 py-2 text-sm font-medium text-gray-200 hover:bg-white/5 disabled:cursor-not-allowed disabled:border-text-border/80 disabled:text-gray-200"
                         >
-                            Canceled
+                            Deactivate
                         </Button>
                     </div>
                 </section>

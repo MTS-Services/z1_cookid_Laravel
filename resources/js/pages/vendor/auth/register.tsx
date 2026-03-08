@@ -191,7 +191,7 @@ const VendorRegisterPage: FC = () => {
                                     <Label htmlFor="government_issue_license" className="text-xs text-gray-400">
                                         Government Issue License*
                                     </Label>
-                                    <FileUpload
+                                    <FileUpload className='bg-accent/50 rounded-lg'
                                         value={data.government_issue_license}
                                         onChange={(file) =>
                                             setData('government_issue_license', file as File | null)

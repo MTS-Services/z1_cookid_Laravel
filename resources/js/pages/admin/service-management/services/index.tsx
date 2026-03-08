@@ -8,7 +8,7 @@ import { useDataTable } from '@/hooks/use-data-table';
 import type { PaginationData, ColumnConfig, FilterConfig } from '@/types/data-table.types';
 import { Button } from '@/components/ui/button';
 
-type ServiceStatus = 'requested' | 'in_progress' | 'completed' | 'cancelled';
+type ServiceStatus = 'active' | 'inactive';
 
 interface Vendor {
     id: number;
@@ -17,11 +17,12 @@ interface Vendor {
 
 interface Service extends Record<string, unknown> {
     id: number;
-    service_name: string;
-    area: string;
-    city?: string;
+    title: string;
+    slug: string;
+    location: string;
     price: number;
     status: ServiceStatus | string;
+    image_url?: string | null;
     created_at?: string;
     vendor?: Vendor;
 }
@@ -38,27 +39,25 @@ interface Props {
 }
 
 const statusLabel: Record<ServiceStatus, string> = {
-    requested: 'Requested',
-    in_progress: 'In Progress',
-    completed: 'Completed',
-    cancelled: 'Cancelled',
+    active: 'Active',
+    inactive: 'Inactive',
 };
 
 const statusClassName: Record<ServiceStatus, string> = {
-    requested: 'bg-amber-500/15 text-amber-300 border-amber-500/40',
-    in_progress: 'bg-sky-500/15 text-sky-300 border-sky-500/40',
-    completed: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40',
-    cancelled: 'bg-rose-500/15 text-rose-300 border-rose-500/40',
+    active: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40',
+    inactive: 'bg-rose-500/15 text-rose-300 border-rose-500/40',
 };
 
 const TABS = [
-    { key: 'requested', label: 'Requested Service' },
-    { key: 'all', label: 'All Service List' },
+    { key: 'inactive', label: 'Requested Services' },
+    { key: 'all', label: 'All Services List' },
+    { key: 'active', label: 'Active Services List' },
 ] as const;
 
 const TAB_TITLES: Record<string, string> = {
-    requested: 'Requested Service',
-    all: 'All Service List',
+    all: 'All Services List',
+    active: 'Active Services List',
+    inactive: 'Requested Services',
 };
 
 export default function ServiceManagementIndex({
@@ -84,21 +83,19 @@ export default function ServiceManagementIndex({
 
     const columns: ColumnConfig<Service>[] = [
         {
-            key: 'service_name',
+            key: 'title',
             label: 'Service Name',
             sortable: true,
             render: (service) => (
-                <span className="font-medium text-gray-100">{service.service_name}</span>
+                <span className="font-medium text-gray-100">{service.title}</span>
             ),
         },
         {
-            key: 'area',
-            label: 'Area',
+            key: 'location',
+            label: 'Location',
             sortable: true,
             render: (service) => (
-                <span className="text-gray-300">
-                    {[service.area, service.city].filter(Boolean).join(', ')}
-                </span>
+                <span className="text-gray-300">{service.location ?? '—'}</span>
             ),
         },
         {
@@ -121,7 +118,7 @@ export default function ServiceManagementIndex({
             label: 'Status',
             sortable: true,
             render: (service) => {
-                const key = (service.status as ServiceStatus) || 'requested';
+                const key = (service.status as ServiceStatus) || 'inactive';
                 const label = statusLabel[key] ?? service.status;
                 const classes = statusClassName[key] ?? 'bg-white/5 text-white border-white/10';
 
@@ -142,41 +139,43 @@ export default function ServiceManagementIndex({
             label: 'Actions',
             render: (service) => (
                 <div className="flex justify-end gap-2">
-                    {service.status === 'requested' && (
-                        <>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    if (confirm('Cancel this service request?')) {
-                                        router.visit(route('admin.sm.services.cancel', service.id), {
-                                            method: 'post',
-                                        });
-                                    }
-                                }}
-                                className="rounded-full bg-white/5 px-3 py-1.5 text-xs font-medium text-gray-200 hover:bg-white/10"
-                            >
-                                <span className="inline-flex items-center gap-1">
-                                    <X className="h-3 w-3" />
-                                    Cancel
-                                </span>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    if (confirm('Approve this service request?')) {
-                                        router.visit(route('admin.sm.services.approve', service.id), {
-                                            method: 'post',
-                                        });
-                                    }
-                                }}
-                                className="rounded-full bg-navy px-3 py-1.5 text-xs font-medium text-white hover:bg-navy"
-                            >
-                                <span className="inline-flex items-center gap-1">
-                                    <Check className="h-3 w-3" />
-                                    Approve
-                                </span>
-                            </button>
-                        </>
+                    {service.status === 'inactive' && (
+                        <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => {
+                                if (confirm('Activate this service?')) {
+                                    router.visit(route('admin.sm.services.approve', service.id), {
+                                        method: 'post',
+                                    });
+                                }
+                            }}
+                            className="rounded-full cursor-pointer"
+                        >
+                            <span className="inline-flex items-center gap-1">
+                                <Check className="h-3 w-3" />
+                                Activate
+                            </span>
+                        </Button>
+                    )}
+                    {service.status === 'active' && (
+                        <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                                if (confirm('Deactivate this service?')) {
+                                    router.visit(route('admin.sm.services.cancel', service.id), {
+                                        method: 'post',
+                                    });
+                                }
+                            }}
+                            className="rounded-full cursor-pointer"
+                        >
+                            <span className="inline-flex items-center gap-1">
+                                <X className="h-3 w-3" />
+                                Deactivate
+                            </span>
+                        </Button>
                     )}
                     <Link href={route('admin.sm.services.show', service.id)}>
                         <Button
@@ -200,10 +199,8 @@ export default function ServiceManagementIndex({
             label: 'Status',
             placeholder: 'Filter by status',
             options: [
-                { label: 'Requested', value: 'requested' },
-                { label: 'In Progress', value: 'in_progress' },
-                { label: 'Completed', value: 'completed' },
-                { label: 'Cancelled', value: 'cancelled' },
+                { label: 'Active', value: 'active' },
+                { label: 'Inactive', value: 'inactive' },
             ],
         },
     ];
@@ -258,7 +255,7 @@ export default function ServiceManagementIndex({
                         sortOrder={sortOrder}
                         isLoading={isLoading}
                         emptyMessage="No services found"
-                        searchPlaceholder="Search by service, area, or vendor"
+                        searchPlaceholder="Search by title, location, or vendor"
                     />
                 </div>
             </div>

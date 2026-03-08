@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Vendor\ListingManagement;
 
+use App\Enums\ActiveInactiveStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Vendor\ListingManagement\ListingRequest;
 use App\Models\CarType;
@@ -65,8 +66,8 @@ class ListingController extends Controller
 
     public function create(): Response
     {
-        $categories = Category::where('status', 'active')->orderBy('name')->get(['id', 'name']);
-        $carTypes = CarType::where('status', 'active')->orderBy('name')->get(['id', 'name']);
+        $categories = Category::where('status', ActiveInactiveStatus::ACTIVE->value)->orderBy('name')->get(['id', 'name']);
+        $carTypes = CarType::where('status', ActiveInactiveStatus::ACTIVE->value)->orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('vendor/listing-management/listing/create', [
             'categories' => $categories,
@@ -108,8 +109,8 @@ class ListingController extends Controller
         $this->authorizeVendorOwns($listing);
 
         $listing->load('category', 'carType', 'images');
-        $categories = Category::where('status', 'active')->orderBy('name')->get(['id', 'name']);
-        $carTypes = CarType::where('status', 'active')->orderBy('name')->get(['id', 'name']);
+        $categories = Category::where('status', ActiveInactiveStatus::ACTIVE->value)->orderBy('name')->get(['id', 'name']);
+        $carTypes = CarType::where('status', ActiveInactiveStatus::ACTIVE->value)->orderBy('name')->get(['id', 'name']);
 
         $gallery = $listing->images->sortBy('sort_order')->values()->map(function (ServiceImage $img) {
             return [
@@ -197,7 +198,7 @@ class ListingController extends Controller
             'location' => $v['location'],
             'features' => $v['features'] ?? null,
             'price' => (float) $v['price'],
-            'status' => $v['status'] ?? 'active',
+            'status' => $v['status'] ?? ActiveInactiveStatus::ACTIVE->value,
         ];
     }
 

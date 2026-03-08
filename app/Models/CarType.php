@@ -12,7 +12,7 @@ class CarType extends Model
         'name',
         'slug',
         'status',
-        
+
         'creater_id',
         'creater_type',
         'updater_id',
@@ -37,4 +37,5 @@ class CarType extends Model
     {
         return $this->morphTo('updater');
     }
+
 }

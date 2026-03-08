@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\Vendor\ForgetPassword;
 use App\Http\Controllers\Auth\Vendor\VendorAuthController;
 use App\Http\Controllers\Auth\Vendor\VendorOtpController;
 use App\Http\Controllers\Vendor\AccountController;
+use App\Http\Controllers\Vendor\ListingManagement\CarTypeController;
 use App\Http\Controllers\Vendor\ListingManagement\CategoryController;
 use App\Http\Controllers\Vendor\ListingManagement\ListingController;
 use App\Http\Controllers\Vendor\PaymentController;
@@ -61,6 +62,16 @@ Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function (
                 Route::post('/', 'store')->name('store');
                 Route::post('{category}', 'update')->name('update');
                 Route::delete('{category}', 'destroy')->name('destroy');
+            });
+
+        Route::controller(CarTypeController::class)
+            ->prefix('car-type')
+            ->name('car-type.')
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/', 'store')->name('store');
+                Route::post('{carType}', 'update')->name('update');
+                Route::delete('{carType}', 'destroy')->name('destroy');
             });
     });
 });

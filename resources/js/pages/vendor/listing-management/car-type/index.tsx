@@ -17,86 +17,43 @@ import {
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import FileUpload from '@/components/file-upload';
 import { toast } from 'sonner';
 
-type CategoryStatus = 'active' | 'inactive';
+type CarTypeStatus = 'active' | 'inactive';
 
-interface Category extends Record<string, unknown> {
+interface CarType extends Record<string, unknown> {
   id: number;
   name: string;
   slug: string;
-  image?: string | null;
-  image_url?: string | null;
-  status: CategoryStatus;
+  status: CarTypeStatus;
   created_at: string;
 }
 
-interface ExistingUploadFile {
-  id: number | string;
-  path: string;
-  url: string;
-  mime_type: string;
-  name?: string;
-}
-
-interface CategoryPageProps {
-  categories: Category[];
+interface CarTypePageProps {
+  carTypes: CarType[];
   pagination: PaginationData;
   offset: number;
   filters: Record<string, string | number>;
   search: string;
   sortBy: string;
   sortOrder: 'asc' | 'desc';
-  statuses: { label: string; value: CategoryStatus }[];
+  statuses: { label: string; value: CarTypeStatus }[];
 }
 
-type CategoryFormData = {
+type CarTypeFormData = {
   id: number | null;
   name: string;
-  status: CategoryStatus;
-  image: File | null;
-  remove_image: boolean;
+  status: CarTypeStatus;
 };
 
-const defaultFormValues: CategoryFormData = {
+const defaultFormValues: CarTypeFormData = {
   id: null,
   name: '',
   status: 'active',
-  image: null,
-  remove_image: false,
 };
 
-const resolveImageUrl = (image?: string | null): string => {
-  if (!image) {
-    return '/no-image.png';
-  }
-
-  if (image.startsWith('http') || image.startsWith('/')) {
-    return image;
-  }
-
-  return `/storage/${image}`;
-};
-
-const buildExistingImage = (category: Category): ExistingUploadFile[] => {
-  if (!category.image) {
-    return [];
-  }
-
-  return [
-    {
-      id: `category-image-${category.id}`,
-      path: category.image,
-      url: resolveImageUrl(category.image_url),
-      mime_type: 'image/*',
-      name: category.name,
-    },
-  ];
-};
-
-export default function CategoryIndex({
-  categories,
+export default function CarTypeIndex({
+  carTypes,
   pagination,
   offset,
   filters,
@@ -104,39 +61,26 @@ export default function CategoryIndex({
   sortBy,
   sortOrder,
   statuses,
-}: CategoryPageProps) {
+}: CarTypePageProps) {
   const { isLoading, handleSearch, handleFilterChange, handleSort, handlePerPageChange, handlePageChange } = useDataTable({
-    only: ['categories', 'pagination', 'offset', 'filters', 'search', 'sortBy', 'sortOrder', 'statuses'],
+    only: ['carTypes', 'pagination', 'offset', 'filters', 'search', 'sortBy', 'sortOrder', 'statuses'],
   });
 
-  const form = useForm<CategoryFormData>({ ...defaultFormValues });
-
+  const form = useForm<CarTypeFormData>({ ...defaultFormValues });
   const { data, setData, post, processing, errors, reset } = form;
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [existingFiles, setExistingFiles] = useState<ExistingUploadFile[]>([]);
-  const [currentCategoryId, setCurrentCategoryId] = useState<number | null>(null);
-  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [currentCarTypeId, setCurrentCarTypeId] = useState<number | null>(null);
+  const [carTypeToDelete, setCarTypeToDelete] = useState<CarType | null>(null);
 
-  const columns: ColumnConfig<Category>[] = useMemo(
+  const columns: ColumnConfig<CarType>[] = useMemo(
     () => [
-      {
-        key: 'image',
-        label: 'Image',
-        render: (item) => (
-          <img src={resolveImageUrl(item.image_url)} alt={item.name} className="h-16 w-16 rounded-full object-cover" />
-        ),
-      },
       {
         key: 'name',
         label: 'Name',
         sortable: true,
-        render: (item) => (
-          <div>
-            <p className="font-semibold">{item.name}</p>
-          </div>
-        ),
+        render: (item) => <span className="font-semibold">{item.name}</span>,
       },
       {
         key: 'status',
@@ -144,8 +88,9 @@ export default function CategoryIndex({
         sortable: true,
         render: (item) => (
           <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${item.status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-800'
-              }`}
+            className={`px-2 py-1 rounded-full text-xs font-medium ${
+              item.status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-800'
+            }`}
           >
             {item.status}
           </span>
@@ -179,19 +124,16 @@ export default function CategoryIndex({
 
   const resetForm = () => {
     reset();
-    setExistingFiles([]);
-    setCurrentCategoryId(null);
+    setCurrentCarTypeId(null);
     setData(() => ({ ...defaultFormValues }));
   };
 
-  const populateForm = (category: Category | null) => {
-    if (category) {
+  const populateForm = (carType: CarType | null) => {
+    if (carType) {
       setData(() => ({
-        id: category.id,
-        name: category.name,
-        status: category.status,
-        image: null,
-        remove_image: false,
+        id: carType.id,
+        name: carType.name,
+        status: carType.status,
       }));
     } else {
       setData(() => ({ ...defaultFormValues }));
@@ -203,10 +145,9 @@ export default function CategoryIndex({
     setIsFormOpen(true);
   };
 
-  const openEdit = (category: Category) => {
-    setCurrentCategoryId(category.id);
-    populateForm(category);
-    setExistingFiles(buildExistingImage(category));
+  const openEdit = (carType: CarType) => {
+    setCurrentCarTypeId(carType.id);
+    populateForm(carType);
     setIsFormOpen(true);
   };
 
@@ -215,68 +156,57 @@ export default function CategoryIndex({
     resetForm();
   };
 
-  const handleDelete = (category: Category) => {
-    setCategoryToDelete(category);
+  const handleDelete = (carType: CarType) => {
+    setCarTypeToDelete(carType);
     setIsDeleteOpen(true);
   };
 
-  const submitCategory = () => {
-    const url = currentCategoryId
-      ? route('vendor.lm.category.update', currentCategoryId)
-      : route('vendor.lm.category.store');
+  const submitCarType = () => {
+    const url = currentCarTypeId
+      ? route('vendor.lm.car-type.update', currentCarTypeId)
+      : route('vendor.lm.car-type.store');
 
     post(url, {
       method: 'post',
       preserveScroll: true,
-      forceFormData: true,
       onSuccess: () => {
         closeForm();
-        setExistingFiles([]);
-        toast.success('Category saved successfully');
+        toast.success('Car type saved successfully');
       },
     });
   };
 
   const confirmDelete = () => {
-    if (!categoryToDelete) {
+    if (!carTypeToDelete) {
       return;
     }
 
-    router.delete(route('vendor.lm.category.destroy', categoryToDelete.id), {
+    router.delete(route('vendor.lm.car-type.destroy', carTypeToDelete.id), {
       preserveScroll: true,
       onSuccess: () => {
         setIsDeleteOpen(false);
-        setCategoryToDelete(null);
+        setCarTypeToDelete(null);
       },
     });
   };
 
-  const handleImageChange = (file: File | File[] | null) => {
-    setData('image', (file as File) ?? null);
-    setData('remove_image', false);
-  };
-
-  const handleRemoveExistingImage = () => {
-    setExistingFiles([]);
-    setData('remove_image', true);
-  };
-
   return (
-    <VendorLayout activeSlug="category">
-      <Head title="Category Management" />
+    <VendorLayout activeSlug="car-type">
+      <Head title="Car Type Management" />
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold">Categories</h1>
-          <p className="text-muted-foreground">Manage your service categories</p>
+          <h1 className="text-2xl font-semibold">Car Types</h1>
+          <p className="text-muted-foreground">Manage the car types your services support</p>
         </div>
         <Button onClick={openCreate}>
           <Plus className="mr-2 h-4 w-4" />
-          New Category
+          New Car Type
         </Button>
       </div>
-      <DataTable<Category>
-        data={categories}
+
+      <DataTable<CarType>
+        data={carTypes}
         columns={columns}
         pagination={pagination}
         offset={offset}
@@ -298,8 +228,8 @@ export default function CategoryIndex({
         sortBy={sortBy}
         sortOrder={sortOrder}
         isLoading={isLoading}
-        emptyMessage="No categories found"
-        searchPlaceholder="Search categories"
+        emptyMessage="No car types found"
+        searchPlaceholder="Search car types"
       />
 
       <Dialog
@@ -314,7 +244,7 @@ export default function CategoryIndex({
       >
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-white">{currentCategoryId ? 'Edit Category' : 'Create Category'}</DialogTitle>
+            <DialogTitle className="text-white">{currentCarTypeId ? 'Edit Car Type' : 'Create Car Type'}</DialogTitle>
           </DialogHeader>
 
           <FieldGroup>
@@ -327,22 +257,9 @@ export default function CategoryIndex({
             </Field>
 
             <Field>
-              <FieldLabel className="text-white">Image</FieldLabel>
-              <FileUpload
-                value={data.image}
-                onChange={handleImageChange}
-                existingFiles={existingFiles}
-                onRemoveExisting={handleRemoveExistingImage}
-                accept="image/*"
-                maxSize={10}
-              />
-              <FieldError errors={errors.image ? [{ message: errors.image }] : undefined} className="mt-2" />
-            </Field>
-
-            <Field>
               <FieldLabel className="text-white">Status</FieldLabel>
               <FieldContent className="text-white">
-                <Select value={data.status} onValueChange={(value) => setData('status', value as CategoryStatus)}>
+                <Select value={data.status} onValueChange={(value) => setData('status', value as CarTypeStatus)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
@@ -363,8 +280,8 @@ export default function CategoryIndex({
             <Button variant="outline" onClick={closeForm}>
               Cancel
             </Button>
-            <Button onClick={submitCategory} disabled={processing}>
-              {processing ? 'Saving...' : currentCategoryId ? 'Update' : 'Create'}
+            <Button onClick={submitCarType} disabled={processing}>
+              {processing ? 'Saving...' : currentCarTypeId ? 'Update' : 'Create'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -375,7 +292,7 @@ export default function CategoryIndex({
         onOpenChange={(open) => {
           if (!open) {
             setIsDeleteOpen(false);
-            setCategoryToDelete(null);
+            setCarTypeToDelete(null);
           } else {
             setIsDeleteOpen(true);
           }
@@ -383,17 +300,17 @@ export default function CategoryIndex({
       >
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-white">Delete Category</DialogTitle>
+            <DialogTitle className="text-white">Delete Car Type</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-white">
-            Are you sure you want to delete "{categoryToDelete?.name}"? This action cannot be undone.
+            Are you sure you want to delete "{carTypeToDelete?.name}"? This action cannot be undone.
           </p>
           <DialogFooter>
             <Button
               variant="outline"
               onClick={() => {
                 setIsDeleteOpen(false);
-                setCategoryToDelete(null);
+                setCarTypeToDelete(null);
               }}
             >
               Cancel

@@ -10,7 +10,20 @@ import { BookingsSection } from '@/components/section/profile/booking'
 import { WishlistSection } from '@/components/section/profile/wishlist'
 import { router } from '@inertiajs/react'
 
-export default function Index() {
+export interface WishlistItem {
+    id: number
+    serviceId: number
+    name: string
+    image: string
+    address: string
+    price: number
+}
+
+interface ProfilePageProps {
+    wishlist: WishlistItem[]
+}
+
+export default function Index({ wishlist = [] }: ProfilePageProps) {
     const [section, setSection] = useState<'bookings' | 'wishlist' | 'account'>('bookings')
     const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -58,7 +71,7 @@ export default function Index() {
 
                     <main ref={scrollRef} className="space-y-10">
                         {section === 'bookings' && <BookingsSection />}
-                        {section === 'wishlist' && <WishlistSection />}
+                        {section === 'wishlist' && <WishlistSection wishlist={wishlist} />}
                         {section === 'account' && <AccountSection />}
                     </main>
                 </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Heart, User, Menu, X } from "lucide-react";
+import { Heart, User, Menu, X, UserIcon, User2 } from "lucide-react";
 import {
   FaTwitter,
   FaFacebookF,
@@ -8,7 +8,8 @@ import {
   FaYoutube,
   FaRedditAlien,
 } from "react-icons/fa";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
+import { SharedData } from "@/types";
 
 interface Props {
   activePage?: string;
@@ -17,6 +18,8 @@ interface Props {
 
 function FrontendHeader({ activePage, subPage }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { auth } = usePage<SharedData>().props;
+  const isLoggedIn = auth.user !== null;
 
   const linkClass = (routeName: string) =>
     `block py-2 text-lg transition-colors ${route().current(routeName)
@@ -89,20 +92,19 @@ function FrontendHeader({ activePage, subPage }: Props) {
 
           {/* Desktop Right Side */}
           <div className="hidden md:flex items-center gap-5">
-            <Link href="#" className="text-gray-300 hover:text-white">
+            <Link href={route("user.profile")} className="text-white hover:text-white">
               <Heart size={20} />
-            </Link>
+              </Link>
 
-            <Link href={route("user.auth.login")} className="text-gray-300 hover:text-white">
-              <User size={20} />
-            </Link>
-
-            <Link
-              href={route("vendor.auth.register")}
-              className="bg-navy hover:bg-navy/80 text-white px-5 py-3 rounded-md text-sm font-medium"
-            >
-              Become a Provider
-            </Link>
+            {isLoggedIn ? (
+              <Link href={route("user.profile")} className="text-white hover:text-white">
+                <User2 className="text-white fill-current" size={20} />
+              </Link>
+            ) : (
+              <Link href={route("user.auth.login")} className="text-gray-300 hover:text-white">
+                <User size={20} />
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}

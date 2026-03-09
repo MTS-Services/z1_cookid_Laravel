@@ -1,8 +1,9 @@
 // components/PremiumCarDetailingCard.tsx
-import { Star, MapPin } from 'lucide-react';
+import { Star, MapPin, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Link } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import type { ServiceDetailsPayload } from './details';
+import { toast } from 'sonner';
 
 interface PremiumCarDetailingCardProps {
     service: ServiceDetailsPayload;
@@ -26,8 +27,22 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export default function PremiumCarDetailingCard({ service }: PremiumCarDetailingCardProps) {
+    const pageProps = usePage().props as { auth?: { user?: { id: number } | null } };
+    const isLoggedIn = Boolean(pageProps.auth?.user);
     const categoryLabel = service.categoryName ?? 'Service';
     const vehicleLabel = service.vehicleTypeName ?? '—';
+    const inWishlist = Boolean(service.inWishlist);
+    const wishlistId = service.wishlistId ?? null;
+
+    const handleWishlistToggle = () => {
+        if (inWishlist && wishlistId != null) {
+            toast.error('Removed from Wishlist');
+            router.delete(route('user.wishlist.destroy', wishlistId));
+        } else {
+            toast.success('Added to Wishlist');
+            router.post(route('user.wishlist.store'), { service_id: service.id });
+        }
+    };
 
     return (
         <div className="w-full lg:p-6 text-white shadow-2xl">
@@ -101,14 +116,30 @@ export default function PremiumCarDetailingCard({ service }: PremiumCarDetailing
                             Book Now
                         </Button>
                     </Link>
-                    <Link href="#" className="flex-1">
+                    {isLoggedIn ? (
                         <Button
+                            type="button"
                             variant="outline"
-                            className="w-full flex-1 bg-bg-gray border-none text-text-white"
+                            className="flex-1 bg-bg-gray border-none text-text-white"
+                            onClick={handleWishlistToggle}
                         >
-                            Add To Wishlist
+                            <Heart
+                                size={18}
+                                className={inWishlist ? 'fill-current text-red-400' : ''}
+                            />
+                            {inWishlist ? 'Remove from Wishlist' : 'Add To Wishlist'}
                         </Button>
-                    </Link>
+                    ) : (
+                        <Link href={route('user.auth.login')} className="flex-1">
+                            <Button
+                                variant="outline"
+                                className="w-full flex-1 bg-bg-gray border-none text-text-white"
+                            >
+                                <Heart size={18} />
+                                Add To Wishlist
+                            </Button>
+                        </Link>
+                    )}
                 </div>
             </div>
 

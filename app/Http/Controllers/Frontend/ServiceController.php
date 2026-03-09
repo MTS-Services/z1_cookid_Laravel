@@ -123,7 +123,7 @@ class ServiceController extends Controller
         ]);
     }
 
-    public function show(int $id): Response
+    public function show(Request $request, int $id): Response
     {
         $service = Service::query()
             ->with(['category', 'carType', 'vendor', 'images' => fn ($q) => $q->orderBy('sort_order'), 'inclusions' => fn ($q) => $q->orderBy('sort_order')])
@@ -151,6 +151,10 @@ class ServiceController extends Controller
             ->values()
             ->all();
 
+        $wishlistEntry = $request->user()?->wishlists()
+            ->where('service_id', $service->id)
+            ->first();
+
         $serviceData = [
             'id' => $service->id,
             'title' => $service->title,
@@ -171,6 +175,8 @@ class ServiceController extends Controller
                 'name' => $service->vendor?->shop_name ?? $service->vendor?->first_name.' '.$service->vendor?->last_name ?? 'Vendor',
                 'location' => $service->location ?? null,
             ],
+            'inWishlist' => $wishlistEntry !== null,
+            'wishlistId' => $wishlistEntry?->id,
         ];
 
         return Inertia::render('frontend/service-details', [

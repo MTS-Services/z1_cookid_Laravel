@@ -30,6 +30,8 @@ export interface ServiceDetailsPayload {
   /** Structured "What's Included" sections from ServiceInclusion */
   inclusions: { label: string; items: string[] }[];
   vendor: { name: string; location: string | null };
+  inWishlist?: boolean;
+  wishlistId?: number | null;
 }
 
 interface DetailsProps {

@@ -29,6 +29,7 @@ class OrderController extends Controller
                 'price' => (float) $service->price,
             ],
             'summary' => [
+                'id' => Crypt::encryptString($service->id),
                 'service' => $service->title,
                 'price' => (float) $service->price,
             ],

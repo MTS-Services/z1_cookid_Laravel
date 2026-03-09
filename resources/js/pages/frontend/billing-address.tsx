@@ -19,6 +19,7 @@ type Address = {
 type BillingAddressProps = {
   address?: Address | null;
   summary: {
+    id: string;
     service: string;
     price: number;
   };
@@ -27,6 +28,7 @@ type BillingAddressProps = {
 
 export default function BillingAddress({ address, summary, supportPhone }: BillingAddressProps) {
   const { data, setData, post, processing, errors } = useForm({
+    service_id: summary.id,
     first_name: address?.first_name ?? '',
     last_name: address?.last_name ?? '',
     email: address?.email ?? '',
@@ -56,6 +58,7 @@ export default function BillingAddress({ address, summary, supportPhone }: Billi
 
                 <div className="mt-8 space-y-6">
                   <div className="grid gap-5 md:grid-cols-2">
+                    <Input type="hidden" name="service_id" value={summary.id} />
                     <div className="grid gap-2">
                       <Label htmlFor="first_name">First name*</Label>
                       <Input

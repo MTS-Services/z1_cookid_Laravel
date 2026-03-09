@@ -3,133 +3,31 @@ import { Search, MapPin, ChevronDown, Filter, X } from 'lucide-react';
 import ServiceCard from '@/components/ui/service-card';
 import FilterSection from '@/components/ui/filter-section';
 import PriceRange from '@/components/ui/price-range';
+import Pagination from '@/components/ui/pagination';
 import { router } from '@inertiajs/react';
+import { Paginated, Service, ServiceFilters, ServiceOptions } from '@/types/model';
 
-const INITIAL_SERVICES = [
-    {
-        id: 1,
-        image: '/assets/images/service/EliteAutoSpa.png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        category: 'Full Detailing',
-        location: 'Downtown',
-        vehicleType: 'SUV',
-        price: 120,
-        service: 'DETAILING'
-    },
-    {
-        id: 2,
-        image: '/assets/images/service/Frame 2147225286 (1).png',
-        name: 'Quick Clean Pro',
-        rating: 4.9,
-        category: 'Car Wash',
-        location: 'Westside',
-        vehicleType: 'Sedan',
-        price: 45,
-        service: 'WASH'
-    },
-    {
-        id: 3,
-        image: '/assets/images/service/acf994a9fb4b2987dc25a22e5d14deef32175a6f.jpg',
-        name: 'Elite Automotive Detailers',
-        rating: 4.9,
-        category: 'Tinting',
-        location: 'San Francisco',
-        vehicleType: 'Luxury',
-        price: 180,
-        service: 'TINT'
-    },
+interface ServiceMarketplaceProps {
+    services: Paginated<Service>;
+    filters: ServiceFilters;
+    options: ServiceOptions;
+}
 
-    // Repeated rows (like your screenshot grid)
-    {
-        id: 4,
-        image: '/assets/images/service/EliteAutoSpa.png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        category: 'Full Detailing',
-        location: 'Downtown',
-        vehicleType: 'SUV',
-        price: 120,
-        service: 'DETAILING'
-    },
-    {
-        id: 5,
-        image: '/assets/images/service/Frame 2147225286 (1).png',
-        name: 'Quick Clean Pro',
-        rating: 4.9,
-        category: 'Car Wash',
-        location: 'Westside',
-        vehicleType: 'Sedan',
-        price: 45,
-        service: 'WASH'
-    },
-    {
-        id: 6,
-        image: '/assets/images/service/acf994a9fb4b2987dc25a22e5d14deef32175a6f.jpg',
-        name: 'Elite Automotive Detailers',
-        rating: 4.9,
-        category: 'Tinting',
-        location: 'San Francisco',
-        vehicleType: 'Luxury',
-        price: 180,
-        service: 'TINT'
-    },
-
-    {
-        id: 7,
-        image: '/assets/images/service/EliteAutoSpa.png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        category: 'Full Detailing',
-        location: 'Downtown',
-        vehicleType: 'SUV',
-        price: 120,
-        service: 'DETAILING'
-    },
-    {
-        id: 8,
-        image: '/assets/images/service/Frame 2147225286 (1).png',
-        name: 'Quick Clean Pro',
-        rating: 4.9,
-        category: 'Car Wash',
-        location: 'Westside',
-        vehicleType: 'Sedan',
-        price: 45,
-        service: 'WASH'
-    },
-    {
-        id: 9,
-        image: '/assets/images/service/acf994a9fb4b2987dc25a22e5d14deef32175a6f.jpg',
-        name: 'Elite Automotive Detailers',
-        rating: 4.9,
-        category: 'Tinting',
-        location: 'San Francisco',
-        vehicleType: 'Luxury',
-        price: 180,
-        service: 'TINT'
-    }
-];
-
-
-const ServiceMarketplace = () => {
-    // Dropdown/Mobile Visibility States
+const ServiceMarketplace = ({ services, filters, options }: ServiceMarketplaceProps) => {
     const [isServiceOpen, setIsServiceOpen] = useState(false);
     const [isVehicleOpen, setIsVehicleOpen] = useState(false);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile Filter Toggle
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [locationInput, setLocationInput] = useState(filters.location ?? '');
 
-    // Filter Selection States
-    const [selectedService, setSelectedService] = useState('Select Service');
-    const [selectedVehicle, setSelectedVehicle] = useState('Vehicle Type');
-    const [searchLocation, setSearchLocation] = useState('');
-    const [sidebarCategory, setSidebarCategory] = useState('All');
-    const [sidebarLocation, setSidebarLocation] = useState('All');
-    const [activePrice, setActivePrice] = useState("All Price");
-
-    const searchBarRef = useRef(null);
+    const searchBarRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (searchBarRef.current && !searchBarRef.current.contains(event.target)) {
+        setLocationInput(filters.location ?? '');
+    }, [filters.location]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node)) {
                 setIsServiceOpen(false);
                 setIsVehicleOpen(false);
             }
@@ -138,26 +36,100 @@ const ServiceMarketplace = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const filteredServices = useMemo(() => {
-        return INITIAL_SERVICES.filter((item) => {
-            const matchesServiceDrop = selectedService === 'Select Service' || item.category === selectedService;
-            const matchesVehicleDrop = selectedVehicle === 'Vehicle Type' || item.vehicleType === selectedVehicle;
-            const matchesSearchLoc = item.location.toLowerCase().includes(searchLocation.toLowerCase());
-            const matchesSidebarCat = sidebarCategory === 'All' || item.category === sidebarCategory;
-            const matchesSidebarLoc = sidebarLocation === 'All' || item.location === sidebarLocation;
-            return matchesServiceDrop && matchesVehicleDrop && matchesSearchLoc && matchesSidebarCat && matchesSidebarLoc;
-        });
-    }, [selectedService, selectedVehicle, searchLocation, sidebarCategory, sidebarLocation]);
+    const serviceData = services?.data ?? [];
+    const pagination = services?.meta ?? {
+        current_page: 1,
+        last_page: 1,
+        per_page: serviceData.length,
+        total: serviceData.length,
+        from: serviceData.length ? 1 : null,
+        to: serviceData.length || null,
+    };
 
-    const priceOptions = [
-        { label: "All Price", min: 0, max: 10000 },
-        { label: "Under $20", min: 0, max: 20 },
-        { label: "$25 to $100", min: 25, max: 100 },
-        { label: "$100 to $300", min: 100, max: 300 },
-        { label: "$300 to $500", min: 300, max: 500 },
-        { label: "$500 to $1,000", min: 500, max: 1000 },
-        { label: "$1,000 to $10,000", min: 1000, max: 10000 },
-    ];
+    const sidebarCategoryOptions = useMemo(
+        () => [{ label: 'All', value: null }, ...options.categories],
+        [options.categories]
+    );
+
+    const sidebarLocationOptions = useMemo(
+        () => [
+            { label: 'All', value: null },
+            ...options.locations.map((location) => ({ label: location, value: location })),
+        ],
+        [options.locations]
+    );
+
+    const priceOptions = useMemo(() => (
+        options.priceRanges.length > 0
+            ? options.priceRanges
+            : [{ label: 'All Price', min: options.priceBounds.min, max: options.priceBounds.max }]
+    ), [options.priceRanges, options.priceBounds]);
+
+    const categoryDropdownLabel = filters.category
+        ? options.categories.find((option) => option.value === filters.category)?.label ?? 'Select Service'
+        : 'Select Service';
+
+    const vehicleDropdownLabel = filters.vehicleType != null
+        ? options.vehicleTypes.find((option) => Number(option.value) === Number(filters.vehicleType))?.label ?? 'Vehicle Type'
+        : 'Vehicle Type';
+
+    const activePriceLabel = useMemo(() => {
+        const min = filters.minPrice ?? options.priceBounds.min;
+        const max = filters.maxPrice ?? options.priceBounds.max;
+        const match = priceOptions.find((option) => option.min === min && option.max === max);
+        return match?.label ?? 'All Price';
+    }, [filters.minPrice, filters.maxPrice, priceOptions, options.priceBounds.min, options.priceBounds.max]);
+
+    const buildQuery = (overrideFilters: Partial<ServiceFilters>, page?: number) => {
+        const merged: ServiceFilters = { ...filters, ...overrideFilters };
+        const query: Record<string, string | number> = {};
+
+        if (merged.search && merged.search.trim() !== '') {
+            query.search = merged.search.trim();
+        }
+        if (merged.category) {
+            query.category = merged.category;
+        }
+        if (merged.vehicleType != null) {
+            query.vehicle_type = merged.vehicleType;
+        }
+        if (merged.location && merged.location.trim() !== '') {
+            query.location = merged.location.trim();
+        }
+        if (merged.minPrice != null) {
+            query.min_price = merged.minPrice;
+        }
+        if (merged.maxPrice != null) {
+            query.max_price = merged.maxPrice;
+        }
+        if (page && page > 1) {
+            query.page = page;
+        }
+
+        return query;
+    };
+
+    const navigateWithFilters = (overrideFilters: Partial<ServiceFilters> = {}, page?: number) => {
+        router.get(route('frontend.services'), buildQuery(overrideFilters, page), {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
+
+    const handleLocationSearch = () => {
+        navigateWithFilters({ location: locationInput || null }, 1);
+    };
+
+    const handleCategorySelect = (value: string | number | null) => {
+        setIsServiceOpen(false);
+        navigateWithFilters({ category: value ? String(value) : null }, 1);
+    };
+
+    const handleVehicleSelect = (value: string | number | null) => {
+        setIsVehicleOpen(false);
+        navigateWithFilters({ vehicleType: value ? Number(value) : null }, 1);
+    };
 
     return (
         <div className="bg-[#0A0A0A] min-h-screen text-white font-poppins lg:pb-20">
@@ -177,13 +149,19 @@ const ServiceMarketplace = () => {
                                 onClick={() => { setIsServiceOpen(!isServiceOpen); setIsVehicleOpen(false); }}
                                 className="w-full flex items-center justify-between px-4 py-4 bg-[#1A1A1A] md:bg-[#1A1A1A] border border-gray-700 md:rounded-l-lg hover:border-gray-500 transition"
                             >
-                                <span className="text-gray-300 text-sm truncate">{selectedService}</span>
+                                <span className="text-gray-300 text-sm truncate">{categoryDropdownLabel}</span>
                                 <ChevronDown size={18} className={`text-gray-400 transition-transform ${isServiceOpen ? "rotate-180" : ""}`} />
                             </button>
                             {isServiceOpen && (
                                 <ul className="absolute left-0 top-full mt-1 w-full bg-[#1A1A1A] border border-gray-700 rounded-md shadow-2xl z-50 overflow-hidden">
-                                    {["Select Service", "Car Wash", "Full Detailing", "Tinting"].map((s) => (
-                                        <li key={s} onClick={() => { setSelectedService(s); setIsServiceOpen(false); }} className="px-4 py-3 text-sm text-gray-300 hover:bg-navy cursor-pointer">{s}</li>
+                                    {[{ label: 'Select Service', value: null }, ...options.categories].map((option) => (
+                                        <li
+                                            key={`${option.label}-${option.value ?? 'all'}`}
+                                            onClick={() => handleCategorySelect(option.value)}
+                                            className="px-4 py-3 text-sm text-gray-300 hover:bg-navy cursor-pointer"
+                                        >
+                                            {option.label}
+                                        </li>
                                     ))}
                                 </ul>
                             )}
@@ -195,13 +173,19 @@ const ServiceMarketplace = () => {
                                 onClick={() => { setIsVehicleOpen(!isVehicleOpen); setIsServiceOpen(false); }}
                                 className="w-full flex items-center justify-between px-4 py-4 bg-[#1A1A1A] border border-gray-700 md:border-l-0 hover:border-gray-500 transition"
                             >
-                                <span className="text-gray-300 text-sm truncate">{selectedVehicle}</span>
+                                <span className="text-gray-300 text-sm truncate">{vehicleDropdownLabel}</span>
                                 <ChevronDown size={18} className={`text-gray-400 transition-transform ${isVehicleOpen ? "rotate-180" : ""}`} />
                             </button>
                             {isVehicleOpen && (
                                 <ul className="absolute left-0 top-full mt-1 w-full bg-[#1A1A1A] border border-gray-700 rounded-md shadow-2xl z-50 overflow-hidden">
-                                    {["Vehicle Type", "Sedan", "SUV", "Luxury"].map((v) => (
-                                        <li key={v} onClick={() => { setSelectedVehicle(v); setIsVehicleOpen(false); }} className="px-4 py-3 text-sm text-gray-300 hover:bg-navy cursor-pointer">{v}</li>
+                                    {[{ label: 'Vehicle Type', value: null }, ...options.vehicleTypes].map((option) => (
+                                        <li
+                                            key={`${option.label}-${option.value ?? 'all'}`}
+                                            onClick={() => handleVehicleSelect(option.value)}
+                                            className="px-4 py-3 text-sm text-gray-300 hover:bg-navy cursor-pointer"
+                                        >
+                                            {option.label}
+                                        </li>
                                     ))}
                                 </ul>
                             )}
@@ -214,15 +198,19 @@ const ServiceMarketplace = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter Your Location"
-                                    value={searchLocation}
-                                    onChange={(e) => setSearchLocation(e.target.value)}
+                                    value={locationInput}
+                                    onChange={(e) => setLocationInput(e.target.value)}
                                     className="bg-transparent text-gray-200 placeholder-gray-500 w-full py-4 outline-none text-sm"
                                 />
                             </div>
-                            <button className="bg-black hover:bg-bg-gray text-white px-6 py-2.5 rounded-md m-1.5 transition flex items-center gap-2 text-sm font-bold cursor-pointer">
+                            <button
+                                onClick={handleLocationSearch}
+                                className="bg-black hover:bg-bg-gray text-white px-6 py-2.5 rounded-md m-1.5 transition flex items-center gap-2 text-sm font-bold cursor-pointer"
+                            >
                                 <Search size={18} />
                                 <span className="hidden sm:inline">Search</span>
                             </button>
+
                         </div>
                     </div>
 
@@ -254,24 +242,30 @@ const ServiceMarketplace = () => {
                     <div className="space-y-8 h-full overflow-y-auto pb-20 md:pb-0">
                         <FilterSection
                             title="Category"
-                            items={['All', 'Car Wash', 'Full Detailing', 'Paint & Protection', 'Interior Care', 'Tinting']}
-                            active={sidebarCategory}
-                            onChange={(val) => { setSidebarCategory(val); if (window.innerWidth < 768) setIsSidebarOpen(false); }}
+                            items={sidebarCategoryOptions}
+                            active={filters.category ?? null}
+                            onChange={(value) => {
+                                navigateWithFilters({ category: value ? String(value) : null }, 1);
+                                if (window.innerWidth < 768) setIsSidebarOpen(false);
+                            }}
                         />
 
                         <FilterSection
                             title="Location"
-                            items={['All', 'Downtown', 'Westside', 'North Hills', 'San Francisco']}
-                            active={sidebarLocation}
-                            onChange={(val) => { setSidebarLocation(val); if (window.innerWidth < 768) setIsSidebarOpen(false); }}
+                            items={sidebarLocationOptions}
+                            active={filters.location ?? null}
+                            onChange={(value) => {
+                                navigateWithFilters({ location: value ? String(value) : null }, 1);
+                                if (window.innerWidth < 768) setIsSidebarOpen(false);
+                            }}
                         />
 
                         <PriceRange
                             options={priceOptions}
-                            active={activePrice}
+                            active={activePriceLabel}
                             onChange={(option) => {
-                                setActivePrice(option.label);
-                                // router logic here...
+                                navigateWithFilters({ minPrice: option.min, maxPrice: option.max }, 1);
+                                if (window.innerWidth < 768) setIsSidebarOpen(false);
                             }}
                         />
 
@@ -292,10 +286,10 @@ const ServiceMarketplace = () => {
                 </aside>
 
                 {/* Results Grid */}
-                <main className="flex-1">
-                    {filteredServices.length > 0 ? (
+                <main className="flex-1 space-y-10">
+                    {serviceData.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredServices.map((item) => (
+                            {serviceData.map((item) => (
                                 <ServiceCard key={item.id} {...item} />
                             ))}
                         </div>
@@ -304,12 +298,26 @@ const ServiceMarketplace = () => {
                             <Search size={48} className="mb-4 opacity-20" />
                             <p className="text-xl">No services match your criteria.</p>
                             <button
-                                onClick={() => { setSelectedService('Select Service'); setSelectedVehicle('Vehicle Type'); setSearchLocation(''); setSidebarCategory('All'); setSidebarLocation('All'); }}
+                                onClick={() => navigateWithFilters({
+                                    category: null,
+                                    vehicleType: null,
+                                    location: null,
+                                    minPrice: options.priceBounds.min,
+                                    maxPrice: options.priceBounds.max,
+                                }, 1)}
                                 className="mt-4 text-navy hover:underline"
                             >
                                 Reset all filters
                             </button>
                         </div>
+                    )}
+
+                    {pagination.last_page > 1 && (
+                        <Pagination
+                            currentPage={pagination.current_page}
+                            totalPages={pagination.last_page}
+                            onPageChange={(page) => navigateWithFilters({}, page)}
+                        />
                     )}
                 </main>
             </div>

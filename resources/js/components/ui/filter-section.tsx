@@ -1,11 +1,18 @@
-interface Filter{
-    title: string;
-    items: string[];
-    active: string;
-    onChange: (item: string) => void;
+type FilterValue = string | number | null;
+
+interface FilterOption {
+    label: string;
+    value: FilterValue;
 }
 
-export default function FilterSection({ title, items, active, onChange }: Filter) {
+interface FilterProps {
+    title?: string;
+    items: FilterOption[];
+    active: FilterValue;
+    onChange: (value: FilterValue, option: FilterOption) => void;
+}
+
+export default function FilterSection({ title, items, active, onChange }: FilterProps) {
     return (
         <div className="mb-8">
             {title && (
@@ -13,13 +20,14 @@ export default function FilterSection({ title, items, active, onChange }: Filter
             )}
 
             <ul className="space-y-3">
-                {items.map((item: string) => {
-                    const isActive = item === active;
+                {items.map((item) => {
+                    const option = typeof item === 'string' ? { label: item, value: item } : item;
+                    const isActive = option.value === active || (option.value === null && (active === null || active === undefined));
 
                     return (
                         <li
-                            key={item}
-                            onClick={() => onChange(item)}
+                            key={`${option.label}-${option.value ?? 'all'}`}
+                            onClick={() => onChange(option.value, option)}
                             className="flex items-center gap-4 cursor-pointer"
                         >
                             {/* Outer Circle */}
@@ -48,7 +56,7 @@ export default function FilterSection({ title, items, active, onChange }: Filter
                                         : 'text-white'
                                     }`}
                             >
-                                {item}
+                                {option.label}
                             </span>
                         </li>
                     );

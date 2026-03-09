@@ -3,7 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\Order;
+use App\Models\OrderAddress;
+use App\Models\Service;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class OrderSeeder extends Seeder
 {
@@ -12,25 +16,44 @@ class OrderSeeder extends Seeder
      */
     public function run(): void
     {
-        // Data based on your UI image
-        $orderData = [
-            'order_number' => '#6548-225568',
-            'service_name' => 'Elite Auto Spa',
-            'vendor_name' => 'Maktech Store',
-            'price' => 100.00,
-            'commission' => 7.00,
-            'vendor_earning' => 93.00,
-            'status' => 'active',
-        ];
+        $user = User::query()->first();
+        $service = Service::query()->first();
 
-        // Creating 7 identical records to match your "Showing 1 to 7 results" footer
-        for ($i = 0; $i < 7; $i++) {
-            // Note: If you made order_number 'unique' in the migration,
-            // you might want to append the index to avoid errors:
-            $currentOrder = $orderData;
-            $currentOrder['order_number'] = '#6548-22556'.$i;
+        $address = OrderAddress::query()->create([
+            'user_id' => $user?->id,
+            'first_name' => $user?->first_name ?? 'John',
+            'last_name' => $user?->last_name ?? 'Doe',
+            'email' => $user?->email ?? 'john.doe@example.com',
+            'phone' => $user?->phone ?? '1234567890',
+            'address' => '123 Test Street',
+            'state' => 'Test State',
+            'city' => 'Test City',
+            'zip_code' => '12345',
+        ]);
 
-            Order::create($currentOrder);
+        $baseAmount = 100.00;
+
+        for ($i = 1; $i <= 7; $i++) {
+            $subtotal = $baseAmount;
+            $discount = 0;
+            $total = $subtotal - $discount;
+
+            Order::create([
+                'order_number' => sprintf('#ORD-%06d', $i),
+                'user_id' => $user?->id,
+                'service_id' => $service?->id,
+                'address_id' => $address->id,
+                'payment_method' => 'stripe',
+                'scheduled_at' => Carbon::now()->addDays($i),
+                'notes' => 'Sample order #' . $i,
+                'subtotal' => $subtotal,
+                'discount' => $discount,
+                'total' => $total,
+                'status' => 'active',
+                'cancelled_reason' => null,
+                'cancelled_by' => null,
+                'completed_at' => null,
+            ]);
         }
     }
 }

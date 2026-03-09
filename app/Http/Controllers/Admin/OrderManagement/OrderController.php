@@ -21,13 +21,13 @@ class OrderController extends Controller
         if ($tab === 'requested') {
             $query->where('status', 'pending');
         } elseif ($tab === 'active') {
-            $query->where('status', 'in_progress');
+            $query->where('status', 'active');
         }
 
-        $result = $this->dataTableService->process($query, $request, [
-            'searchable' => ['order_number', 'service_name', 'vendor_name', 'status'],
+        $result = $this->dataTableService->process($query->with(['user', 'service', 'address']), $request, [
+            'searchable' => ['order_number', 'notes', 'status'],
             'filterable' => ['status'],
-            'sortable' => ['id', 'order_number', 'price', 'status', 'created_at'],
+            'sortable' => ['id', 'order_number', 'total', 'status', 'created_at'],
         ]);
 
         return Inertia::render('admin/order-management/orders/index', [

@@ -1,31 +1,58 @@
-export interface ExternalListingSubmission {
+
+
+export interface Service {
     id: number;
-    user_id: number;
     name: string;
-    email: string;
-    external_link: string;
-    created_at: string;
-    updated_at: string;
+    image: string;
+    rating: number;
+    location: string;
+    price: number;
+    service: string;
+    category?: string | null;
+    vehicleType?: string | null;
 }
 
+export interface ServiceFilters {
+    search?: string;
+    category?: string | null;
+    vehicleType?: number | null;
+    location?: string | null;
+    minPrice?: number | null;
+    maxPrice?: number | null;
+}
 
-export interface Listing {
-    id: number
-    user_id: number
-    city_id: number
-    title: string
-    description: string | null
-    purchase_price: number | null
-    listing_status: string
-    property_type: string
-    bedrooms: number
-    bathrooms: number
-    square_feet: number
-    primary_image_url: string | null
-    image_url: string[]
-    status: string
-    created_at: string
-    updated_at: string
-    galleries?: ListingGallery[]
-    [key: string]: unknown;
+export interface FilterOptionItem {
+    label: string;
+    value: string | number;
+}
+
+export interface PriceRangeOption {
+    label: string;
+    min: number;
+    max: number;
+}
+
+export interface ServiceOptions {
+    categories: FilterOptionItem[];
+    vehicleTypes: FilterOptionItem[];
+    locations: string[];
+    priceRanges: PriceRangeOption[];
+    priceBounds: {
+        min: number;
+        max: number;
+    };
+}
+
+export interface PaginationMeta {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    from: number | null;
+    to: number | null;
+}
+
+export interface Paginated<T> {
+    data: T[];
+    meta: PaginationMeta;
 }

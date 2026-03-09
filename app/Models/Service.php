@@ -73,7 +73,8 @@ class Service extends Model
     public function getImageUrlAttribute(): ?string
     {
         if (! $this->image) {
-            return asset('no-user-image-icon.png');
+            $image = "https://placehold.co/600x400?text=" . urlencode($this->title);
+            return $image;
         }
         if (filter_var($this->image, FILTER_VALIDATE_URL)) {
             return $this->image;

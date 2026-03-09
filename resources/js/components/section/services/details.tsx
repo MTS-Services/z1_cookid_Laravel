@@ -13,6 +13,7 @@ import CustomerFeedbackSection from './curstomer-feedback-section';
 
 export interface ServiceDetailsPayload {
   id: number;
+  encryptedId: string;
   title: string;
   slug: string;
   description: string;

@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Service;
 use App\Models\ServiceImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -126,7 +127,7 @@ class ServiceController extends Controller
     public function show(Request $request, int $id): Response
     {
         $service = Service::query()
-            ->with(['category', 'carType', 'vendor', 'images' => fn ($q) => $q->orderBy('sort_order'), 'inclusions' => fn ($q) => $q->orderBy('sort_order')])
+            ->with(['category', 'carType', 'vendor', 'images'])
             ->where('status', ActiveInactiveStatus::ACTIVE)
             ->find($id);
 
@@ -142,21 +143,13 @@ class ServiceController extends Controller
                 'alt' => $service->title,
             ])->values()->all();
 
-        $inclusionsBySection = $service->inclusions
-            ->groupBy('section_label')
-            ->map(fn ($items, $label) => [
-                'label' => $label ?: 'Included',
-                'items' => $items->pluck('item')->values()->all(),
-            ])
-            ->values()
-            ->all();
-
         $wishlistEntry = $request->user()?->wishlists()
             ->where('service_id', $service->id)
             ->first();
 
         $serviceData = [
             'id' => $service->id,
+            'encryptedId' => Crypt::encryptString((string) $service->id),
             'title' => $service->title,
             'slug' => $service->slug,
             'description' => $service->description,
@@ -170,7 +163,6 @@ class ServiceController extends Controller
             'vehicleTypeName' => $service->carType?->name,
             'image' => $service->image_url,
             'images' => $images,
-            'inclusions' => $inclusionsBySection,
             'vendor' => [
                 'name' => $service->vendor?->shop_name ?? $service->vendor?->first_name.' '.$service->vendor?->last_name ?? 'Vendor',
                 'location' => $service->location ?? null,

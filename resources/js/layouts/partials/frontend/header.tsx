@@ -94,7 +94,7 @@ function FrontendHeader({ activePage, subPage }: Props) {
           <div className="hidden md:flex items-center gap-5">
             <Link href={route("user.profile")} className="text-white hover:text-white">
               <Heart size={20} />
-              </Link>
+            </Link>
 
             {isLoggedIn ? (
               <Link href={route("user.profile")} className="text-white hover:text-white">
@@ -105,6 +105,12 @@ function FrontendHeader({ activePage, subPage }: Props) {
                 <User size={20} />
               </Link>
             )}
+            <Link
+              href={route("vendor.auth.register")}
+              className="bg-navy hover:bg-navy/80 text-white px-5 py-3 rounded-md text-sm font-medium"
+            >
+              Become a Provider
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}

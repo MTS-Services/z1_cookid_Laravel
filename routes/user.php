@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\User\OrderController;
 use App\Http\Controllers\Auth\User\ForgetPassword;
 use App\Http\Controllers\Auth\User\UserAuthController;
 use App\Http\Controllers\Auth\User\UserOtpController;
@@ -41,5 +42,9 @@ Route::middleware(['auth'])->prefix('account')->name('user.')->group(function ()
     Route::controller(WishlistController::class)->prefix('wishlist')->name('wishlist.')->group(function () {
         Route::post('/', 'store')->name('store');
         Route::delete('/{wishlist}', 'destroy')->name('destroy');
+    });
+    Route::controller(OrderController::class)->prefix('order')->name('order.')->group(function () {
+        Route::get('/billing-address/{service_id}', 'billingAddress')->name('billing-address');
+        Route::post('/billing-address', 'billingAddressStore')->name('billing-address.store');
     });
 });

@@ -11,9 +11,35 @@ use Inertia\Inertia;
 
 class ProfileController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Inertia::render('user/profile/index');
+        $user = $request->user();
+        $wishlist = $user->wishlists()
+            ->with(['service' => fn ($q) => $q->with('category')])
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function ($w) {
+                $s = $w->service;
+                if (! $s) {
+                    return null;
+                }
+
+                return [
+                    'id' => $w->id,
+                    'serviceId' => $s->id,
+                    'name' => $s->title,
+                    'image' => $s->image_url,
+                    'address' => $s->location ?? '—',
+                    'price' => (float) $s->price,
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
+
+        return Inertia::render('user/profile/index', [
+            'wishlist' => $wishlist,
+        ]);
     }
     public function profileUpdate(Request $request): RedirectResponse
     {

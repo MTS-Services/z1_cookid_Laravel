@@ -1,11 +1,15 @@
-import Details from '@/components/section/services/details'
+import Details, { type ServiceDetailsPayload } from '@/components/section/services/details'
 import FrontendLayout from '@/layouts/frontend-layout'
 import React from 'react'
 
-export default function ServiceDetails() {
+interface ServiceDetailsPageProps {
+  service: ServiceDetailsPayload
+}
+
+export default function ServiceDetails({ service }: ServiceDetailsPageProps) {
   return (
     <FrontendLayout activePage="service-details">
-      <Details />
+      <Details service={service} />
     </FrontendLayout>
   )
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ActiveInactiveStatus;
 use App\Enums\OtpPurpose;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -74,5 +75,15 @@ class User extends Authenticatable
     public function getFullNameAttribute()
     {
         return $this->first_name . ' ' . $this->last_name;
+    }
+
+    public function wishlists(): HasMany
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    public function orderAddresses(): HasMany
+    {
+        return $this->hasMany(OrderAddress::class);
     }
 }

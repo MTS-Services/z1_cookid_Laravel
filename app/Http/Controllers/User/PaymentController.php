@@ -231,13 +231,6 @@ class PaymentController extends Controller
         }
 
         $accessToken = $tokenResponse->json('access_token');
-        // $captureResponse = Http::withToken($accessToken)
-        //     ->withHeaders([
-        //         'Content-Type' => 'application/json',
-        //         'Prefer' => 'return=representation',
-        //     ])
-        //     // PayPal requires a JSON body (can be empty object)
-        //     ->post($baseUrl . '/v2/checkout/orders/' . $token . '/capture', []);
 
         $captureResponse = Http::withToken($accessToken)
             ->asJson()

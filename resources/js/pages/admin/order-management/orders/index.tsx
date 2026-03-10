@@ -252,23 +252,23 @@ export default function AdminOrdersIndex({
                 );
             },
         },
-        {
-            key: 'actions',
-            label: 'Actions',
-            render: (order) => (
-                <div className="flex justify-end">
-                    <Button
-                        type="button"
-                        size="sm"
-                        className="h-9 rounded bg-navy px-4 text-xs font-medium text-white hover:bg-navy"
-                    >
-                        <span>View booking</span>
-                        <ArrowRight className="ml-2 h-3 w-3" />
-                    </Button>
-                </div>
-            ),
-            className: 'text-right',
-        },
+        // {
+        //     key: 'actions',
+        //     label: 'Actions',
+        //     render: (order) => (
+        //         <div className="flex justify-end">
+        //             <Button
+        //                 type="button"
+        //                 size="sm"
+        //                 className="h-9 rounded bg-navy px-4 text-xs font-medium text-white hover:bg-navy"
+        //             >
+        //                 <span>View booking</span>
+        //                 <ArrowRight className="ml-2 h-3 w-3" />
+        //             </Button>
+        //         </div>
+        //     ),
+        //     className: 'text-right',
+        // },
     ];
 
     const filterConfig: FilterConfig[] = [

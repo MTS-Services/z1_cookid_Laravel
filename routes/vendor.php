@@ -74,8 +74,8 @@ Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function (
     });
     Route::controller(OrderController::class)->prefix('order')->name('order.')->group(function () {
         Route::get('/', 'index')->name('index');
-        Route::get('{order}', 'orderDetails')->name('details');
-        Route::get('{order}/candelled', 'orderCandelledDetails')->name('candelled-details');
-        Route::patch('{order}/status', 'updateStatus')->name('update-status');
+        Route::get('/details/{order}', 'orderDetails')->name('details');
+        Route::get('/details/candelled/{order}', 'orderCandelledDetails')->name('candelled-details');
+        Route::patch('/details/status/{order}', 'updateStatus')->name('update-status');
     });
 });

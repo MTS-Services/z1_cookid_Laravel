@@ -387,7 +387,7 @@ export default function Orders() {
                                 onPageChange={(page) => {
                                     setCurrentPage(page)
                                     router.get(
-                                        route('vendor.orders'),
+                                        route('vendor.order.index'),
                                         { type: statusFilter, page },
                                         {
                                             preserveState: true,

@@ -1,21 +1,17 @@
 import { Button } from '@/components/ui/button'
+import { CardContent } from '@/components/ui/card'
+import { DataTable } from '@/components/ui/data-table'
 import Pagination from '@/components/ui/pagination'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import VendorLayout from '@/layouts/vendor-layout'
 import { cn } from '@/lib/utils'
-import { Link, router } from '@inertiajs/react'
+import { Link, router, usePage } from '@inertiajs/react'
 import { CheckCircle2, Clock, Copy, XCircle } from 'lucide-react'
 import { useState } from 'react'
+import { useDataTable } from '@/hooks/use-data-table'
+import type { PaginationData, ColumnConfig, FilterConfig } from '@/types/data-table.types'
 
-type OrderStatus = 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled'
+type OrderStatus = 'pending' | 'confirmed' | 'inprogress' | 'completed' | 'cancelled'
 
 interface Order {
     id: string
@@ -27,62 +23,17 @@ interface Order {
     amount: number
 }
 
-const mockOrders: Order[] = [
-    {
-        id: '#ORD-1',
-        reference: '051114075922',
-        customerName: 'Guy Hawkins',
-        service: 'Elite Auto Spa',
-        date: '10/6/2025',
-        status: 'pending',
-        amount: 120,
-    },
-    {
-        id: '#ORD-2',
-        reference: '051114075922',
-        customerName: 'Jacob Jones',
-        service: 'Quick Clean Pro',
-        date: '10/6/2025',
-        status: 'completed',
-        amount: 45,
-    },
-    {
-        id: '#ORD-3',
-        reference: '051114075922',
-        customerName: 'Devon Lane',
-        service: 'Master Tint & Wrap',
-        date: '10/6/2025',
-        status: 'in_progress',
-        amount: 180,
-    },
-    {
-        id: '#ORD-4',
-        reference: '051114075922',
-        customerName: 'Albert Flores',
-        service: 'Elite Automotive Detailers',
-        date: '10/6/2025',
-        status: 'pending',
-        amount: 120,
-    },
-    {
-        id: '#ORD-5',
-        reference: '051114075922',
-        customerName: 'Bessie Cooper',
-        service: 'Quick Clean Pro',
-        date: '10/6/2025',
-        status: 'confirmed',
-        amount: 45,
-    },
-    {
-        id: '#ORD-6',
-        reference: '051114075922',
-        customerName: 'Leslie Alexander',
-        service: 'Elite Auto Spa',
-        date: '10/6/2025',
-        status: 'cancelled',
-        amount: 180,
-    },
-]
+interface VendorOrdersPageProps {
+    orders: Order[]
+    counts: Record<OrderStatus, number>
+    type: OrderStatus
+    pagination: PaginationData
+    offset: number
+    filters: Record<string, string | number>
+    search: string
+    sortBy: string
+    sortOrder: 'asc' | 'desc'
+}
 
 const statusConfig: Record<
     OrderStatus,
@@ -98,7 +49,7 @@ const statusConfig: Record<
         badgeClassName: 'border-emerald-500/50 bg-emerald-500/10 text-emerald-400',
         cardBorderClassName: 'border-t-2 border-emerald-500',
     },
-    in_progress: {
+    inprogress: {
         label: 'In Progress',
         badgeClassName: 'border-navy/50 bg-navy/10 text-blue-400',
         cardBorderClassName: 'border-t-2 border-navy',
@@ -115,142 +66,197 @@ const statusConfig: Record<
     },
 }
 
-function OrdersTable({ orders }: { orders: Order[] }) {
-    return (
-        <Table>
-            <TableHeader>
-                <TableRow className="border-white/5 hover:bg-transparent">
-                    <TableHead className="text-slate-400 font-medium">Order ID</TableHead>
-                    <TableHead className="text-slate-400 font-medium">Buyer</TableHead>
-                    <TableHead className="text-slate-400 font-medium">Service</TableHead>
-                    <TableHead className="text-slate-400 font-medium">Amount</TableHead>
-                    <TableHead className="text-slate-400 font-medium">Date</TableHead>
-                    <TableHead className="text-slate-400 font-medium text-right w-40">Actions</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {orders.map((order) => {
-                    const config = statusConfig[order.status]
-                    return (
-                        <TableRow
-                            key={order.id}
-                            className="border-white/5 text-white hover:bg-white/5"
-                        >
-                            <TableCell className="font-medium text-white">
-                                <div className="flex flex-col">
-                                    <span>{order.id}</span>
-                                    <div className="mt-1 flex items-center gap-2 text-xs text-slate-400">
-                                        <span>{order.reference}</span>
-                                        <Copy className="h-3 w-3 cursor-pointer text-slate-500 hover:text-slate-300" />
-                                    </div>
-                                </div>
-                            </TableCell>
-                            <TableCell className="text-slate-300">{order.customerName}</TableCell>
-                            <TableCell className="text-slate-300">{order.service}</TableCell>
-                            <TableCell className="text-slate-400">${order.amount}</TableCell>
-                            <TableCell className="text-slate-400">{order.date}</TableCell>
-                            <TableCell className="text-right">
-                                <div className="flex justify-end gap-2">
-                                    {order.status === 'pending' && (
-                                        <>
-                                            <Button
-                                                size="sm"
-                                                className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy"
-                                            >
-                                                Accept
-                                            </Button>
-                                            <Button
-                                                size="sm"
-                                                variant="secondary"
-                                                className="h-9 rounded bg-dark-gray px-4 text-sm font-medium text-white hover:bg-slate-800"
-                                            >
-                                                Reject
-                                            </Button>
-                                        </>
-                                    )}
-                                    {order.status == 'in_progress' && (
-                                        <>
-                                            <Button
-                                                size="sm"
-                                                className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy"
-                                            >
-                                                Completed
-                                            </Button>
-                                        </>
-                                    )}
-                                    {order.status == 'completed' && (
-                                        <>
-                                            <Button
-                                                size="sm"
-                                                className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy"
-                                            >
-                                                <Link href={route('vendor.order-details')}>
-                                                    See Details
-                                                </Link>
-                                            </Button>
-                                        </>
-                                    )}
-                                    {order.status == 'cancelled' && (
-                                        <>
-                                                <Button
-                                                    size="sm"
-                                                    className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy cursor-pointer"
-                                                >
-                                                    <Link href={route('vendor.order-candelled-details')}>
-                                                        See Details
-                                                    </Link>
-                                                </Button>
-                                        </>
-                                    )}
-                                    {order.status == 'confirmed' && (
-                                        <>
-                                            <Button
-                                                size="sm"
-                                                className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy cursor-pointer"
-                                            >
-                                                Next Step
-                                            </Button>
-                                        </>
-                                    )}
-                                </div>
-                            </TableCell>
-                        </TableRow>
-                    )
-                })}
-            </TableBody>
-        </Table>
-    )
-}
-
 export default function Orders() {
-    const getInitialStatus = (): OrderStatus => {
-        if (typeof window === 'undefined') {
-            return 'pending'
-        }
+    const { orders, counts, type, pagination, offset, filters, search, sortBy, sortOrder } =
+        usePage<VendorOrdersPageProps>().props
 
-        const params = new URLSearchParams(window.location.search)
-        const type = params.get('type') as OrderStatus | null
+    const [statusFilter, setStatusFilter] = useState<OrderStatus>(type ?? 'pending')
+    const [currentPage, setCurrentPage] = useState(pagination.current_page ?? 1)
+    const totalPages = pagination.last_page ?? 1
 
-        if (type && ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'].includes(type)) {
-            return type
-        }
+    const {
+        isLoading,
+        handleSearch,
+        handleFilterChange,
+        handleSort,
+        handlePerPageChange,
+        handlePageChange,
+    } = useDataTable({
+        only: ['orders', 'pagination', 'offset', 'filters', 'search', 'sortBy', 'sortOrder', 'counts', 'type'],
+    })
 
-        return 'pending'
-    }
+    const enrichedOrders = orders
 
-    const [statusFilter, setStatusFilter] = useState<OrderStatus>(getInitialStatus)
-    const [currentPage, setCurrentPage] = useState(1)
-    const totalPages = 3
+    const columns: ColumnConfig<Order>[] = [
+        {
+            key: 'id',
+            label: 'Order ID',
+            sortable: true,
+            render: (order) => (
+                <span className="font-medium text-white">
+                    {order.id}
+                </span>
+            ),
+        },
+        {
+            key: 'customerName',
+            label: 'Buyer',
+            sortable: true,
+            render: (order) => <span className="text-slate-300">{order.customerName}</span>,
+        },
+        {
+            key: 'service',
+            label: 'Service',
+            sortable: true,
+            render: (order) => <span className="text-slate-300">{order.service}</span>,
+        },
+        {
+            key: 'amount',
+            label: 'Amount',
+            sortable: true,
+            render: (order) => <span className="text-slate-400">${order.amount}</span>,
+        },
+        {
+            key: 'date',
+            label: 'Date',
+            sortable: true,
+            render: (order) => <span className="text-slate-400">{order.date}</span>,
+        },
+        {
+            key: 'status',
+            label: 'Status',
+            sortable: true,
+            render: (order) => {
+                const config = statusConfig[order.status]
 
-    const filteredOrders = mockOrders.filter((order) => order.status === statusFilter)
+                return (
+                    <span
+                        className={cn(
+                            'inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium',
+                            config.badgeClassName,
+                        )}
+                    >
+                        {config.label}
+                    </span>
+                )
+            },
+        },
+        {
+            key: 'actions',
+            label: 'Actions',
+            render: (order) => (
+                <div className="flex justify-end gap-2">
+                    {order.status === 'pending' && (
+                        <>
+                            <Button
+                                size="sm"
+                                className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy"
+                                onClick={() =>
+                                    router.patch(
+                                        route('vendor.order.update-status', order.reference),
+                                        { status: 'confirmed' },
+                                        { preserveScroll: true, preserveState: true },
+                                    )
+                                }
+                            >
+                                Accept
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="secondary"
+                                className="h-9 rounded bg-dark-gray px-4 text-sm font-medium text-white hover:bg-slate-800"
+                                onClick={() =>
+                                    router.patch(
+                                        route('vendor.order.update-status', order.reference),
+                                        { status: 'cancelled' },
+                                        { preserveScroll: true, preserveState: true },
+                                    )
+                                }
+                            >
+                                Reject
+                            </Button>
+                        </>
+                    )}
+                    {order.status == 'inprogress' && (
+                        <>
+                            <Button
+                                size="sm"
+                                className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy"
+                                onClick={() =>
+                                    router.patch(
+                                        route('vendor.order.update-status', order.reference),
+                                        { status: 'completed' },
+                                        { preserveScroll: true, preserveState: true },
+                                    )
+                                }
+                            >
+                                Completed
+                            </Button>
+                        </>
+                    )}
+                    {order.status == 'completed' && (
+                        <>
+                            <Button
+                                size="sm"
+                                className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy"
+                            >
+                                <Link href={route('vendor.order.details', order.reference)}>
+                                    See Details
+                                </Link>
+                            </Button>
+                        </>
+                    )}
+                    {order.status == 'cancelled' && (
+                        <>
+                            <Button
+                                size="sm"
+                                className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy cursor-pointer"
+                            >
+                                <Link href={route('vendor.order.candelled-details', order.reference)}>
+                                    See Details
+                                </Link>
+                            </Button>
+                        </>
+                    )}
+                    {order.status == 'confirmed' && (
+                        <>
+                            <Button
+                                size="sm"
+                                className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy cursor-pointer"
+                                onClick={() =>
+                                    router.patch(
+                                        route('vendor.order.update-status', order.reference),
+                                        { status: 'inprogress' },
+                                        { preserveScroll: true, preserveState: true },
+                                    )
+                                }
+                            >
+                                Next Step
+                            </Button>
+                        </>
+                    )}
+                </div>
+            ),
+            className: 'text-right',
+        },
+    ]
 
-    const counts: Record<OrderStatus, number> = {
-        pending: mockOrders.filter((order) => order.status === 'pending').length,
-        confirmed: mockOrders.filter((order) => order.status === 'confirmed').length,
-        in_progress: mockOrders.filter((order) => order.status === 'in_progress').length,
-        completed: mockOrders.filter((order) => order.status === 'completed').length,
-        cancelled: mockOrders.filter((order) => order.status === 'cancelled').length,
-    }
+    const filterConfig: FilterConfig[] = [
+        {
+            key: 'status',
+            label: 'Status',
+            placeholder: 'Filter by status',
+            options: [
+                { label: 'Pending', value: 'pending' },
+                { label: 'Confirmed', value: 'confirmed' },
+                { label: 'In Progress', value: 'inprogress' },
+                { label: 'Completed', value: 'completed' },
+                { label: 'Cancelled', value: 'cancelled' },
+            ],
+        },
+    ]
+
+    const filteredOrders = orders
 
     return (
         <VendorLayout activeSlug="orders">
@@ -270,7 +276,7 @@ export default function Orders() {
                                 setStatusFilter(next)
 
                                 router.get(
-                                    route('vendor.orders'),
+                                    route('vendor.order.index'),
                                     { type: next },
                                     {
                                         preserveState: true,
@@ -304,13 +310,13 @@ export default function Orders() {
                                 </TabsTrigger>
 
                                 <TabsTrigger
-                                    value="in_progress"
+                                    value="inprogress"
                                     className="flex items-center gap-2 rounded-md px-4 py-1.5 text-sm data-[state=active]:bg-navy data-[state=active]:text-white data-[state=active]:shadow-none"
                                 >
                                     <Clock className="h-4 w-4" />
                                     <span>In Progress</span>
                                     <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-slate-200 px-2 text-xs font-semibold text-slate-900">
-                                        {counts.in_progress}
+                                        {counts.inprogress}
                                     </span>
                                 </TabsTrigger>
                                 <TabsTrigger
@@ -334,7 +340,7 @@ export default function Orders() {
                                     </span>
                                 </TabsTrigger>
                             </TabsList>
-                            {(['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'] as const).map((tabValue) => (
+                            {(['pending', 'confirmed', 'inprogress', 'completed', 'cancelled'] as const).map((tabValue) => (
                                 <TabsContent key={tabValue} value={tabValue} className="mt-4">
                                     <div
                                         className={cn(
@@ -348,49 +354,48 @@ export default function Orders() {
                                             </h2>
                                         </div>
 
-                                        {filteredOrders.length > 0 ? (
-                                            <div className="px-4 pb-4 pt-2">
-                                                <OrdersTable orders={filteredOrders} />
-                                                <div className="mt-4 flex items-center justify-between text-xs text-slate-400">
-                                                    <span>
-                                                        Showing 1 to {filteredOrders.length} of {filteredOrders.length}{' '}
-                                                        results
-                                                    </span>
-                                                    <div className="flex gap-2">
-                                                        <Button
-                                                            size="sm"
-                                                            variant="secondary"
-                                                            className="h-8 rounded bg-slate-900 px-4 text-xs text-white hover:bg-slate-800"
-                                                        >
-                                                            Previous
-                                                        </Button>
-                                                        <Button
-                                                            size="sm"
-                                                            className="h-8 rounded bg-navy px-4 text-xs text-white hover:bg-navy"
-                                                        >
-                                                            Next
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
-                                                <p className="text-slate-400">No orders in this state yet.</p>
-                                                <p className="mt-1 text-sm text-slate-500">
-                                                    New orders will appear here as customers book services.
-                                                </p>
-                                            </div>
-                                        )}
+                                        <CardContent>
+                                            <DataTable<Order>
+                                                data={enrichedOrders}
+                                                columns={columns}
+                                                pagination={pagination}
+                                                offset={offset}
+                                                filters={filterConfig}
+                                                onSearch={handleSearch}
+                                                onFilterChange={handleFilterChange}
+                                                onSort={handleSort}
+                                                onPerPageChange={handlePerPageChange}
+                                                onPageChange={handlePageChange}
+                                                searchValue={search}
+                                                filterValues={filters}
+                                                sortBy={sortBy}
+                                                sortOrder={sortOrder}
+                                                isLoading={isLoading}
+                                                emptyMessage="No orders found"
+                                                searchPlaceholder="Search by order ID, service, or vendor"
+                                            />
+                                        </CardContent>
                                     </div>
                                 </TabsContent>
                             ))}
                         </Tabs>
 
-                        {filteredOrders.length > 0 && (
+                        {orders.length > 0 && (
                             <Pagination
                                 currentPage={currentPage}
                                 totalPages={totalPages}
-                                onPageChange={setCurrentPage}
+                                onPageChange={(page) => {
+                                    setCurrentPage(page)
+                                    router.get(
+                                        route('vendor.order.index'),
+                                        { type: statusFilter, page },
+                                        {
+                                            preserveState: true,
+                                            preserveScroll: true,
+                                            replace: true,
+                                        },
+                                    )
+                                }}
                             />
                         )}
                     </div>

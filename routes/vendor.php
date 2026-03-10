@@ -7,6 +7,7 @@ use App\Http\Controllers\Vendor\AccountController;
 use App\Http\Controllers\Vendor\ListingManagement\CarTypeController;
 use App\Http\Controllers\Vendor\ListingManagement\CategoryController;
 use App\Http\Controllers\Vendor\ListingManagement\ListingController;
+use App\Http\Controllers\Vendor\OrderManagement\OrderController;
 use App\Http\Controllers\Vendor\PaymentController;
 use App\Http\Controllers\Vendor\PerformanceController;
 use App\Http\Controllers\Vendor\VendorDashboardController;
@@ -34,9 +35,6 @@ Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function (
     Route::post('logout', [VendorAuthController::class, 'logout'])->name('logout');
     Route::get('dashboard', [VendorDashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('notification', [VendorDashboardController::class, 'notification'])->name('notification');
-    Route::get('orders', [VendorDashboardController::class, 'orders'])->name('orders');
-    Route::get('order-candelled-details', [VendorDashboardController::class, 'orderCandelledDetails'])->name('order-candelled-details');
-    Route::get('order-details', [VendorDashboardController::class, 'orderDetails'])->name('order-details');
     Route::get('payments', [PaymentController::class, 'index'])->name('payments');
     Route::get('performance', [PerformanceController::class, 'index'])->name('performance');
     Route::get('account', [AccountController::class, 'index'])->name('account');
@@ -73,5 +71,11 @@ Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function (
                 Route::post('{carType}', 'update')->name('update');
                 Route::delete('{carType}', 'destroy')->name('destroy');
             });
+    });
+    Route::controller(OrderController::class)->prefix('order')->name('order.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/details/{order}', 'orderDetails')->name('details');
+        Route::get('/details/candelled/{order}', 'orderCandelledDetails')->name('candelled-details');
+        Route::patch('/details/status/{order}', 'updateStatus')->name('update-status');
     });
 });

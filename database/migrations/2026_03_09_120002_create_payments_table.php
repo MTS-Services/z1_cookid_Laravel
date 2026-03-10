@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PaymentStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,7 +22,7 @@ return new class extends Migration
 
             // Payment Details
             $table->decimal('amount', 12, 2);
-            $table->enum('status', ['unpaid', 'paid', 'failed', 'refunded', 'cancelled'])->default('unpaid');
+            $table->string('status')->default(PaymentStatus::Unpaid->value);
 
             // Stripe Fields
             $table->string('stripe_payment_intent_id')->nullable();

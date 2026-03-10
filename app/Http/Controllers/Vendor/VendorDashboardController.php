@@ -22,19 +22,4 @@ class VendorDashboardController extends Controller
     {
         return Inertia::render('vendor/notification');
     }
-
-    public function orders(): Response
-    {
-        return Inertia::render('vendor/orders');
-    }
-
-    public function orderDetails(): Response
-    {
-        return Inertia::render('vendor/order-details');
-    }
-
-    public function orderCandelledDetails(): Response
-    {
-        return Inertia::render('vendor/order-candelled-details');
-    }
 }

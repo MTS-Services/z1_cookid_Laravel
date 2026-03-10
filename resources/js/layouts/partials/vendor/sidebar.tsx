@@ -43,7 +43,7 @@ const adminNavItems: NavItemType[] = [
     },
     {
         title: "Orders",
-        href: route("vendor.orders"),
+        href: route("vendor.order.index"),
         icon: ShoppingBag,
         slug: "orders",
     },

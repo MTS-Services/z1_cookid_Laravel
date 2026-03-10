@@ -40,4 +40,16 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'stripe' => [
+        'secret' => env('STRIPE_SECRET'),
+        'currency' => env('STRIPE_CURRENCY', 'usd'),
+    ],
+
+    'paypal' => [
+        'client_id' => env('PAYPAL_CLIENT_ID'),
+        'secret' => env('PAYPAL_CLIENT_SECRET'),
+        'environment' => env('PAYPAL_ENVIRONMENT', 'sandbox'), // sandbox or live
+        'currency' => env('PAYPAL_CURRENCY', 'usd'),
+    ],
+
 ];

@@ -17,6 +17,7 @@ class OrderController extends Controller
     {
         $tab = $request->input('tab', 'requested');
         $query = Order::query();
+        $query->with(['service.vendor']);
 
         if ($tab === 'requested') {
             $query->where('status', 'pending');

@@ -10,7 +10,26 @@ import { useDataTable } from '@/hooks/use-data-table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { PaginationData, ColumnConfig, FilterConfig } from '@/types/data-table.types';
 
-type OrderStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
+type OrderStatus = 'pending' | 'confirmed' | 'inprogress' | 'completed' | 'cancelled';
+
+type NestedVendor = {
+    first_name?: string;
+    last_name?: string;
+} | null;
+
+type NestedService = {
+    title?: string;
+    price?: number | string | null;
+    vendor?: NestedVendor;
+} | null;
+
+interface CurrencyLike {
+    price?: number | string | null;
+    subtotal?: number | string | null;
+    total?: number | string | null;
+    commission?: number | string | null;
+    vendor_earning?: number | string | null;
+}
 
 interface Order extends Record<string, unknown> {
     id: number;
@@ -22,6 +41,10 @@ interface Order extends Record<string, unknown> {
     vendor_earning: number;
     status: OrderStatus | string;
     created_at?: string;
+    subtotal?: number | string | null;
+    total?: number | string | null;
+    service?: NestedService;
+    vendor?: NestedVendor;
 }
 
 interface Props {
@@ -37,14 +60,16 @@ interface Props {
 
 const statusLabel: Record<OrderStatus, string> = {
     pending: 'Pending',
-    in_progress: 'In Progress',
+    confirmed: 'Confirmed',
+    inprogress: 'In Progress',
     completed: 'Completed',
     cancelled: 'Cancelled',
 };
 
 const statusClassName: Record<OrderStatus, string> = {
     pending: 'bg-amber-500/15 text-amber-300 border-amber-500/40',
-    in_progress: 'bg-sky-500/15 text-sky-300 border-sky-500/40',
+    confirmed: 'bg-blue-500/15 text-blue-300 border-blue-500/40',
+    inprogress: 'bg-sky-500/15 text-sky-300 border-sky-500/40',
     completed: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40',
     cancelled: 'bg-rose-500/15 text-rose-300 border-rose-500/40',
 };
@@ -86,6 +111,79 @@ export default function AdminOrdersIndex({
         handlePageChange,
     } = useDataTable({
         only: ['orders', 'pagination', 'offset', 'filters', 'search', 'sortBy', 'sortOrder'],
+    });
+
+    const toNumber = (value: unknown): number | undefined => {
+        if (value === null || value === undefined) {
+            return undefined;
+        }
+
+        if (typeof value === 'number') {
+            return Number.isNaN(value) ? undefined : value;
+        }
+
+        if (typeof value === 'string' && value.trim() !== '') {
+            const parsed = Number(value);
+            return Number.isNaN(parsed) ? undefined : parsed;
+        }
+
+        return undefined;
+    };
+
+    const normalizeStatus = (status: string | OrderStatus | undefined): OrderStatus => {
+        if (!status) {
+            return 'pending';
+        }
+
+        const normalized = status.toLowerCase();
+
+        if (['in_progress', 'in-progress', 'active'].includes(normalized)) {
+            return 'inprogress';
+        }
+
+        if (['confirmed'].includes(normalized)) {
+            return 'confirmed';
+        }
+
+        if (['completed'].includes(normalized)) {
+            return 'completed';
+        }
+
+        if (['cancelled'].includes(normalized)) {
+            return 'cancelled';
+        }
+
+        return 'pending';
+    };
+
+    const deriveMonetaryValue = (order: Order & CurrencyLike, keys: (keyof CurrencyLike)[], fallback?: number): number => {
+        for (const key of keys) {
+            const value = toNumber(order[key]);
+            if (value !== undefined) {
+                return value;
+            }
+        }
+
+        return fallback ?? 0;
+    };
+
+    const enrichedOrders = orders.map((order) => {
+        const serviceTitle = order.service_name ?? order.service?.title ?? 'N/A';
+        const vendorName = order.vendor_name ?? (order.service?.vendor?.first_name && order.service?.vendor?.last_name ? order.service.vendor.first_name + ' ' + order.service.vendor.last_name : 'N/A');
+
+        const priceValue = deriveMonetaryValue(order, ['price', 'total', 'subtotal']);
+        const commissionValue = deriveMonetaryValue(order, ['commission']);
+        const vendorEarningValue = deriveMonetaryValue(order, ['vendor_earning'], priceValue - commissionValue);
+
+        return {
+            ...order,
+            service_name: serviceTitle,
+            vendor_name: vendorName,
+            price: priceValue,
+            commission: commissionValue,
+            vendor_earning: vendorEarningValue,
+            status: normalizeStatus(order.status as OrderStatus | string),
+        };
     });
 
     const columns: ColumnConfig<Order>[] = [
@@ -154,23 +252,23 @@ export default function AdminOrdersIndex({
                 );
             },
         },
-        {
-            key: 'actions',
-            label: 'Actions',
-            render: (order) => (
-                <div className="flex justify-end">
-                    <Button
-                        type="button"
-                        size="sm"
-                        className="h-9 rounded bg-navy px-4 text-xs font-medium text-white hover:bg-navy"
-                    >
-                        <span>View booking</span>
-                        <ArrowRight className="ml-2 h-3 w-3" />
-                    </Button>
-                </div>
-            ),
-            className: 'text-right',
-        },
+        // {
+        //     key: 'actions',
+        //     label: 'Actions',
+        //     render: (order) => (
+        //         <div className="flex justify-end">
+        //             <Button
+        //                 type="button"
+        //                 size="sm"
+        //                 className="h-9 rounded bg-navy px-4 text-xs font-medium text-white hover:bg-navy"
+        //             >
+        //                 <span>View booking</span>
+        //                 <ArrowRight className="ml-2 h-3 w-3" />
+        //             </Button>
+        //         </div>
+        //     ),
+        //     className: 'text-right',
+        // },
     ];
 
     const filterConfig: FilterConfig[] = [
@@ -180,7 +278,8 @@ export default function AdminOrdersIndex({
             placeholder: 'Filter by status',
             options: [
                 { label: 'Pending', value: 'pending' },
-                { label: 'In Progress', value: 'in_progress' },
+                { label: 'Confirmed', value: 'confirmed' },
+                { label: 'In Progress', value: 'inprogress' },
                 { label: 'Completed', value: 'completed' },
                 { label: 'Cancelled', value: 'cancelled' },
             ],
@@ -218,7 +317,7 @@ export default function AdminOrdersIndex({
                 </header>
                 <CardContent>
                     <DataTable<Order>
-                        data={orders}
+                        data={enrichedOrders}
                         columns={columns}
                         pagination={pagination}
                         offset={offset}

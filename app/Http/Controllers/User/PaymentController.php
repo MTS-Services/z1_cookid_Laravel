@@ -2,18 +2,27 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Enums\ActiveInactiveStatus;
+use App\Enums\OrderStatus;
+use App\Enums\PaymentMethod;
+use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Order;
+use App\Models\OrderAddress;
+use App\Models\Payment;
 use App\Models\Service;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Inertia\Inertia;
 
 class PaymentController extends Controller
 {
     // ─── Entry Point: Called after billingAddressStore redirect ───────────────
-    public function start(Request $request): RedirectResponse
+    public function start(Request $request): RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         // Read from session — never from URL params (prevents tampering)
         $pending = session('payment_pending');
@@ -37,40 +46,243 @@ class PaymentController extends Controller
         }
 
         $service = $this->resolveService($encryptedServiceId);
+        $user = $request->user();
 
-        // ✅ Fix: price (dollars float) → cents integer
-        // e.g. 49.99 → 4999  |  50.00 → 5000
-        $amountInCents = (int) round((float) $service->price * 100);
+        // Ensure address belongs to user
+        $address = OrderAddress::where('id', $addressId)->where('user_id', $user->id)->firstOrFail();
+
+        $amount = (float) $service->price;
+        $amountInCents = (int) round($amount * 100);
 
         if ($amountInCents < 50) {
             abort(422, 'Amount too low for payment processing (minimum $0.50).');
         }
 
+        $methodEnum = $paymentMethod === 'stripe' ? PaymentMethod::Stripe : PaymentMethod::Paypal;
+
+        [$order, $payment] = DB::transaction(function () use ($user, $service, $address, $amount, $methodEnum) {
+            $order = Order::create([
+                'user_id'        => $user->id,
+                'service_id'     => $service->id,
+                'address_id'     => $address->id,
+                'order_number'   => Order::generateOrderNumber(),
+                'payment_method' => $methodEnum,
+                'subtotal'       => $amount,
+                'discount'       => 0,
+                'total'          => $amount,
+                'status'         => OrderStatus::Pending->value,
+            ]);
+
+            $payment = Payment::create([
+                'order_id' => $order->id,
+                'user_id'  => $user->id,
+                'amount'   => $amount,
+                'method'   => $methodEnum,
+                'status'   => PaymentStatus::Unpaid->value,
+            ]);
+
+            return [$order, $payment];
+        });
+
+        $currency = (string) config('services.stripe.currency', 'usd');
+
         if ($paymentMethod === 'stripe') {
             $checkoutUrl = $this->createStripeCheckoutSession(
                 $service,
                 $amountInCents,
-                (string) config('services.stripe.currency', 'usd'),
+                $currency,
                 $encryptedServiceId,
-                $addressId
+                $addressId,
+                $order,
+                $payment
             );
 
-            return redirect()->away($checkoutUrl);
+            return $this->externalRedirect($checkoutUrl, $request);
         }
 
         if ($paymentMethod === 'paypal') {
+            $paypalCurrency = (string) config('services.paypal.currency', 'usd');
             $approvalUrl = $this->createPaypalOrder(
                 $service,
                 $amountInCents,
-                (string) config('services.paypal.currency', 'usd'),
+                $paypalCurrency,
                 $encryptedServiceId,
-                $addressId
+                $addressId,
+                $order,
+                $payment
             );
 
-            return redirect()->away($approvalUrl);
+            return $this->externalRedirect($approvalUrl, $request);
         }
 
         abort(422, 'Unhandled payment method.');
+    }
+
+    /**
+     * Payment success callback (after Stripe Checkout or PayPal approval).
+     * Verifies payment with gateway and updates Order + Payment.
+     */
+    public function success(Request $request, string $gateway): RedirectResponse
+    {
+        $gateway = strtolower($gateway);
+
+        if ($gateway === 'stripe') {
+            return $this->handleStripeSuccess($request);
+        }
+
+        if ($gateway === 'paypal') {
+            return $this->handlePayPalSuccess($request);
+        }
+
+        return redirect()->route('frontend.home')->withErrors(['payment' => 'Invalid gateway.']);
+    }
+
+    private function handleStripeSuccess(Request $request): RedirectResponse
+    {
+        $sessionId = $request->query('session_id');
+
+        if (! $sessionId || ! is_string($sessionId)) {
+            return redirect()->route('frontend.home')->withErrors(['payment' => 'Missing Stripe session.']);
+        }
+
+        $secretKey = (string) config('services.stripe.secret');
+        if ($secretKey === '') {
+            return redirect()->route('frontend.home')->withErrors(['payment' => 'Stripe is not configured.']);
+        }
+
+        $response = Http::withBasicAuth($secretKey, '')
+            ->timeout(10)
+            ->get('https://api.stripe.com/v1/checkout/sessions/' . $sessionId . '?expand[]=payment_intent');
+
+        if (! $response->successful()) {
+            report(new \RuntimeException('Stripe session retrieval failed: ' . $response->body()));
+            return redirect()->route('frontend.home')->withErrors(['payment' => 'Could not verify payment.']);
+        }
+
+        $session = $response->json();
+        $paymentStatus = $session['payment_status'] ?? PaymentStatus::Unpaid->value;
+
+        if ($paymentStatus !== PaymentStatus::Paid->value) {
+            return redirect()->route('frontend.home')->withErrors(['payment' => 'Payment was not completed.']);
+        }
+
+        $paymentId = (int) ($session['metadata']['payment_id'] ?? 0);
+        $payment = Payment::where('id', $paymentId)->where('user_id', $request->user()->id)->first();
+
+        if (! $payment || $payment->isPaid()) {
+            return redirect()->route('frontend.home')->with('status', __('Payment already recorded.'));
+        }
+
+        $paymentIntent = $session['payment_intent'] ?? null;
+        $paymentIntentId = is_array($paymentIntent) ? ($paymentIntent['id'] ?? null) : $paymentIntent;
+        $chargeId = null;
+        if (is_array($paymentIntent) && isset($paymentIntent['charges']['data'][0]['id'])) {
+            $chargeId = $paymentIntent['charges']['data'][0]['id'];
+        } elseif (is_string($paymentIntentId)) {
+            $chargeResponse = Http::withBasicAuth($secretKey, '')
+                ->get('https://api.stripe.com/v1/payment_intents/' . $paymentIntentId);
+            if ($chargeResponse->successful()) {
+                $pi = $chargeResponse->json();
+                $chargeId = $pi['charges']['data'][0]['id'] ?? null;
+            }
+        }
+
+        DB::transaction(function () use ($payment, $sessionId, $paymentIntentId, $chargeId) {
+            $payment->update([
+                'status'                   => PaymentStatus::Paid->value,
+                'paid_at'                  => now(),
+                'transaction_id'           => $chargeId ?? $sessionId,
+                'stripe_payment_intent_id' => $paymentIntentId,
+                'stripe_charge_id'         => $chargeId,
+            ]);
+            $payment->order->update([
+                'status' => OrderStatus::Confirmed->value,
+            ]);
+        });
+
+        return redirect()->route('frontend.booking-confirm', ['order' => $payment->order->id])
+            ->with('status', __('Payment successful. Order :order confirmed.', ['order' => $payment->order->order_number]));
+    }
+
+    private function handlePayPalSuccess(Request $request): RedirectResponse
+    {
+        $token = $request->query('token'); // PayPal order ID (PayerID is separate in older flow)
+
+        if (! $token || ! is_string($token)) {
+            return redirect()->route('frontend.home')->withErrors(['payment' => 'Missing PayPal token.']);
+        }
+
+        $payment = Payment::where('paypal_order_id', $token)->where('user_id', $request->user()->id)->first();
+
+        if (! $payment) {
+            return redirect()->route('frontend.home')->withErrors(['payment' => 'Payment not found.']);
+        }
+
+        if ($payment->isPaid()) {
+            return redirect()->route('frontend.home')->with('status', __('Payment already recorded.'));
+        }
+
+        $clientId = (string) config('services.paypal.client_id');
+        $clientSecret = (string) config('services.paypal.secret');
+        $environment = (string) config('services.paypal.environment', 'sandbox');
+        $baseUrl = $environment === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
+
+        $tokenResponse = Http::asForm()
+            ->withBasicAuth($clientId, $clientSecret)
+            ->post($baseUrl . '/v1/oauth2/token', ['grant_type' => 'client_credentials']);
+
+        if (! $tokenResponse->successful() || ! $tokenResponse->json('access_token')) {
+            return redirect()->route('frontend.home')->withErrors(['payment' => 'Could not verify with PayPal.']);
+        }
+
+        $accessToken = $tokenResponse->json('access_token');
+        $captureResponse = Http::withToken($accessToken)
+            ->post($baseUrl . '/v2/checkout/orders/' . $token . '/capture');
+
+        if (! $captureResponse->successful()) {
+            report(new \RuntimeException('PayPal capture failed: ' . $captureResponse->body()));
+            return redirect()->route('frontend.home')->withErrors(['payment' => 'PayPal capture failed.']);
+        }
+
+        $captureData = $captureResponse->json();
+        $status = $captureData['status'] ?? null;
+        $purchaseUnits = $captureData['purchase_units'] ?? [];
+        $captureId = $purchaseUnits[0]['payments']['captures'][0]['id'] ?? null;
+        $payerId = $captureData['payer']['payer_id'] ?? null;
+
+        if ($status !== 'COMPLETED') {
+            return redirect()->route('frontend.home')->withErrors(['payment' => 'PayPal payment not completed.']);
+        }
+
+        DB::transaction(function () use ($payment, $captureId, $payerId) {
+            $payment->update([
+                'status'            => PaymentStatus::Paid->value,
+                'paid_at'           => now(),
+                'transaction_id'    => $captureId,
+                'paypal_capture_id' => $captureId,
+                'paypal_payer_id'   => $payerId,
+            ]);
+            $payment->order->update([
+                'status' => OrderStatus::Confirmed->value,
+            ]);
+        });
+
+        return redirect()->route('frontend.booking-confirm', ['order' => $payment->order->id])
+            ->with('status', __('Payment successful. Order :order confirmed.', ['order' => $payment->order->order_number]));
+    }
+
+    /**
+     * Redirect to external URL (Stripe/PayPal). For Inertia/XHR requests, use
+     * Inertia::location() so the browser does a full-page redirect and avoids
+     * CORS / Network Error when Axios tries to follow the redirect.
+     */
+    private function externalRedirect(string $url, Request $request): RedirectResponse|\Symfony\Component\HttpFoundation\Response
+    {
+        if ($request->header('X-Inertia')) {
+            return Inertia::location($url);
+        }
+
+        return redirect()->away($url);
     }
 
     // ─── Stripe Checkout Session ───────────────────────────────────────────────
@@ -79,7 +291,9 @@ class PaymentController extends Controller
         int $amountInCents,
         string $currency,
         string $encryptedServiceId,
-        int $addressId
+        int $addressId,
+        Order $order,
+        Payment $payment
     ): string {
         $secretKey = (string) config('services.stripe.secret');
 
@@ -87,8 +301,8 @@ class PaymentController extends Controller
             abort(500, 'Stripe is not configured.');
         }
 
-        $successUrl = route('frontend.booking-confirm', ['service' => $encryptedServiceId])
-            . '?payment=stripe_success';
+        $successUrl = route('user.payment.success', ['gateway' => 'stripe'])
+            . '?session_id={CHECKOUT_SESSION_ID}';
 
         $cancelUrl = route('user.order.billing-address', ['service_id' => $encryptedServiceId])
             . '?payment=stripe_cancel';
@@ -111,9 +325,8 @@ class PaymentController extends Controller
                     ],
                 ]],
                 'metadata' => [
-                    'service_id' => $service->id,
-                    'address_id' => $addressId,
-                    'user_id'    => auth()->user()->id,
+                    'order_id'   => $order->id,
+                    'payment_id' => $payment->id,
                 ],
             ]);
 
@@ -130,6 +343,12 @@ class PaymentController extends Controller
             abort(500, 'Stripe did not return a checkout URL.');
         }
 
+        $payment->update([
+            'gateway_response' => json_encode([
+                'stripe_session_id' => $session['id'] ?? null,
+            ]),
+        ]);
+
         return $session['url'];
     }
 
@@ -139,12 +358,13 @@ class PaymentController extends Controller
         int $amountInCents,
         string $currency,
         string $encryptedServiceId,
-        int $addressId
+        int $addressId,
+        Order $order,
+        Payment $payment
     ): string {
         $clientId     = (string) config('services.paypal.client_id');
         $clientSecret = (string) config('services.paypal.secret');
         $environment  = (string) config('services.paypal.environment', 'sandbox');
-
         if ($clientId === '' || $clientSecret === '') {
             abort(500, 'PayPal is not configured.');
         }
@@ -171,13 +391,13 @@ class PaymentController extends Controller
             abort(500, 'PayPal access token missing.');
         }
 
-        $successUrl = route('frontend.booking-confirm', ['service' => $encryptedServiceId])
-            . '?payment=paypal_success';
+        $successUrl = route('user.payment.success', ['gateway' => 'paypal'])
+            . '?token={TOKEN}';
 
         $cancelUrl = route('user.order.billing-address', ['service_id' => $encryptedServiceId])
             . '?payment=paypal_cancel';
 
-        // Step 2: Create PayPal order
+        // Step 2: Create PayPal order (custom_id = our payment id for success handler)
         $orderResponse = Http::withToken($accessToken)
             ->timeout(15)
             ->post($baseUrl . '/v2/checkout/orders', [
@@ -185,12 +405,11 @@ class PaymentController extends Controller
                 'purchase_units' => [[
                     'amount' => [
                         'currency_code' => strtoupper($currency),
-                        // PayPal needs decimal string e.g. "49.99"
                         'value'         => number_format($amountInCents / 100, 2, '.', ''),
                     ],
                     'description'  => $service->title,
-                    'custom_id'    => (string) $service->id,
-                    'reference_id' => (string) $addressId,
+                    'custom_id'    => (string) $payment->id,
+                    'reference_id' => (string) $order->id,
                 ]],
                 'application_context' => [
                     'brand_name'   => config('app.name'),
@@ -201,6 +420,8 @@ class PaymentController extends Controller
                 ],
             ]);
 
+        dd($orderResponse);
+
         if (! $orderResponse->successful()) {
             report(new \RuntimeException(
                 'PayPal order creation failed: ' . $orderResponse->body()
@@ -208,9 +429,14 @@ class PaymentController extends Controller
             abort(500, 'Unable to start PayPal payment. Please try again.');
         }
 
-        $order = $orderResponse->json();
+        $paypalOrder = $orderResponse->json();
+        $paypalOrderId = $paypalOrder['id'] ?? null;
 
-        $approvalLink = collect($order['links'] ?? [])
+        if ($paypalOrderId) {
+            $payment->update(['paypal_order_id' => $paypalOrderId]);
+        }
+
+        $approvalLink = collect($paypalOrder['links'] ?? [])
             ->firstWhere('rel', 'approve')['href'] ?? null;
 
         if (! $approvalLink) {
@@ -230,7 +456,7 @@ class PaymentController extends Controller
         }
 
         $service = Service::query()
-            ->where('status', \App\Enums\ActiveInactiveStatus::ACTIVE)
+            ->where('status', ActiveInactiveStatus::ACTIVE->value)
             ->find($serviceId);
 
         if (! $service) {

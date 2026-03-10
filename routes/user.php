@@ -50,5 +50,6 @@ Route::middleware(['auth'])->prefix('account')->name('user.')->group(function ()
     });
     Route::controller(PaymentController::class)->prefix('payment')->name('payment.')->group(function () {
         Route::get('/start', 'start')->name('start');
+        Route::get('/success/{gateway}', 'success')->name('success');
     });
 });

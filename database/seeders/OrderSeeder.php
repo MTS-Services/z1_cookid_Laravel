@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\OrderStatus;
 use App\Models\Order;
 use App\Models\OrderAddress;
 use App\Models\Service;
@@ -49,7 +50,7 @@ class OrderSeeder extends Seeder
                 'subtotal' => $subtotal,
                 'discount' => $discount,
                 'total' => $total,
-                'status' => 'active',
+                'status' => OrderStatus::Confirmed->value,
                 'cancelled_reason' => null,
                 'cancelled_by' => null,
                 'completed_at' => null,

@@ -8,10 +8,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
     use HasFactory;
+
+    /**
+     * Generate a unique order number (e.g. ORD-20260310-A1B2C3).
+     */
+    public static function generateOrderNumber(): string
+    {
+        $prefix = 'ORD-' . now()->format('Ymd');
+        $suffix = strtoupper(Str::random(6));
+
+        do {
+            $candidate = "{$prefix}-{$suffix}";
+        } while (static::where('order_number', $candidate)->exists());
+
+        return $candidate;
+    }
 
     protected $fillable = [
         'user_id',

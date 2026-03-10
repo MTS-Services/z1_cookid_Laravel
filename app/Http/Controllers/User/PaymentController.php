@@ -58,7 +58,7 @@ class PaymentController extends Controller
             abort(422, 'Amount too low for payment processing (minimum $0.50).');
         }
 
-        $methodEnum = $paymentMethod === 'stripe' ? PaymentMethod::Stripe : PaymentMethod::Paypal;
+        $methodEnum = $paymentMethod === PaymentMethod::Stripe->value ? PaymentMethod::Stripe : PaymentMethod::Paypal;
 
         [$order, $payment] = DB::transaction(function () use ($user, $service, $address, $amount, $methodEnum) {
             $order = Order::create([
@@ -86,7 +86,7 @@ class PaymentController extends Controller
 
         $currency = (string) config('services.stripe.currency', 'usd');
 
-        if ($paymentMethod === 'stripe') {
+        if ($paymentMethod === PaymentMethod::Stripe->value) {
             $checkoutUrl = $this->createStripeCheckoutSession(
                 $service,
                 $amountInCents,
@@ -100,7 +100,7 @@ class PaymentController extends Controller
             return $this->externalRedirect($checkoutUrl, $request);
         }
 
-        if ($paymentMethod === 'paypal') {
+        if ($paymentMethod === PaymentMethod::Paypal->value) {
             $paypalCurrency = (string) config('services.paypal.currency', 'usd');
             $approvalUrl = $this->createPaypalOrder(
                 $service,
@@ -207,19 +207,14 @@ class PaymentController extends Controller
     private function handlePayPalSuccess(Request $request): RedirectResponse
     {
         $token = $request->query('token'); // PayPal order ID (PayerID is separate in older flow)
-
         if (! $token || ! is_string($token)) {
             return redirect()->route('frontend.home')->withErrors(['payment' => 'Missing PayPal token.']);
         }
 
         $payment = Payment::where('paypal_order_id', $token)->where('user_id', $request->user()->id)->first();
 
-        if (! $payment) {
+        if (! $payment || $payment->isPaid()) {
             return redirect()->route('frontend.home')->withErrors(['payment' => 'Payment not found.']);
-        }
-
-        if ($payment->isPaid()) {
-            return redirect()->route('frontend.home')->with('status', __('Payment already recorded.'));
         }
 
         $clientId = (string) config('services.paypal.client_id');
@@ -236,9 +231,21 @@ class PaymentController extends Controller
         }
 
         $accessToken = $tokenResponse->json('access_token');
-        $captureResponse = Http::withToken($accessToken)
-            ->post($baseUrl . '/v2/checkout/orders/' . $token . '/capture');
+        // $captureResponse = Http::withToken($accessToken)
+        //     ->withHeaders([
+        //         'Content-Type' => 'application/json',
+        //         'Prefer' => 'return=representation',
+        //     ])
+        //     // PayPal requires a JSON body (can be empty object)
+        //     ->post($baseUrl . '/v2/checkout/orders/' . $token . '/capture', []);
 
+        $captureResponse = Http::withToken($accessToken)
+            ->asJson()
+            ->withHeaders([
+                'Prefer' => 'return=representation',
+            ])
+            ->post($baseUrl . '/v2/checkout/orders/' . $token . '/capture', new \stdClass());
+            
         if (! $captureResponse->successful()) {
             report(new \RuntimeException('PayPal capture failed: ' . $captureResponse->body()));
             return redirect()->route('frontend.home')->withErrors(['payment' => 'PayPal capture failed.']);
@@ -391,14 +398,16 @@ class PaymentController extends Controller
             abort(500, 'PayPal access token missing.');
         }
 
-        $successUrl = route('user.payment.success', ['gateway' => 'paypal'])
-            . '?token={TOKEN}';
+        // PayPal will append its own query params (e.g. ?token=...).
+        // Do not use placeholders like {TOKEN} in return_url.
+        $successUrl = route('user.payment.success', ['gateway' => 'paypal']);
 
         $cancelUrl = route('user.order.billing-address', ['service_id' => $encryptedServiceId])
             . '?payment=paypal_cancel';
 
         // Step 2: Create PayPal order (custom_id = our payment id for success handler)
         $orderResponse = Http::withToken($accessToken)
+            ->acceptJson()
             ->timeout(15)
             ->post($baseUrl . '/v2/checkout/orders', [
                 'intent'         => 'CAPTURE',
@@ -420,11 +429,9 @@ class PaymentController extends Controller
                 ],
             ]);
 
-        dd($orderResponse);
-
         if (! $orderResponse->successful()) {
             report(new \RuntimeException(
-                'PayPal order creation failed: ' . $orderResponse->body()
+                'PayPal order creation failed: ' . $orderResponse->status() . ' ' . $orderResponse->body()
             ));
             abort(500, 'Unable to start PayPal payment. Please try again.');
         }

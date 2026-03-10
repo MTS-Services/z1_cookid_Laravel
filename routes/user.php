@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\User\UserOtpController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\WishlistController;
+use App\Http\Controllers\User\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 // ─── User Auth ───────────────────────────────────────────
@@ -46,5 +47,8 @@ Route::middleware(['auth'])->prefix('account')->name('user.')->group(function ()
     Route::controller(OrderController::class)->prefix('order')->name('order.')->group(function () {
         Route::get('/billing-address/{service_id}', 'billingAddress')->name('billing-address');
         Route::post('/billing-address', 'billingAddressStore')->name('billing-address.store');
+    });
+    Route::controller(PaymentController::class)->prefix('payment')->name('payment.')->group(function () {
+        Route::get('/start', 'start')->name('start');
     });
 });

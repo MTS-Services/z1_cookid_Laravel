@@ -15,6 +15,10 @@ interface OrderDetailsProps {
   paymentMethod?: string;
   transactionId?: string;
   orderStatus?: "Completed" | "Cancelled" | "Pending" | string;
+  serviceTitle?: string;
+  serviceDescription?: string;
+  duration?: string;
+  location?: string;
 }
 
 export default function OrderDetailsCard({
@@ -28,6 +32,10 @@ export default function OrderDetailsCard({
   paymentMethod = "Credit Card",
   transactionId = "TXN-78459321",
   orderStatus = "Cancelled",
+  serviceTitle,
+  serviceDescription,
+  duration,
+  location,
 }: OrderDetailsProps) {
   const statusColor = orderStatus === "Cancelled" 
     ? "bg-red-950 text-red-400 border-red-800/50" 
@@ -103,19 +111,19 @@ export default function OrderDetailsCard({
           <div className="space-y-3 text-sm">
             <div>
               <p className="font-medium text-blue-400 mb-1">
-                Full Interior & Exterior Detailing
+                {serviceTitle ?? "Full Interior & Exterior Detailing"}
               </p>
               <p className="text-gray-300">
-                Complete exterior hand wash, interior deep cleaning, tire shine, and surface polishing.
+                {serviceDescription ?? "Complete exterior hand wash, interior deep cleaning, tire shine, and surface polishing."}
               </p>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Duration:</span>
-              <span>2.5 Hours</span>
+              <span>{duration ?? "2.5 Hours"}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Location:</span>
-              <span>Customer Address (On-site Service)</span>
+              <span>{location ?? "Customer Address (On-site Service)"}</span>
             </div>
           </div>
         </div>

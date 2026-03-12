@@ -2,6 +2,7 @@
 
 import type { JSX } from 'react';
 import { useState } from 'react';
+import { router } from '@inertiajs/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 import { Navigation, Thumbs } from 'swiper/modules';
@@ -29,27 +30,52 @@ export interface ServiceDetailsPayload {
   image: string;
   images: { id: number; src: string; alt: string }[];
   /** Structured "What's Included" sections from ServiceInclusion */
-  inclusions: { label: string; items: string[] }[];
+  inclusions?: { label: string; items: string[] }[];
   vendor: { name: string; location: string | null };
   inWishlist?: boolean;
   wishlistId?: number | null;
 }
 
-interface DetailsProps {
-  service: ServiceDetailsPayload;
+export interface FormattedReview {
+  id: number;
+  name: string;
+  rating: number;
+  comment: string;
+  timeAgo: string;
 }
 
-const defaultRatingDistribution = [
-  { stars: 5, percentage: 0, count: 0 },
-  { stars: 4, percentage: 0, count: 0 },
-  { stars: 3, percentage: 0, count: 0 },
-  { stars: 2, percentage: 0, count: 0 },
-  { stars: 1, percentage: 0, count: 0 },
-];
+export interface ReviewsPaginator {
+  data: FormattedReview[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  links: { url: string | null; label: string; active: boolean }[];
+}
 
-export default function Details({ service }: DetailsProps): JSX.Element {
+export interface RatingDistributionItem {
+  stars: number;
+  percentage: number;
+  count: number;
+}
+
+interface DetailsProps {
+  service: ServiceDetailsPayload;
+  reviews: ReviewsPaginator;
+  ratingDistribution: RatingDistributionItem[];
+}
+
+export default function Details({ service, reviews, ratingDistribution }: DetailsProps): JSX.Element {
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
   const images = service.images?.length ? service.images : [{ id: 0, src: service.image, alt: service.title }];
+
+  const handleReviewsPageChange = (page: number) => {
+    if (page < 1 || page > reviews.last_page) return;
+    router.get(route('frontend.service-details', service.id), {
+      reviews_page: page,
+      reviews_per_page: reviews.per_page,
+    }, { preserveState: false })
+  };
 
   return (
     <main className="min-h-screen text-white">
@@ -102,9 +128,11 @@ export default function Details({ service }: DetailsProps): JSX.Element {
       <CustomerFeedbackSection
         averageRating={service.rating}
         totalReviews={service.totalReviews}
-        ratingDistribution={defaultRatingDistribution}
-        reviews={[]}
-        totalPages={0}
+        ratingDistribution={ratingDistribution}
+        reviews={reviews.data}
+        currentPage={reviews.current_page}
+        totalPages={reviews.last_page}
+        onPageChange={handleReviewsPageChange}
       />
     </main>
   );

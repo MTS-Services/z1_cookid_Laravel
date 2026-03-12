@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\OtpPurpose;
 use App\Enums\VendorStatus;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -83,4 +85,20 @@ class Vendor extends Authenticatable
 
         return asset('storage/'.$this->government_issue_license);
     }
+
+    public function balance(): HasOne
+    {
+        return $this->hasOne(VendorBalance::class);
+    }
+
+    public function earnings(): HasMany
+    {
+        return $this->hasMany(VendorEarning::class);
+    }
+
+    public function withdrawals(): HasMany
+    {
+        return $this->hasMany(VendorWithdrawal::class);
+    }
 }
+

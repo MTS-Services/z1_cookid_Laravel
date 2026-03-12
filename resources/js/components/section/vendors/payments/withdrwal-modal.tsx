@@ -312,18 +312,19 @@ export function VerifyAccountModal({
 type AddAccountModalProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
-    onContinue?: () => void
+    onContinue?: (accountLabel: string) => void
 }
 
 const providerTabs = [
     { id: 'card', label: 'Card' },
-    { id: 'gpay', label: 'GPay' },
     { id: 'paypal', label: 'PayPal' },
     { id: 'stripe', label: 'Stripe' },
 ]
 
 export function AddAccountModal({ open, onOpenChange, onContinue }: AddAccountModalProps) {
     const [provider, setProvider] = useState('card')
+    const [cardHolder, setCardHolder] = useState('')
+    const [cardNumber, setCardNumber] = useState('')
 
     return (
         <PaymentModalShell open={open} onOpenChange={onOpenChange} size="lg">
@@ -353,11 +354,21 @@ export function AddAccountModal({ open, onOpenChange, onContinue }: AddAccountMo
                 <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                     <div className="mb-4 flex items-center gap-2 text-sm font-semibold">
                         <CreditCard className="h-4 w-4" />
-                        Add Credit / Debit Card
+                        {provider === 'card' ? 'Add Credit / Debit Card' : 'Link payout account'}
                     </div>
                     <div className="space-y-4 text-sm">
-                        <Input placeholder="Card Holder’s Name" className="rounded-xl border-white/10 bg-black/30 text-white" />
-                        <Input placeholder="Card Number" className="rounded-xl border-white/10 bg-black/30 text-white" />
+                        <Input
+                            placeholder="Account holder’s name"
+                            value={cardHolder}
+                            onChange={(event) => setCardHolder(event.target.value)}
+                            className="rounded-xl border-white/10 bg-black/30 text-white"
+                        />
+                        <Input
+                            placeholder={provider === 'card' ? 'Card Number' : 'Account Identifier'}
+                            value={cardNumber}
+                            onChange={(event) => setCardNumber(event.target.value)}
+                            className="rounded-xl border-white/10 bg-black/30 text-white"
+                        />
                         <div className="grid gap-4 sm:grid-cols-2">
                             <Input placeholder="Month" className="rounded-xl border-white/10 bg-black/30 text-white" />
                             <Input placeholder="Year" className="rounded-xl border-white/10 bg-black/30 text-white" />
@@ -368,7 +379,15 @@ export function AddAccountModal({ open, onOpenChange, onContinue }: AddAccountMo
 
                 <Button
                     className="w-full rounded-2xl bg-(--color-accent-blue) text-white hover:bg-(--color-accent-blue-dark)"
-                    onClick={onContinue}
+                    onClick={() => {
+                        const digits = cardNumber.replace(/\D/g, '')
+                        const last4 = digits.slice(-4)
+                        const label =
+                            cardHolder && last4
+                                ? `${cardHolder} ••••${last4}`
+                                : cardHolder || (provider === 'card' ? 'Card payout account' : 'Payout account')
+                        onContinue?.(label)
+                    }}
                 >
                     Continue
                 </Button>

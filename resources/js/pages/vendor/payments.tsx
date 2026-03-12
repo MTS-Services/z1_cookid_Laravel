@@ -1,5 +1,6 @@
 import { ActionButton } from '@/components/ui/action-button'
 import VendorLayout from '@/layouts/vendor-layout'
+import { router, usePage } from '@inertiajs/react'
 import { Banknote, CheckCircle2, Clock3, Plus, TrendingUp } from 'lucide-react'
 import { useState } from 'react'
 import {
@@ -11,38 +12,38 @@ import {
   WithdrawalSuccessModal,
 } from '@/components/section/vendors/payments/withdrwal-modal'
 
-const payoutStats = [
-  {
-    label: 'Total Balance',
-    amount: '$20,450',
-    caption: 'Across all time',
-    icon: TrendingUp,
-  },
-  {
-    label: 'Pending Payouts',
-    amount: '$8,450',
-    caption: 'Awaiting release',
-    icon: Clock3,
-  },
-  {
-    label: 'Completed Payouts',
-    amount: '$12,450',
-    caption: 'This month',
-    icon: CheckCircle2,
-  },
-]
+type WithdrawalStatus = 'pending' | 'approved' | 'processing' | 'completed' | 'rejected'
 
-const withdrawals = [
-  { date: 'Mar 20, 2026 23:14', amount: '$5,000.00', status: 'Confirmed' },
-  { date: 'Mar 18, 2026 16:02', amount: '$4,500.00', status: 'Confirmed' },
-  { date: 'Mar 15, 2026 09:43', amount: '$6,200.00', status: 'Confirmed' },
-  { date: 'Mar 12, 2026 18:54', amount: '$3,800.00', status: 'Confirmed' },
-  { date: 'Mar 10, 2026 11:37', amount: '$5,000.00', status: 'Confirmed' },
-  { date: 'Mar 07, 2026 14:20', amount: '$2,950.00', status: 'Confirmed' },
-  { date: 'Mar 02, 2026 21:05', amount: '$4,750.00', status: 'Confirmed' },
-]
+interface VendorPaymentsStats {
+  totalEarned: number
+  pendingBalance: number
+  availableBalance: number
+  totalWithdrawn: number
+}
+
+interface VendorWithdrawalItem {
+  id: number
+  date: string
+  amount: number
+  status: WithdrawalStatus
+  statusLabel: string
+}
+
+interface VendorPaymentsPageProps extends Record<string, unknown> {
+  stats: VendorPaymentsStats
+  withdrawals: VendorWithdrawalItem[]
+}
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 2,
+  }).format(value ?? 0)
 
 export default function Payment() {
+  const { stats, withdrawals } = usePage<VendorPaymentsPageProps>().props
+
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const [isVerifyOpen, setIsVerifyOpen] = useState(false)
@@ -52,6 +53,7 @@ export default function Payment() {
   const [isAccountVerifyOpen, setIsAccountVerifyOpen] = useState(false)
   const [isAccountSuccessOpen, setIsAccountSuccessOpen] = useState(false)
   const [accountEmail, setAccountEmail] = useState('example@gmail.com')
+  const [linkedAccountLabel, setLinkedAccountLabel] = useState<string | null>(null)
 
   const [withdrawDetails, setWithdrawDetails] = useState<{ amount: string; method: string } | null>(null)
 
@@ -64,8 +66,22 @@ export default function Payment() {
 
   // Step 2: Confirm -> Verify
   const handleConfirmSend = () => {
-    setIsConfirmOpen(false)
-    setIsSuccessOpen(true)
+    if (!withdrawDetails) return
+
+    router.post(
+      route('vendor.payments.withdraw'),
+      {
+        amount: withdrawDetails.amount,
+        method: withdrawDetails.method,
+      },
+      {
+        preserveScroll: true,
+        onSuccess: () => {
+          setIsConfirmOpen(false)
+          setIsSuccessOpen(true)
+        },
+      },
+    )
   }
 
   // Step 3: Verify -> Success
@@ -76,7 +92,8 @@ export default function Payment() {
     setIsSuccessOpen(true)
   }
 
-  const handleAddAccountContinue = () => {
+  const handleAddAccountContinue = (accountLabel: string) => {
+    setLinkedAccountLabel(accountLabel)
     setIsAddAccountOpen(false)
     setIsAddAccountEmailOpen(true)
   }
@@ -101,7 +118,26 @@ export default function Payment() {
         </header>
 
         <div className="grid gap-4 md:grid-cols-3">
-          {payoutStats.map((stat) => (
+          {[
+            {
+              label: 'Total Balance',
+              amount: formatCurrency(stats.totalEarned),
+              caption: 'Across all time',
+              icon: TrendingUp,
+            },
+            {
+              label: 'Pending Payouts',
+              amount: formatCurrency(stats.pendingBalance),
+              caption: 'Awaiting release',
+              icon: Clock3,
+            },
+            {
+              label: 'Completed Payouts',
+              amount: formatCurrency(stats.totalWithdrawn),
+              caption: 'Total withdrawn',
+              icon: CheckCircle2,
+            },
+          ].map((stat) => (
             <article
               key={stat.label}
               className="rounded-2xl border border-white/5 bg-bg-gray p-5 shadow-[0_25px_70px_rgba(0,0,0,0.45)]"
@@ -138,11 +174,20 @@ export default function Payment() {
             <article className="rounded-2xl bg-(--color-card-darker) p-4">
               <div className="flex items-center justify-between text-sm text-text-gray-50">
                 <div>
-                  <p className="text-white">HSBC Business Account</p>
-                  <p>•••• •••• •••• 1234</p>
+                  {linkedAccountLabel ? (
+                    <>
+                      <p className="text-white">{linkedAccountLabel}</p>
+                      <p className="text-xs text-text-gray">{accountEmail}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-white">No payout account linked</p>
+                      <p className="text-xs text-text-gray">Add an account to receive withdrawals.</p>
+                    </>
+                  )}
                 </div>
                 <span className="rounded-full bg-(--color-accent-blue)/20 px-3 py-1 text-xs font-semibold text-(--color-accent-blue)">
-                  Primary
+                  {linkedAccountLabel ? 'Primary' : 'None'}
                 </span>
               </div>
             </article>
@@ -152,7 +197,7 @@ export default function Payment() {
             <div>
               <p className="text-md font-medium text-text-gray">Platform Earnings</p>
               <h2 className="text-xl font-semibold text-white">Available Balance</h2>
-              <p className="mt-3 text-3xl font-semibold">$12,450</p>
+              <p className="mt-3 text-3xl font-semibold">{formatCurrency(stats.availableBalance)}</p>
             </div>
             <ActionButton
               IconNode={Banknote}
@@ -213,6 +258,7 @@ export default function Payment() {
       <WithdrawFundsModal
         open={isWithdrawOpen}
         onOpenChange={setIsWithdrawOpen}
+        availableBalance={formatCurrency(stats.availableBalance)}
         onContinue={handleWithdrawContinue}
       />
 

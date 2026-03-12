@@ -36,6 +36,7 @@ Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function (
     Route::get('dashboard', [VendorDashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('notification', [VendorDashboardController::class, 'notification'])->name('notification');
     Route::get('payments', [PaymentController::class, 'index'])->name('payments');
+    Route::post('payments/withdraw', [PaymentController::class, 'withdraw'])->name('payments.withdraw');
     Route::get('performance', [PerformanceController::class, 'index'])->name('performance');
     Route::get('account', [AccountController::class, 'index'])->name('account');
     Route::patch('account', [AccountController::class, 'update'])->name('account.update');

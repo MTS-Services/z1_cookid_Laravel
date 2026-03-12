@@ -17,7 +17,7 @@ enum OrderStatus: string
             self::Completed => 'Completed',
             self::Confirmed => 'Confirmed',
             self::Cancelled => 'Cancelled',
-            self::Inprogress => 'Inprogress',
+            self::Inprogress => 'In Progress',
         };
     }
 }

@@ -48,6 +48,11 @@ class OrderController extends Controller
             $query->where('status', $state);
         });
 
+        // Default: most recently updated first (step change shows at top); overridden when user sorts
+        if (! $request->filled('sort_by')) {
+            $listQuery->orderBy('orders.updated_at', 'desc');
+        }
+
         // Use shared DataTableService for pagination, search, filters & sorting
         $result = $this->dataTableService->process($listQuery, $request, [
             'searchable' => ['order_number'],
@@ -58,10 +63,11 @@ class OrderController extends Controller
 
         // Transform orders to the shape expected by the frontend (reference = real id for URLs)
         $orders = collect($result['data'])->map(function (Order $order) {
+            $customerName = $order->service?->vendor?->first_name . ' ' . $order->service?->vendor?->last_name ?? 'N/A';
             return [
                 'id' => $order->order_number,
                 'reference' => (string) $order->order_primary_id,
-                'customerName' => optional($order->user)->name ?? 'N/A',
+                'customerName' => $customerName,
                 'service' => optional($order->service)->title ?? 'N/A',
                 'date' => optional($order->created_at)?->format('m/d/Y'),
                 'status' => (string) $order->status->value,

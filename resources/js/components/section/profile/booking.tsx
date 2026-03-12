@@ -5,15 +5,68 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { CalendarClock, ChevronLeft, ChevronRight, LocateIcon, User2 } from 'lucide-react'
 
-type BookingStatus = 'All' | 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled'
+type BookingStatus = 'All' | 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled' | 'In Progress'
 
-const tabs: BookingStatus[] = ['All', 'Pending', 'Confirmed', 'Completed', 'Cancelled']
+const tabs: BookingStatus[] = ['All', 'Pending', 'Confirmed', 'In Progress', 'Completed', 'Cancelled']
 
-const bookings = [
+interface BookingItem {
+    id: number | string
+    title: string
+    status: Exclude<BookingStatus, 'All'>
+    store: string
+    address: string
+    date: string
+    time: string
+    price: number
+    orderId?: number
+}
+
+function orderToBooking(order: {
+    id: number
+    orderNumber: string
+    status: string
+    statusLabel: string
+    scheduledAt: string | null
+    createdAt: string | null
+    totals: { total: number | null }
+    service?: { title: string | null; vendorName: string | null } | null
+    address?: { addressLine?: string; address?: string; city?: string; state?: string; zipCode?: string; zip_code?: string } | null
+}): BookingItem {
+    const statusMap: Record<string, Exclude<BookingStatus, 'All'>> = {
+        pending: 'Pending',
+        confirmed: 'Confirmed',
+        completed: 'Completed',
+        cancelled: 'Cancelled',
+        inprogress: 'In Progress',
+    }
+    const status = statusMap[order.status] ?? 'Pending'
+    const addr = order.address
+    const line = addr && ('addressLine' in addr ? addr.addressLine : (addr as { address?: string }).address)
+    const zip = addr && ('zipCode' in addr ? addr.zipCode : (addr as { zip_code?: string }).zip_code)
+    const addressStr = addr ? [line, addr.city, addr.state, zip].filter(Boolean).join(', ') || '—' : '—'
+    const scheduled = order.scheduledAt ?? order.createdAt
+    const d = scheduled ? new Date(scheduled) : null
+    const date = d ? d.toLocaleDateString('en-US', { dateStyle: 'long' }) : '—'
+    const time = d ? d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '—'
+    const price = order.totals?.total != null ? Number(order.totals.total) : 0
+    return {
+        id: order.orderNumber,
+        orderId: order.id,
+        title: order.service?.title ?? 'Service',
+        status,
+        store: order.service?.vendorName ?? '—',
+        address: addressStr,
+        date,
+        time,
+        price,
+    }
+}
+
+const defaultBookings: BookingItem[] = [
     {
         id: 'BK-2026-001',
         title: 'Full Car Service',
-        status: 'Confirmed' as BookingStatus,
+        status: 'Confirmed',
         store: 'Maktech Store',
         address: '2769 Ash Dr, San Jose, South Dakota 83475',
         date: 'Wednesday, February 21, 2026',
@@ -33,7 +86,7 @@ const bookings = [
     {
         id: 'BK-2026-003',
         title: 'Full Car Service',
-        status: 'Completed' as BookingStatus,
+        status: 'Completed',
         store: 'Maktech Store',
         address: '2769 Ash Dr, San Jose, South Dakota 83475',
         date: 'Wednesday, February 21, 2026',
@@ -43,7 +96,7 @@ const bookings = [
     {
         id: 'BK-2026-004',
         title: 'Full Car Service',
-        status: 'Cancelled' as BookingStatus,
+        status: 'Cancelled',
         store: 'Maktech Store',
         address: '2769 Ash Dr, San Jose, South Dakota 83475',
         date: 'Wednesday, February 21, 2026',
@@ -53,7 +106,7 @@ const bookings = [
     {
         id: 'BK-2026-005',
         title: 'Full Car Service',
-        status: 'Confirmed' as BookingStatus,
+        status: 'Confirmed',
         store: 'Maktech Store',
         address: '2769 Ash Dr, San Jose, South Dakota 83475',
         date: 'Wednesday, February 21, 2026',
@@ -63,7 +116,7 @@ const bookings = [
     {
         id: 'BK-2026-006',
         title: 'Master Tint & Wrap',
-        status: 'Pending' as BookingStatus,
+        status: 'Pending',
         store: 'Maktech Store',
         address: '2769 Ash Dr, San Jose, South Dakota 83475',
         date: 'Wednesday, February 21, 2026',
@@ -73,7 +126,7 @@ const bookings = [
     {
         id: 'BK-2026-007',
         title: 'Full Car Service',
-        status: 'Completed' as BookingStatus,
+        status: 'Completed',
         store: 'Maktech Store',
         address: '2769 Ash Dr, San Jose, South Dakota 83475',
         date: 'Wednesday, February 21, 2026',
@@ -83,7 +136,7 @@ const bookings = [
     {
         id: 'BK-2026-008',
         title: 'Full Car Service',
-        status: 'Confirmed' as BookingStatus,
+        status: 'Confirmed',
         store: 'Maktech Store',
         address: '2769 Ash Dr, San Jose, South Dakota 83475',
         date: 'Wednesday, February 21, 2026',
@@ -93,7 +146,7 @@ const bookings = [
     {
         id: 'BK-2026-009',
         title: 'Full Car Service',
-        status: 'Cancelled' as BookingStatus,
+        status: 'Cancelled',
         store: 'Maktech Store',
         address: '2769 Ash Dr, San Jose, South Dakota 83475',
         date: 'Wednesday, February 21, 2026',
@@ -111,6 +164,10 @@ const statusStyles: Record<Exclude<BookingStatus, 'All'>, { badge: string; butto
         badge: 'bg-orange-500/15 text-orange-300 border border-orange-500/30',
         button: 'border-slate-700 text-slate-200 hover:bg-[#292929]/80 hover:text-white',
     },
+    'In Progress': {
+        badge: 'bg-blue-500/15 text-blue-300 border border-blue-500/30',
+        button: 'border-slate-700 text-slate-200 hover:bg-[#292929]/80 hover:text-white',
+    },
     Completed: {
         badge: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30',
         button: 'border-slate-700 text-slate-200 bg-[#292929] hover:bg-[#292929]/80 hover:text-white',
@@ -121,16 +178,15 @@ const statusStyles: Record<Exclude<BookingStatus, 'All'>, { badge: string; butto
     },
 }
 
-function usePaginatedBookings(activeTab: BookingStatus, itemsPerPage = 9) {
+function usePaginatedBookings(activeTab: BookingStatus, items: BookingItem[], itemsPerPage = 9) {
     const [page, setPage] = useState(1)
 
     const filtered = useMemo(() => {
         if (activeTab === 'All') {
-            return bookings
+            return items
         }
-
-        return bookings.filter((booking) => booking.status === activeTab)
-    }, [activeTab])
+        return items.filter((booking) => booking.status === activeTab)
+    }, [activeTab, items])
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage))
     const currentPage = Math.min(page, totalPages)
@@ -144,9 +200,27 @@ function usePaginatedBookings(activeTab: BookingStatus, itemsPerPage = 9) {
     return { current, totalPages, page: currentPage, setPage }
 }
 
-export function BookingsSection() {
+interface BookingsSectionProps {
+    orders?: Array<{
+        id: number
+        orderNumber: string
+        status: string
+        statusLabel: string
+        scheduledAt: string | null
+        createdAt: string | null
+        totals: { total: number | null }
+        service?: { title: string | null; vendorName: string | null } | null
+        address?: { addressLine?: string; city?: string; state?: string; zipCode?: string } | null
+    }>
+}
+
+export function BookingsSection({ orders = [] }: BookingsSectionProps) {
     const [activeTab, setActiveTab] = useState<BookingStatus>('All')
-    const { current, page, setPage, totalPages } = usePaginatedBookings(activeTab)
+    const bookingsList = useMemo(
+        () => (orders.length > 0 ? orders.map(orderToBooking) : defaultBookings),
+        [orders]
+    )
+    const { current, page, setPage, totalPages } = usePaginatedBookings(activeTab, bookingsList)
 
     return (
         <section className="space-y-8">
@@ -204,9 +278,15 @@ export function BookingsSection() {
 
                                 <span className="text-2xl font-bold">${booking.price.toFixed(2)}</span>
                                 <div className="border-t border-[#292929] pt-4">
-                                    {['Confirmed', 'Completed'].includes(booking.status) ? (
+                                    {['Confirmed', 'Completed', 'In Progress'].includes(booking.status) ? (
                                         <div className="grid grid-cols-2 gap-3">
-                                            <Link href={route('user.order-details')}>
+                                            <Link
+                                                href={
+                                                    booking.orderId != null
+                                                        ? route('user.order-details.show', booking.orderId)
+                                                        : route('user.order-details')
+                                                }
+                                            >
                                                 <Button className="w-full rounded-lg bg-navy px-5 py-2 text-sm font-semibold cursor-pointer">
                                                     View Details
                                                 </Button>
@@ -222,7 +302,13 @@ export function BookingsSection() {
                                                 </Link>
                                             )}
                                             {booking.status === 'Completed' && (
-                                                <Link href={route('user.service-review')}>
+                                                <Link
+                                                    href={
+                                                        booking.orderId != null
+                                                            ? route('user.service-review.show', booking.orderId)
+                                                            : route('user.order-details')
+                                                    }
+                                                >
                                                     <Button
                                                         className={`${statusStyles.Completed.button} w-full rounded-lg px-5 py-2 text-sm font-semibold cursor-pointer`}
                                                         variant="outline"
@@ -233,7 +319,13 @@ export function BookingsSection() {
                                             )}
                                         </div>
                                     ) : (
-                                        <Link href="#">
+                                        <Link
+                                            href={
+                                                booking.orderId != null
+                                                    ? route('user.order-details.show', booking.orderId)
+                                                    : route('user.order-details')
+                                            }
+                                        >
                                             <Button className="w-full rounded-lg bg-navy px-5 py-2 text-sm font-semibold">
                                                 View Details
                                             </Button>

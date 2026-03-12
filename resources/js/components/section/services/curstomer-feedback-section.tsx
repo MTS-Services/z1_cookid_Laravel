@@ -24,24 +24,29 @@ interface CustomerFeedbackProps {
   totalReviews: number;
   ratingDistribution: RatingDistribution[];
   reviews: Review[];
-  currentPage?: number;      // for pagination control if needed
+  currentPage?: number;
   totalPages?: number;
+  onPageChange?: (page: number) => void;
 }
 
 export default function CustomerFeedbackSection({
-  averageRating = 4.7,
-  totalReviews = 934516,
+  averageRating = 0,
+  totalReviews = 0,
   ratingDistribution = [
-    { stars: 5, percentage: 63, count: 589532 },
-    { stars: 4, percentage: 24, count: 224717 },
-    { stars: 3, percentage: 9, count: 84174 },
-    { stars: 2, percentage: 1, count: 9352 },
-    { stars: 1, percentage: 3, count: 28041 }, // example adjustment
+    { stars: 5, percentage: 0, count: 0 },
+    { stars: 4, percentage: 0, count: 0 },
+    { stars: 3, percentage: 0, count: 0 },
+    { stars: 2, percentage: 0, count: 0 },
+    { stars: 1, percentage: 0, count: 0 },
   ],
-  totalPages = 6,
+  currentPage: controlledPage,
+  totalPages = 0,
+  onPageChange,
   reviews = []
 }: CustomerFeedbackProps) {
-  const [activePage, setActivePage] = useState(1);
+  const [internalPage, setInternalPage] = useState(1);
+  const activePage = controlledPage ?? internalPage;
+  const setActivePage = onPageChange ?? setInternalPage;
 
   return (
     <div className="container mx-auto text-white p-4">
@@ -139,12 +144,14 @@ export default function CustomerFeedbackSection({
         ))}
       </div>
 
-      {/* Pagination Dots */}
-      <Pagination
-        currentPage={activePage}
-        totalPages={totalPages}
-        onPageChange={setActivePage}
-      />
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={activePage}
+          totalPages={totalPages}
+          onPageChange={setActivePage}
+        />
+      )}
     </div>
   );
 }

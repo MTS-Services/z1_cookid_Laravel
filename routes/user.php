@@ -38,7 +38,9 @@ Route::middleware(['auth'])->prefix('account')->name('user.')->group(function ()
         Route::get('/profile', 'index')->name('profile');
         Route::post('/profile', 'profileUpdate')->name('profile.update');
         Route::get('/order-details', 'orderDetails')->name('order-details');
-        Route::get('/service-review', 'serviceReview')->name('service-review');
+        Route::get('/order-details/{order}', 'orderDetail')->name('order-details.show');
+        Route::get('/service-review/{order}', 'serviceReview')->name('service-review.show');
+        Route::post('/service-review/{order}', 'storeReview')->name('service-review.store');
     });
     Route::controller(WishlistController::class)->prefix('wishlist')->name('wishlist.')->group(function () {
         Route::post('/', 'store')->name('store');

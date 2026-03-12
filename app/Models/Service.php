@@ -70,6 +70,11 @@ class Service extends Model
         return $this->hasMany(ServiceInclusion::class);
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
     public function getImageUrlAttribute(): ?string
     {
         if (! $this->image) {

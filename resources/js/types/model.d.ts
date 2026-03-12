@@ -12,6 +12,12 @@ export interface Service {
     vehicleType?: string | null;
 }
 
+export interface Review {
+    id: number;
+    name: string;
+    rating: number;
+    comment: string;
+}
 export interface ServiceFilters {
     search?: string;
     category?: string | null;

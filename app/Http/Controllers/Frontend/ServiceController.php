@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Enums\ActiveInactiveStatus;
 use App\Http\Controllers\Controller;
+use App\Enums\ActiveInactiveStatus;
 use App\Models\CarType;
 use App\Models\Category;
+use App\Models\Review;
 use App\Models\Service;
 use App\Models\ServiceImage;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Inertia\Inertia;
@@ -163,16 +165,88 @@ class ServiceController extends Controller
             'vehicleTypeName' => $service->carType?->name,
             'image' => $service->image_url,
             'images' => $images,
+            'inclusions' => $this->formatInclusions($service),
             'vendor' => [
-                'name' => $service->vendor?->shop_name ?? $service->vendor?->first_name.' '.$service->vendor?->last_name ?? 'Vendor',
+                'name' => $service->vendor?->shop_name ?? trim(($service->vendor?->first_name ?? '').' '.($service->vendor?->last_name ?? '')) ?: 'Vendor',
                 'location' => $service->location ?? null,
             ],
             'inWishlist' => $wishlistEntry !== null,
             'wishlistId' => $wishlistEntry?->id,
         ];
 
+        $reviewsPerPage = (int) $request->input('reviews_per_page', 10);
+        $reviewsPerPage = max(5, min(50, $reviewsPerPage));
+        $reviewsPage = (int) $request->input('reviews_page', 1);
+        $reviewsPage = max(1, $reviewsPage);
+
+        $reviewsPaginator = $service->reviews()
+            ->with('user')
+            ->latest()
+            ->paginate($reviewsPerPage, ['*'], 'reviews_page')
+            ->withQueryString()
+            ->through(function ($review) {
+                return [
+                    'id' => $review->id,
+                    'name' => $review->user?->first_name && $review->user?->last_name
+                        ? $review->user->first_name.' '.$review->user->last_name
+                        : ($review->user?->email ?? 'Guest'),
+                    'rating' => (int) $review->rating,
+                    'comment' => $review->comment ?? '',
+                    'timeAgo' => Carbon::parse($review->created_at)->diffForHumans(),
+                ];
+            });
+
+        $ratingDistribution = $this->ratingDistributionForService($service->id);
+
         return Inertia::render('frontend/service-details', [
             'service' => $serviceData,
+            'reviews' => $reviewsPaginator,
+            'ratingDistribution' => $ratingDistribution,
         ]);
+    }
+
+    /**
+     * Rating distribution (count and percentage per star) for a service, from all reviews.
+     */
+    private function ratingDistributionForService(int $serviceId): array
+    {
+        $total = Review::where('service_id', $serviceId)->count();
+        $counts = Review::where('service_id', $serviceId)
+            ->selectRaw('rating, count(*) as count')
+            ->groupBy('rating')
+            ->pluck('count', 'rating');
+
+        return collect([5, 4, 3, 2, 1])->map(function (int $stars) use ($counts, $total) {
+            $count = (int) ($counts[$stars] ?? 0);
+
+            return [
+                'stars' => $stars,
+                'count' => $count,
+                'percentage' => $total > 0 ? (int) round(($count / $total) * 100) : 0,
+            ];
+        })->all();
+    }
+
+    /**
+     * Format service inclusions for frontend. Returns empty array if no inclusions table/records.
+     */
+    private function formatInclusions(Service $service): array
+    {
+        try {
+            if (! $service->relationLoaded('inclusions')) {
+                $service->load('inclusions');
+            }
+            if ($service->inclusions->isEmpty()) {
+                return [];
+            }
+            $grouped = $service->inclusions->groupBy('section_label');
+
+            return $grouped->map(fn ($items, $label) => [
+                'label' => $label ?: 'Included',
+                'items' => $items->pluck('item')->filter()->values()->all(),
+            ])->values()->all();
+        } catch (\Throwable) {
+            return [];
+        }
     }
 }

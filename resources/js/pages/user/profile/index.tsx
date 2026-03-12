@@ -1,14 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import FrontendLayout from '@/layouts/frontend-layout'
-import {
-    Calendar,
-    Heart,
-    User2,
-} from 'lucide-react'
+import { Calendar, Heart, User2 } from 'lucide-react'
 import { AccountSection } from '@/components/section/profile/account'
 import { BookingsSection } from '@/components/section/profile/booking'
 import { WishlistSection } from '@/components/section/profile/wishlist'
 import { router } from '@inertiajs/react'
+import type { UserOrderSummary } from './order-details'
 
 export interface WishlistItem {
     id: number
@@ -19,17 +16,24 @@ export interface WishlistItem {
     price: number
 }
 
+type ProfileSection = 'bookings' | 'wishlist' | 'account'
+
 interface ProfilePageProps {
+    section: ProfileSection
     wishlist: WishlistItem[]
+    orders?: UserOrderSummary[]
 }
 
-export default function Index({ wishlist = [] }: ProfilePageProps) {
-    const [section, setSection] = useState<'bookings' | 'wishlist' | 'account'>('bookings')
+export default function Index({ section = 'bookings', wishlist = [], orders = [] }: ProfilePageProps) {
     const scrollRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [section])
+
+    const setSection = (key: ProfileSection) => {
+        router.get(route('user.profile'), { section: key }, { preserveState: false })
+    }
 
     return (
         <FrontendLayout activePage="user.profile">
@@ -47,15 +51,16 @@ export default function Index({ wishlist = [] }: ProfilePageProps) {
 
                     <div className="grid grid-cols-2 max-w-2xl gap-4 sm:grid-cols-3">
                         {[
-                            { key: 'bookings', label: 'Bookings', icon: <Calendar className="h-10 w-10" /> },
-                            { key: 'wishlist', label: 'Wishlist', icon: <Heart className="h-10 w-10" /> },
-                            { key: 'account', label: 'Account', icon: <User2 className="h-10 w-10" /> },
+                            { key: 'bookings' as const, label: 'Bookings', icon: <Calendar className="h-10 w-10" /> },
+                            { key: 'wishlist' as const, label: 'Wishlist', icon: <Heart className="h-10 w-10" /> },
+                            { key: 'account' as const, label: 'Account', icon: <User2 className="h-10 w-10" /> },
                         ].map(({ key, label, icon }) => {
                             const isActive = section === key
                             return (
                                 <button
                                     key={key}
-                                    onClick={() => setSection(key as typeof section)}
+                                    type="button"
+                                    onClick={() => setSection(key)}
                                     className={`rounded-lg border p-4 lg:p-6 text-center shadow-lg transition-all duration-300 cursor-pointer ${
                                         isActive
                                             ? 'bg-linear-to-br from-navy to-navy border-transparent shadow-navy/25'
@@ -70,7 +75,7 @@ export default function Index({ wishlist = [] }: ProfilePageProps) {
                     </div>
 
                     <main ref={scrollRef} className="space-y-10">
-                        {section === 'bookings' && <BookingsSection />}
+                        {section === 'bookings' && <BookingsSection orders={orders} />}
                         {section === 'wishlist' && <WishlistSection wishlist={wishlist} />}
                         {section === 'account' && <AccountSection />}
                     </main>

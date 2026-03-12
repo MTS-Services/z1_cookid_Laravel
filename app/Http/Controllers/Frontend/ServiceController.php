@@ -49,7 +49,7 @@ class ServiceController extends Controller
             ->paginate(12)
             ->withQueryString()
             ->through(fn (Service $service) => [
-                'id' => $service->id,
+                'id' => Crypt::encryptString((string) $service->id),
                 'name' => $service->title,
                 'image' => $service->image_url,
                 'rating' => (float) ($service->average_rating ?? 0),
@@ -123,11 +123,12 @@ class ServiceController extends Controller
                     'max' => $maxPriceBound,
                 ],
             ],
-        ]);
+        ]); 
     }
 
-    public function show(Request $request, int $id): Response
+    public function show(Request $request, $id): Response
     {
+        $id = Crypt::decryptString($id);
         $service = Service::query()
             ->with(['category', 'carType', 'vendor', 'images'])
             ->where('status', ActiveInactiveStatus::ACTIVE)
@@ -167,7 +168,9 @@ class ServiceController extends Controller
             'images' => $images,
             'inclusions' => $this->formatInclusions($service),
             'vendor' => [
+                'id' => Crypt::encryptString((string) $service->vendor?->id),
                 'name' => $service->vendor?->shop_name ?? trim(($service->vendor?->first_name ?? '').' '.($service->vendor?->last_name ?? '')) ?: 'Vendor',
+                'avatar_url' => $service->vendor?->avatar_url,
                 'location' => $service->location ?? null,
             ],
             'inWishlist' => $wishlistEntry !== null,

@@ -31,7 +31,7 @@ export interface ServiceDetailsPayload {
   images: { id: number; src: string; alt: string }[];
   /** Structured "What's Included" sections from ServiceInclusion */
   inclusions?: { label: string; items: string[] }[];
-  vendor: { name: string; location: string | null };
+  vendor: { id: number; encryptedId: string; name: string; avatar_url: string; location: string | null };
   inWishlist?: boolean;
   wishlistId?: number | null;
 }

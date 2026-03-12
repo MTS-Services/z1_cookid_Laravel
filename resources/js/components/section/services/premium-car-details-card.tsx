@@ -33,6 +33,8 @@ export default function PremiumCarDetailingCard({ service }: PremiumCarDetailing
     const vehicleLabel = service.vehicleTypeName ?? '—';
     const inWishlist = Boolean(service.inWishlist);
     const wishlistId = service.wishlistId ?? null;
+    const inclusions = service.inclusions ?? [];
+    const hasInclusions = inclusions.length > 0;
 
     const handleWishlistToggle = () => {
         if (inWishlist && wishlistId != null) {
@@ -77,12 +79,12 @@ export default function PremiumCarDetailingCard({ service }: PremiumCarDetailing
             </div>
 
             {/* What's Included: prefer structured inclusions, fallback to features (HTML) */}
-            {(service.inclusions?.length > 0 || (service.features && service.features.trim() !== '')) && (
+            {(hasInclusions || (service.features && service.features.trim() !== '')) && (
                 <div className="mb-8">
                     <h2 className="text-xl font-semibold mb-4">What&apos;s Included</h2>
                     <div className="space-y-6">
-                        {service.inclusions?.length > 0 ? (
-                            service.inclusions.map((section) => (
+                        {hasInclusions ? (
+                            inclusions.map((section) => (
                                 <div key={section.label}>
                                     <h3 className="text-sm font-semibold uppercase tracking-wide text-white/60 mb-3">
                                         {section.label}
@@ -149,9 +151,12 @@ export default function PremiumCarDetailingCard({ service }: PremiumCarDetailing
             {/* Store Info */}
             <div className="p-4 flex gap-4 bg-transparent text-white">
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
-                    <span className="text-lg font-bold text-white/80">
+                    {/* <span className="text-lg font-bold text-white/80">
                         {service.vendor.name.charAt(0)}
-                    </span>
+                    </span> */}
+                    <Link href={route('frontend.services-store', {id: service.vendor.id})}>
+                        <img src={service.vendor.avatar_url} alt={service.vendor.name} className="w-12 h-12 rounded-full" />
+                    </Link>
                 </div>
                 <div>
                     <p className="font-semibold">{service.vendor.name}</p>

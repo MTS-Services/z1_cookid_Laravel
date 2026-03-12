@@ -159,8 +159,8 @@ export default function TopRelated() {
                     <h2 className="text-xl lg:text-3xl font-medium text-text-white">
                         Top Rated Near You
                     </h2>
-                    <Link className="rounded-lg bg-bg-nevy p-3 text-base font-medium text-text-gray-100">
-                        View All Providers
+                    <Link href={route('frontend.services')} className="rounded-lg bg-bg-nevy p-3 text-base font-medium text-text-gray-100">
+                        View All Service
                     </Link>
                 </div>
                 <div className="grid grid-cols-1 gap-9 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

@@ -1,147 +1,76 @@
 import Pagination from '@/components/ui/pagination'
 import FrontendLayout from '@/layouts/frontend-layout'
+import { Link, router } from '@inertiajs/react'
 import { MapPin, Star } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import type { Paginated } from '@/types/model'
 
-const categories = ['Wash', 'Detailing', 'Tint', 'Mechanical Services']
+interface StoreService {
+    id: number
+    title: string
+    location: string
+    price: number
+    category: string
+    rating: number
+    reviews: number
+    image: string
+}
 
-const services = [
-    {
-        id: 1,
-        title: 'Quick Clean Pro',
-        location: 'Westside',
-        price: 45,
-        category: 'Wash',
-        rating: 4.9,
-        reviews: 62,
-        image:
-            'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-        id: 2,
-        title: 'Master Tint & Wrap',
-        location: 'North Hills',
-        price: 180,
-        category: 'Tint',
-        rating: 4.8,
-        reviews: 58,
-        image:
-            'https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-        id: 3,
-        title: 'Elite Automotive Detailers',
-        location: 'San Francisco',
-        price: 180,
-        category: 'Detailing',
-        rating: 4.6,
-        reviews: 43,
-        image:
-            'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-        id: 4,
-        title: 'Ceramic Shield Studio',
-        location: 'Brooklyn',
-        price: 210,
-        category: 'Detailing',
-        rating: 4.7,
-        reviews: 37,
-        image:
-            'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-        id: 5,
-        title: 'Premium Wash & Go',
-        location: 'Uptown',
-        price: 55,
-        category: 'Wash',
-        rating: 4.8,
-        reviews: 51,
-        image:
-            'https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-        id: 6,
-        title: 'Hydra Spa Wash',
-        location: 'Midtown',
-        price: 65,
-        category: 'Wash',
-        rating: 4.5,
-        reviews: 40,
-        image:
-            'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-        id: 7,
-        title: 'Precision Mechanics',
-        location: 'Soho',
-        price: 320,
-        category: 'Mechanical Services',
-        rating: 4.4,
-        reviews: 29,
-        image:
-            'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-        id: 8,
-        title: 'Supreme Detail Care',
-        location: 'Harlem',
-        price: 195,
-        category: 'Detailing',
-        rating: 4.7,
-        reviews: 49,
-        image:
-            'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-        id: 9,
-        title: 'Rapid Express Wash',
-        location: 'Burbank',
-        price: 60,
-        category: 'Wash',
-        rating: 4.6,
-        reviews: 42,
-        image:
-            'https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?auto=format&fit=crop&w=600&q=80',
-    },
-]
+interface StorePageProps {
+    services: Paginated<StoreService>
+    categories: string[]
+    vendor: {
+        id: string
+        name: string
+        location: string | null
+        avatar_url: string
+        averageRating: number
+        totalReviews: number
+    }
+}
 
-export default function Store() {
-    const [activeCategory, setActiveCategory] = useState('Wash')
+export default function Store({ services, categories, vendor }: StorePageProps) {
+    const [activeCategory, setActiveCategory] = useState<string | null>(categories[0] ?? null)
 
     const filteredServices = useMemo(() => {
-        return services.filter((service) =>
-            activeCategory ? service.category === activeCategory : true,
-        )
-    }, [activeCategory])
-    const [currentPage, setCurrentPage] = useState(1)
-    const [totalPages, setTotalPages] = useState(5)
+        const data = services?.data ?? []
+        return activeCategory ? data.filter((service) => service.category === activeCategory) : data
+    }, [activeCategory, services])
+
+    const currentPage = services?.meta?.current_page ?? 1
+    const totalPages = services?.meta?.last_page ?? 1
+
     const onPageChange = (page: number) => {
-        setCurrentPage(page)
+        if (page < 1 || page > totalPages || page === currentPage) return
+        router.get(
+            route('frontend.services-store', vendor.id),
+            { page, category: activeCategory ?? undefined },
+            { preserveScroll: true },
+        )
     }
 
     return (
         <FrontendLayout activePage="frontend.store">
             <section className="container mx-auto px-6 py-16">
                 <div className="mx-auto max-w-4xl text-center text-white">
-                    {/* <div className="mx-auto mb-6 h-28 w-28 rounded-full bg-linear-to-br from-navy via-purple-500 to-pink-500 p-0.75">
-                        <div className="flex h-full w-full items-center justify-center rounded-full bg-gray-950">
-                            <span className="text-4xl font-semibold">M</span>
-                        </div>
-                    </div> */}
                     <div className='flex justify-center mb-4'>
-                        <img src="/maktech.png" alt="Maktech Store" className="h-24 w-24" />
+                        <img src={vendor.avatar_url} alt={vendor.name} className="h-24 w-24 rounded-full" />
                     </div>
-                    <p className="text-sm uppercase tracking-[0.6rem] text-gray-400">Maktech Store</p>
+                    <p className="text-sm uppercase tracking-[0.6rem] text-gray-400">{vendor.name}</p>
                     <div className="mt-4 flex flex-col items-center justify-center gap-4 text-sm text-gray-300">
                         <span className="flex items-center gap-1">
                             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            4.8 (321 reviews)
+                            {vendor.averageRating.toFixed(1)}{' '}
+                            <Link
+                                href={route('frontend.vendor-reviews', vendor.id)}
+                                className="text-white/70 hover:text-white/90 hover:underline"
+                            >
+                                ({vendor.totalReviews.toLocaleString()} reviews)
+                            </Link>
                         </span>
                         <span className="flex items-center gap-2">
                             <MapPin className="h-4 w-4" />
-                            921 4th Avenue North, Birmingham, AL 35203, USA
+                            {vendor.location ?? '—'}
                         </span>
                     </div>
                 </div>
@@ -152,11 +81,10 @@ export default function Store() {
                             key={category}
                             type="button"
                             onClick={() => setActiveCategory(category)}
-                            className={`rounded-full px-6 py-2 text-sm font-medium transition duration-200 ${
-                                activeCategory === category
+                            className={`rounded-full px-6 py-2 text-sm font-medium transition duration-200 ${activeCategory === category
                                     ? 'bg-white text-gray-900'
                                     : 'border border-white/20 text-white hover:bg-white/10'
-                            }`}
+                                }`}
                         >
                             {category}
                         </button>
@@ -196,9 +124,9 @@ export default function Store() {
                                     </div>
                                     <div className="flex items-center justify-between text-sm text-gray-400">
                                         <span>{service.reviews} reviews</span>
-                                        <button className="rounded-full bg-navy px-4 py-2 text-sm font-semibold text-white transition hover:bg-navy">
+                                        <Link href={route('frontend.service-details', { id: service.id })} className="rounded-full bg-navy px-4 py-2 text-sm font-semibold text-white transition hover:bg-navy">
                                             See Details
-                                        </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -206,9 +134,9 @@ export default function Store() {
                     ))}
                 </div>
                 <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={onPageChange}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
                 />
             </section>
         </FrontendLayout>

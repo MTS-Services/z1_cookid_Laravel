@@ -12,8 +12,8 @@ Route::name('frontend.')->controller(FrontendController::class)->group(function 
     Route::get('/how-it-works', 'howItWorks')->name('how-it-works');
     Route::get('/privacy-policy', 'privacyPolicy')->name('privacy-policy');
     Route::get('/booking-confirm', 'bookingConfirm')->name('booking-confirm');
-    Route::get('/vendor-reviews', 'vendorReviews')->name('vendor-reviews');
-    Route::get('/store', 'store')->name('store');
+    Route::get('/vendor-reviews/{id}', 'vendorReviews')->name('vendor-reviews');
+    Route::get('/services-store/{id}', 'servicesStore')->name('services-store');
     Route::get('/search/{id?}', 'search')->name('search');
     Route::get('/about-us', 'aboutUs')->name('about-us');
 });

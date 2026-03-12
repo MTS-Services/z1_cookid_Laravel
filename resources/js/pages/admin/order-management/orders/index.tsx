@@ -47,6 +47,8 @@ interface Order extends Record<string, unknown> {
     vendor?: NestedVendor;
 }
 
+type OrderStatusOption = { value: string; label: string };
+
 interface Props {
     orders: Order[];
     pagination: PaginationData;
@@ -56,15 +58,8 @@ interface Props {
     sortBy: string;
     sortOrder: 'asc' | 'desc';
     tab: string;
+    orderStatuses: OrderStatusOption[];
 }
-
-const statusLabel: Record<OrderStatus, string> = {
-    pending: 'Pending',
-    confirmed: 'Confirmed',
-    inprogress: 'In Progress',
-    completed: 'Completed',
-    cancelled: 'Cancelled',
-};
 
 const statusClassName: Record<OrderStatus, string> = {
     pending: 'bg-amber-500/15 text-amber-300 border-amber-500/40',
@@ -101,7 +96,12 @@ export default function AdminOrdersIndex({
     sortBy,
     sortOrder,
     tab,
+    orderStatuses = [],
 }: Props) {
+    const statusLabelByValue = Object.fromEntries(
+        orderStatuses.map((s) => [s.value, s.label])
+    ) as Record<OrderStatus, string>;
+
     const {
         isLoading,
         handleSearch,
@@ -110,7 +110,7 @@ export default function AdminOrdersIndex({
         handlePerPageChange,
         handlePageChange,
     } = useDataTable({
-        only: ['orders', 'pagination', 'offset', 'filters', 'search', 'sortBy', 'sortOrder'],
+        only: ['orders', 'pagination', 'offset', 'filters', 'search', 'sortBy', 'sortOrder', 'tab', 'orderStatuses'],
     });
 
     const toNumber = (value: unknown): number | undefined => {
@@ -135,22 +135,22 @@ export default function AdminOrdersIndex({
             return 'pending';
         }
 
-        const normalized = status.toLowerCase();
+        const normalized = String(status).toLowerCase().trim();
 
-        if (['in_progress', 'in-progress', 'active'].includes(normalized)) {
+        if (['inprogress', 'in_progress', 'in-progress', 'active'].includes(normalized)) {
             return 'inprogress';
         }
-
         if (['confirmed'].includes(normalized)) {
             return 'confirmed';
         }
-
         if (['completed'].includes(normalized)) {
             return 'completed';
         }
-
-        if (['cancelled'].includes(normalized)) {
+        if (['cancelled', 'canceled'].includes(normalized)) {
             return 'cancelled';
+        }
+        if (['pending'].includes(normalized)) {
+            return 'pending';
         }
 
         return 'pending';
@@ -237,7 +237,7 @@ export default function AdminOrdersIndex({
             sortable: true,
             render: (order) => {
                 const key = (order.status as OrderStatus) || 'pending';
-                const label = statusLabel[key] ?? order.status;
+                const label = statusLabelByValue[key] ?? order.status;
                 const classes = statusClassName[key] ?? 'bg-white/5 text-white border-white/10';
 
                 return (
@@ -276,13 +276,7 @@ export default function AdminOrdersIndex({
             key: 'status',
             label: 'Status',
             placeholder: 'Filter by status',
-            options: [
-                { label: 'Pending', value: 'pending' },
-                { label: 'Confirmed', value: 'confirmed' },
-                { label: 'In Progress', value: 'inprogress' },
-                { label: 'Completed', value: 'completed' },
-                { label: 'Cancelled', value: 'cancelled' },
-            ],
+            options: orderStatuses.map((s) => ({ label: s.label, value: s.value })),
         },
     ];
 

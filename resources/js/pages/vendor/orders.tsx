@@ -7,7 +7,7 @@ import VendorLayout from '@/layouts/vendor-layout'
 import { cn } from '@/lib/utils'
 import { Link, router, usePage } from '@inertiajs/react'
 import { CheckCircle2, Clock, Copy, XCircle } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDataTable } from '@/hooks/use-data-table'
 import type { PaginationData, ColumnConfig, FilterConfig } from '@/types/data-table.types'
 
@@ -73,6 +73,14 @@ export default function Orders() {
     const [statusFilter, setStatusFilter] = useState<OrderStatus>(type ?? 'pending')
     const [currentPage, setCurrentPage] = useState(pagination.current_page ?? 1)
     const totalPages = pagination.last_page ?? 1
+
+    // Keep tab and pagination in sync with URL / server props (e.g. ?type=confirmed)
+    useEffect(() => {
+        setStatusFilter(type ?? 'pending')
+    }, [type])
+    useEffect(() => {
+        setCurrentPage(pagination.current_page ?? 1)
+    }, [pagination.current_page])
 
     const {
         isLoading,
@@ -153,7 +161,7 @@ export default function Orders() {
                                 className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy"
                                 onClick={() =>
                                     router.patch(
-                                        route('vendor.order.update-status', order.reference),
+                                        route('vendor.order.update-status', { order: order.reference }),
                                         { status: 'confirmed' },
                                         { preserveScroll: true, preserveState: true },
                                     )
@@ -167,7 +175,7 @@ export default function Orders() {
                                 className="h-9 rounded bg-dark-gray px-4 text-sm font-medium text-white hover:bg-slate-800"
                                 onClick={() =>
                                     router.patch(
-                                        route('vendor.order.update-status', order.reference),
+                                        route('vendor.order.update-status', { order: order.reference }),
                                         { status: 'cancelled' },
                                         { preserveScroll: true, preserveState: true },
                                     )
@@ -184,7 +192,7 @@ export default function Orders() {
                                 className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy"
                                 onClick={() =>
                                     router.patch(
-                                        route('vendor.order.update-status', order.reference),
+                                        route('vendor.order.update-status', { order: order.reference }),
                                         { status: 'completed' },
                                         { preserveScroll: true, preserveState: true },
                                     )
@@ -200,7 +208,7 @@ export default function Orders() {
                                 size="sm"
                                 className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy"
                             >
-                                <Link href={route('vendor.order.details', order.reference)}>
+                                <Link href={route('vendor.order.details', { order: order.reference })}>
                                     See Details
                                 </Link>
                             </Button>
@@ -212,7 +220,7 @@ export default function Orders() {
                                 size="sm"
                                 className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy cursor-pointer"
                             >
-                                <Link href={route('vendor.order.candelled-details', order.reference)}>
+                                <Link href={route('vendor.order.cancelled-details', { order: order.reference })}>
                                     See Details
                                 </Link>
                             </Button>
@@ -225,7 +233,7 @@ export default function Orders() {
                                 className="h-9 rounded bg-navy px-4 text-sm font-medium text-white hover:bg-navy cursor-pointer"
                                 onClick={() =>
                                     router.patch(
-                                        route('vendor.order.update-status', order.reference),
+                                        route('vendor.order.update-status', { order: order.reference }),
                                         { status: 'inprogress' },
                                         { preserveScroll: true, preserveState: true },
                                     )

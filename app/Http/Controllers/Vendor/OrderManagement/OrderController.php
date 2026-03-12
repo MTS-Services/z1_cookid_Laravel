@@ -28,8 +28,9 @@ class OrderController extends Controller
                 $query->where('vendor_id', $vendor->id);
             })
             ->with(['user', 'service'])
-            // Aliases to support sortable keys used on the frontend data table
+            // Preserve real PK for route model binding; aliases for sortable/display
             ->select('orders.*')
+            ->selectRaw('orders.id as order_primary_id')
             ->selectRaw('order_number as id')
             ->selectRaw('total as amount')
             ->selectRaw('created_at as date');
@@ -47,6 +48,11 @@ class OrderController extends Controller
             $query->where('status', $state);
         });
 
+        // Default: most recently updated first (step change shows at top); overridden when user sorts
+        if (! $request->filled('sort_by')) {
+            $listQuery->orderBy('orders.updated_at', 'desc');
+        }
+
         // Use shared DataTableService for pagination, search, filters & sorting
         $result = $this->dataTableService->process($listQuery, $request, [
             'searchable' => ['order_number'],
@@ -55,12 +61,13 @@ class OrderController extends Controller
             'sortable' => ['id', 'amount', 'date', 'status'],
         ]);
 
-        // Transform orders to the shape expected by the frontend
+        // Transform orders to the shape expected by the frontend (reference = real id for URLs)
         $orders = collect($result['data'])->map(function (Order $order) {
+            $customerName = $order->service?->vendor?->first_name . ' ' . $order->service?->vendor?->last_name ?? 'N/A';
             return [
                 'id' => $order->order_number,
-                'reference' => (string) $order->id,
-                'customerName' => optional($order->user)->name ?? 'N/A',
+                'reference' => (string) $order->order_primary_id,
+                'customerName' => $customerName,
                 'service' => optional($order->service)->title ?? 'N/A',
                 'date' => optional($order->created_at)?->format('m/d/Y'),
                 'status' => (string) $order->status->value,
@@ -90,7 +97,7 @@ class OrderController extends Controller
         ]);
     }
 
-    public function orderCandelledDetails(Order $order): Response
+    public function orderCancelledDetails(Order $order): Response
     {
         $order = $this->loadVendorOrder($order);
 

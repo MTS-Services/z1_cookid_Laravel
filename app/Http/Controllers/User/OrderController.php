@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Enums\ActiveInactiveStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use App\Models\Service;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\RedirectResponse;
@@ -15,6 +16,35 @@ use Inertia\Response;
 
 class OrderController extends Controller
 {
+    // ─── User Order List (Order History) ────────────────────────────────────────
+    public function orderDetails(Request $request): Response
+    {
+        $user = $request->user();
+        $orders = $user->orders()
+            ->with(['service.vendor', 'address', 'payments', 'review'])
+            ->orderByDesc('created_at')
+            ->paginate(12)
+            ->through(fn (Order $order) => app(ProfileController::class)->formatOrderForUser($order));
+
+        return Inertia::render('user/profile/order-details', [
+            'orders' => $orders,
+        ]);
+    }
+
+    // ─── Single Order Detail ───────────────────────────────────────────────────
+    public function orderDetail(Request $request, Order $order): Response|RedirectResponse
+    {
+        if ($order->user_id !== $request->user()->id) {
+            abort(403);
+        }
+        $order->loadMissing(['service.vendor', 'user', 'address', 'payments', 'review']);
+        $orderData = app(ProfileController::class)->formatOrderForUser($order);
+
+        return Inertia::render('user/profile/order-detail', [
+            'order' => $orderData,
+        ]);
+    }
+
     // ─── Show Billing Address Page ─────────────────────────────────────────────
     public function billingAddress(Request $request, string $serviceId): Response
     {

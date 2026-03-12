@@ -37,14 +37,16 @@ Route::middleware(['auth'])->prefix('account')->name('user.')->group(function ()
     Route::controller(ProfileController::class)->group(function () {
         Route::get('/profile', 'index')->name('profile');
         Route::post('/profile', 'profileUpdate')->name('profile.update');
-        Route::get('/order-details', 'orderDetails')->name('order-details');
-        Route::get('/order-details/{order}', 'orderDetail')->name('order-details.show');
         Route::get('/service-review/{order}', 'serviceReview')->name('service-review.show');
         Route::post('/service-review/{order}', 'storeReview')->name('service-review.store');
     });
     Route::controller(WishlistController::class)->prefix('wishlist')->name('wishlist.')->group(function () {
         Route::post('/', 'store')->name('store');
         Route::delete('/{wishlist}', 'destroy')->name('destroy');
+    });
+    Route::controller(OrderController::class)->group(function () {
+        Route::get('/order-details', 'orderDetails')->name('order-details');
+        Route::get('/order-details/{order}', 'orderDetail')->name('order-details.show');
     });
     Route::controller(OrderController::class)->prefix('order')->name('order.')->group(function () {
         Route::get('/billing-address/{service_id}', 'billingAddress')->name('billing-address');

@@ -109,33 +109,6 @@ class ProfileController extends Controller
 
         return redirect()->back()->with('status', 'profile-updated');
     }
-    public function orderDetails(Request $request): Response
-    {
-        $user = $request->user();
-        $orders = $user->orders()
-            ->with(['service.vendor', 'address', 'payments', 'review'])
-            ->orderByDesc('created_at')
-            ->paginate(12)
-            ->through(fn (Order $order) => $this->formatOrderForUser($order));
-
-        return Inertia::render('user/profile/order-details', [
-            'orders' => $orders,
-        ]);
-    }
-
-    public function orderDetail(Request $request, Order $order): Response|RedirectResponse
-    {
-        if ($order->user_id !== $request->user()->id) {
-            abort(403);
-        }
-        $order->loadMissing(['service.vendor', 'user', 'address', 'payments', 'review']);
-        $orderData = $this->formatOrderForUser($order);
-
-        return Inertia::render('user/profile/order-detail', [
-            'order' => $orderData,
-        ]);
-    }
-
     public function serviceReview(Request $request, Order $order): Response|RedirectResponse
     {
         if ($order->user_id !== $request->user()->id) {
@@ -169,7 +142,7 @@ class ProfileController extends Controller
 
         $validated = $request->validate([
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
-            'comment' => ['nullable', 'string', 'max:2000'],
+            'comment' => ['required', 'string', 'max:2000'],
         ]);
 
         $service = $order->service;
@@ -196,7 +169,7 @@ class ProfileController extends Controller
         return redirect()->route('user.order-details.show', $order)->with('status', 'review-submitted');
     }
 
-    protected function formatOrderForUser(Order $order): array
+    public function formatOrderForUser(Order $order): array
     {
         $latestPayment = $order->payments->sortByDesc(fn ($p) => $p->paid_at?->timestamp ?? $p->created_at?->timestamp ?? 0)->first();
 

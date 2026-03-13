@@ -37,7 +37,11 @@ const activeItemStyles =
     'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
 
 export function AdminHeader({ isCollapsed, setIsCollapsed }: AdminHeaderProps) {
-    const { auth } = usePage<SharedData>().props;
+    const { auth, adminNotifications } = usePage<SharedData & {
+        adminNotifications?: {
+            unreadCount: number;
+        };
+    }>().props;
     const adminAvatarSrc = auth.admin?.image_url || '/user.png';
     const getInitials = useInitials();
     const page = usePage<SharedData>();
@@ -55,8 +59,7 @@ export function AdminHeader({ isCollapsed, setIsCollapsed }: AdminHeaderProps) {
             </Button>
 
             <div className="ml-auto flex items-center space-x-3">
-                <Link
-                    href={route('admin.notification')}>
+                <Link href={route('admin.notification')} className="relative">
                     <Button
                         variant="ghost"
                         size="icon"
@@ -65,6 +68,11 @@ export function AdminHeader({ isCollapsed, setIsCollapsed }: AdminHeaderProps) {
                     >
                         <BellIcon size={16} className="w-6 h-6" />
                     </Button>
+                    {((adminNotifications?.unreadCount ?? 0) > 0) && (
+                        <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                            {(adminNotifications?.unreadCount ?? 0) > 9 ? '9+' : String(adminNotifications?.unreadCount ?? 0)}
+                        </span>
+                    )}
                 </Link>
                 <Separator orientation="vertical" className="hidden h-6 bg-white! sm:block" />
                 <DropdownMenu>

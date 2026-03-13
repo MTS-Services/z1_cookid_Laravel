@@ -1,154 +1,39 @@
-import ServiceCard from '@/components/ui/service-card';
-import { Link } from '@inertiajs/react';
+import ServiceCard from '@/components/ui/service-card'
+import Pagination from '@/components/ui/pagination'
+import { Link } from '@inertiajs/react'
+import { useMemo, useState } from 'react'
 
-const service = [
-    {
-        id: 1,
-        image: '/assets/images/service/EliteAutoSpa.png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/Frame 2147225286 (2).png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/Frame 2147225286 (1).png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/acf994a9fb4b2987dc25a22e5d14deef32175a6f.jpg',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/EliteAutoSpa.png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/Frame 2147225286 (2).png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/Frame 2147225286 (1).png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/acf994a9fb4b2987dc25a22e5d14deef32175a6f.jpg',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/EliteAutoSpa.png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/Frame 2147225286 (2).png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/Frame 2147225286 (1).png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/acf994a9fb4b2987dc25a22e5d14deef32175a6f.jpg',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/EliteAutoSpa.png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/Frame 2147225286 (2).png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/Frame 2147225286 (1).png',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-    {
-        id: 1,
-        image: '/assets/images/service/acf994a9fb4b2987dc25a22e5d14deef32175a6f.jpg',
-        name: 'Elite Auto Spa',
-        rating: 4.9,
-        location: 'DETAILING',
-        service: 'See Details',
-        price: 120,
-    },
-];
+interface TopRelatedService {
+    id: number
+    image: string
+    name: string
+    rating: number
+    location: string
+    service: string
+    price: number
+}
 
-export default function TopRelated() {
+interface TopRelatedProps {
+    services: TopRelatedService[]
+}
+
+export default function TopRelated({ services }: TopRelatedProps) {
+    const [currentPage, setCurrentPage] = useState(1)
+    const pageSize = 8
+
+    const { paginatedServices, totalPages } = useMemo(() => {
+        const total = services.length || 1
+        const pages = Math.max(1, Math.ceil(total / pageSize))
+        const safePage = Math.min(Math.max(1, currentPage), pages)
+        const start = (safePage - 1) * pageSize
+        const end = start + pageSize
+
+        return {
+            paginatedServices: services.slice(start, end),
+            totalPages: pages,
+        }
+    }, [services, currentPage])
+
     return (
         <div
             className="py-5 lg:py-10"
@@ -164,11 +49,16 @@ export default function TopRelated() {
                     </Link>
                 </div>
                 <div className="grid grid-cols-1 gap-9 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {service.map((item) => (
+                    {paginatedServices.map((item) => (
                         <ServiceCard key={item.id} {...item} />
                     ))}
                 </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                />
             </div>
         </div>
-    );
+    )
 }

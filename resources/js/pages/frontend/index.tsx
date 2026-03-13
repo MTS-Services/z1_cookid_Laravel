@@ -7,13 +7,28 @@ import WhyChoosePlatform from '@/components/section/home/why-choose-our-platform
 import FrontendLayout from '@/layouts/frontend-layout'
 import React from 'react'
 
-interface Category {
+interface HomeCategory {
     id: number;
     name: string;
     image: string;
 }
-export default function Home({ listings }: any) {
-    const categories: Category[] = [
+
+interface TopRelatedService {
+    id: number
+    image: string
+    name: string
+    rating: number
+    location: string
+    service: string
+    price: number
+}
+
+interface HomePageProps {
+    services: TopRelatedService[]
+}
+
+export default function Home({ services }: HomePageProps) {
+    const categories: HomeCategory[] = [
         {
             id: 1,
             name: 'Car Wash',
@@ -50,11 +65,12 @@ export default function Home({ listings }: any) {
             image: '/assets/images/category/MobileServices.png',
         },
     ];
+
     return (
         <FrontendLayout activePage="home">
             <Banner />
             <Category categories={categories} />
-            <TopRelated />
+            <TopRelated services={services} />
             <HowItWorks />
             <WhyChoosePlatform />
         </FrontendLayout>

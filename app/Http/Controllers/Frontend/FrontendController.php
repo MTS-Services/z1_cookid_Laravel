@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Http\Controllers\Controller;
 use App\Enums\ActiveInactiveStatus;
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Review;
 use App\Models\Service;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Crypt;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,12 +19,32 @@ class FrontendController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('frontend/index');
+        $services = Service::query()
+            ->with('vendor')
+            ->where('status', ActiveInactiveStatus::ACTIVE)
+            ->orderByDesc('average_rating')
+            ->take(40)
+            ->get()
+            ->map(fn (Service $service) => [
+                'id' => Crypt::encryptString((string) $service->id),
+                'image' => $service->image_url,
+                'name' => $service->vendor->shop_name ?? $service->title,
+                'rating' => (float) ($service->average_rating ?? 0),
+                'location' => $service->location ?? '—',
+                'service' => 'See Details',
+                'price' => (float) $service->price,
+            ]);
+
+        return Inertia::render('frontend/index', [
+            'services' => $services,
+        ]);
     }
+
     public function search($id = null): Response
     {
         return Inertia::render('frontend/search-page');
     }
+
     public function privacyPolicy(): Response
     {
         return Inertia::render('frontend/privacy-policy');
@@ -47,58 +67,82 @@ class FrontendController extends Controller
 
             if ($order) {
                 $orderPayload = [
-                    'order_number'   => $order->order_number,
-                    'service'        => $order->service ? [
+                    'order_number' => $order->order_number,
+                    'service' => $order->service ? [
                         'title' => $order->service->title,
                     ] : null,
-                    'provider'       => $order->service && $order->service->vendor
-                        ? ($order->service->vendor->shop_name ?? trim($order->service->vendor->first_name . ' ' . $order->service->vendor->last_name))
+                    'provider' => $order->service && $order->service->vendor
+                        ? ($order->service->vendor->shop_name ?? trim($order->service->vendor->first_name.' '.$order->service->vendor->last_name))
                         : null,
-                    'address'        => $order->address ? [
-                        'address'  => $order->address->address,
-                        'city'     => $order->address->city,
-                        'state'    => $order->address->state,
+                    'address' => $order->address ? [
+                        'address' => $order->address->address,
+                        'city' => $order->address->city,
+                        'state' => $order->address->state,
                         'zip_code' => $order->address->zip_code,
-                        'phone'    => $order->address->phone,
-                        'full'     => implode(', ', array_filter([
+                        'phone' => $order->address->phone,
+                        'full' => implode(', ', array_filter([
                             $order->address->address,
                             $order->address->city,
                             $order->address->state,
                             $order->address->zip_code,
                         ])),
                     ] : null,
-                    'total'          => (float) $order->total,
+                    'total' => (float) $order->total,
                     'payment_method' => $order->payment_method?->value ?? $order->getRawOriginal('payment_method'),
                 ];
             }
         }
 
         return Inertia::render('frontend/booking-confirmation', [
-            'order'  => $orderPayload,
+            'order' => $orderPayload,
             'status' => $request->session()->get('status'),
         ]);
     }
-    public function categories(): Response
+
+    public function categories(Request $request): Response
     {
+        $perPage = (int) $request->integer('per_page', 12);
+        $perPage = max(6, min(48, $perPage));
+
         $categories = Category::query()
             ->where('status', ActiveInactiveStatus::ACTIVE)
             ->select(['id', 'name', 'image'])
             ->orderBy('name')
-            ->get()
-            ->map(fn (Category $category) => [
+            ->paginate($perPage)
+            ->withQueryString()
+            ->through(fn (Category $category) => [
                 'id' => $category->id,
                 'name' => $category->name,
                 'image' => $category->image_url,
             ]);
 
+        $services = Service::query()
+            ->with('vendor')
+            ->where('status', ActiveInactiveStatus::ACTIVE)
+            ->orderByDesc('average_rating')
+            ->take(40)
+            ->get()
+            ->map(fn (Service $service) => [
+                'id' => Crypt::encryptString((string) $service->id),
+                'image' => $service->image_url,
+                'name' => $service->vendor->shop_name ?? $service->title,
+                'rating' => (float) ($service->average_rating ?? 0),
+                'location' => $service->location ?? '—',
+                'service' => 'See Details',
+                'price' => (float) $service->price,
+            ]);
+
         return Inertia::render('frontend/categories', [
             'categories' => $categories,
+            'services' => $services,
         ]);
     }
+
     public function howItWorks(): Response
     {
         return Inertia::render('frontend/how-it-work');
     }
+
     public function vendorReviews(Request $request, $id = null): Response
     {
         $vendorId = Crypt::decryptString($id);
@@ -120,7 +164,7 @@ class FrontendController extends Controller
             ->withQueryString()
             ->through(function (Review $review) {
                 $name = $review->user?->first_name && $review->user?->last_name
-                    ? trim($review->user->first_name . ' ' . $review->user->last_name)
+                    ? trim($review->user->first_name.' '.$review->user->last_name)
                     : ($review->user?->email ?? 'Guest');
 
                 return [
@@ -138,7 +182,7 @@ class FrontendController extends Controller
         return Inertia::render('frontend/vendor-reviews', [
             'vendor' => [
                 'id' => $id,
-                'name' => $vendor->shop_name ?? trim(($vendor->first_name ?? '') . ' ' . ($vendor->last_name ?? '')) ?: 'Vendor',
+                'name' => $vendor->shop_name ?? trim(($vendor->first_name ?? '').' '.($vendor->last_name ?? '')) ?: 'Vendor',
                 'location' => $vendor->location ?? null,
                 'avatar_url' => $vendor->avatar_url,
             ],
@@ -168,6 +212,7 @@ class FrontendController extends Controller
             ];
         })->all();
     }
+
     public function servicesStore(Request $request, $id = null): Response
     {
         $vendorId = Crypt::decryptString($id);
@@ -221,7 +266,7 @@ class FrontendController extends Controller
             'categories' => $categories,
             'vendor' => [
                 'id' => $id,
-                'name' => $vendor->shop_name ?? trim(($vendor->first_name ?? '') . ' ' . ($vendor->last_name ?? '')) ?: 'Vendor',
+                'name' => $vendor->shop_name ?? trim(($vendor->first_name ?? '').' '.($vendor->last_name ?? '')) ?: 'Vendor',
                 'location' => $vendor->location ?? null,
                 'avatar_url' => $vendor->avatar_url,
                 'averageRating' => $vendorAverageRating,
@@ -229,6 +274,7 @@ class FrontendController extends Controller
             ],
         ]);
     }
+
     public function aboutUs(): Response
     {
         return Inertia::render('frontend/about');

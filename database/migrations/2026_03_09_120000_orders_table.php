@@ -14,8 +14,7 @@ return new class extends Migration
             $table->string('order_number')->unique();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('service_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('address_id')->nullable()->constrained('order_addresses')->nullOnDelete();
-            $table->string('payment_method');
+            $table->string('payment_method')->nullable();
             $table->timestamp('scheduled_at')->nullable();
             $table->text('notes')->nullable();
             $table->decimal('subtotal', 10, 2);

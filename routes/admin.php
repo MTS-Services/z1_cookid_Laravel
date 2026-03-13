@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CustomerManagement\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FinanceManagement\FinanceController;
 use App\Http\Controllers\Admin\OrderManagement\OrderController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ServiceManagement\ServiceController;
 use App\Http\Controllers\Admin\UserManagement\UserController;
@@ -34,7 +35,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-        Route::get('/notification', [AdminController::class, 'notification'])->name('notification');
+        Route::get('/notification', [NotificationController::class, 'index'])->name('notification');
+        Route::post('/notification/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notification.mark-all-read');
+        Route::post('/notification/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notification.read');
         Route::get('/all', [AdminController::class, 'index'])->name('index');
         Route::get('/view/detail/{id}', [AdminController::class, 'viewAdmin'])->name('view.detail');
         Route::get('/create', [AdminController::class, 'createAdmin'])->name('create');

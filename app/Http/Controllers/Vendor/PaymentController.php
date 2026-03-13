@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Enums\WithdrawalStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
+use App\Notifications\VendorGenericNotification;
 use App\Models\VendorBalance;
 use App\Models\VendorEarning;
 use App\Models\VendorPayoutAccount;
@@ -141,6 +143,27 @@ class PaymentController extends Controller
             'note' => $validated['note'] ?? null,
             'status' => WithdrawalStatus::Pending,
         ]);
+
+        $vendor->notify(new VendorGenericNotification(
+            sender: 'System',
+            message: sprintf(
+                'Your withdrawal request of %s has been submitted and is pending review.',
+                number_format((float) $validated['amount'], 2)
+            ),
+        ));
+
+        $admins = Admin::query()->get();
+
+        foreach ($admins as $admin) {
+            $admin->notify(new VendorGenericNotification(
+                sender: $vendor->shop_name ?? ($vendor->first_name.' '.$vendor->last_name),
+                message: sprintf(
+                    'requested a withdrawal of %s.',
+                    number_format((float) $validated['amount'], 2)
+                ),
+                avatarUrl: $vendor->avatar_url ?? null,
+            ));
+        }
 
         return redirect()
             ->route('vendor.payments')

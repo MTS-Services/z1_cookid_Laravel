@@ -13,11 +13,6 @@ class AdminController extends Controller
 {
     public function __construct(protected DataTableService $dataTableService) {}
 
-    public function notification(): Response
-    {
-        return Inertia::render('admin/notification');
-    }
-
     public function index(): Response
     {
         $queryBody = Admin::query();

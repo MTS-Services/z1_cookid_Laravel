@@ -17,9 +17,4 @@ class VendorDashboardController extends Controller
     {
         return Inertia::render('vendor/dashboard');
     }
-
-    public function notification(): Response
-    {
-        return Inertia::render('vendor/notification');
-    }
 }

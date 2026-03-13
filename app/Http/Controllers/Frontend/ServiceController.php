@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Http\Controllers\Controller;
 use App\Enums\ActiveInactiveStatus;
+use App\Http\Controllers\Controller;
 use App\Models\CarType;
 use App\Models\Category;
 use App\Models\Review;
@@ -70,12 +70,10 @@ class ServiceController extends Controller
 
         $priceRanges = [
             ['label' => 'All Price', 'min' => $minPriceBound, 'max' => $maxPriceBound],
-            ['label' => 'Under $20', 'min' => 0, 'max' => 20],
-            ['label' => '$25 to $100', 'min' => 25, 'max' => 100],
-            ['label' => '$100 to $300', 'min' => 100, 'max' => 300],
-            ['label' => '$300 to $500', 'min' => 300, 'max' => 500],
-            ['label' => '$500 to $1,000', 'min' => 500, 'max' => 1000],
-            ['label' => '$1,000 to $10,000', 'min' => 1000, 'max' => 10000],
+            ['label' => '$100 - $300', 'min' => 100, 'max' => 300],
+            ['label' => '$300 - $500', 'min' => 300, 'max' => 500],
+            ['label' => '$500 - $1,000', 'min' => 500, 'max' => 1000],
+            ['label' => '$1,000 - $10,000', 'min' => 1000, 'max' => 10000],
         ];
 
         $categories = Category::query()
@@ -123,7 +121,7 @@ class ServiceController extends Controller
                     'max' => $maxPriceBound,
                 ],
             ],
-        ]); 
+        ]);
     }
 
     public function show(Request $request, $id): Response

@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { Bell, ChevronDown, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import React from 'react';
 
@@ -10,6 +10,14 @@ interface VendorHeaderProps {
 
 function VendorHeader({ isCollapsed, setIsCollapsed }: VendorHeaderProps) {
   const [userMenuOpen, setUserMenuOpen] = React.useState(false);
+  const { vendorNotifications } = usePage<{
+    vendorNotifications?: {
+      unreadCount: number;
+    };
+  }>().props;
+
+  const unreadCount = vendorNotifications?.unreadCount ?? 0;
+  const displayCount = unreadCount > 9 ? '9+' : unreadCount.toString();
 
   return (
     <header className="bg-black border-b border-text-border py-4 flex items-center px-6 justify-between">
@@ -24,9 +32,11 @@ function VendorHeader({ isCollapsed, setIsCollapsed }: VendorHeaderProps) {
       <div className="flex items-center gap-6">
         <Link href={route('vendor.notification')} className="relative text-gray-300 hover:text-white">
           <Bell size={20} />
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-            0
-          </span>
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+              {displayCount}
+            </span>
+          )}
         </Link>
 
         <div className="relative text-white">

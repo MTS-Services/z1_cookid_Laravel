@@ -1,101 +1,101 @@
-// src/pages/Dashboard/Notifications.tsx (or wherever fits)
-import { FC } from 'react';
-import VendorLayout from '@/layouts/vendor-layout';
-import { Check } from 'lucide-react';
+import VendorLayout from '@/layouts/vendor-layout'
+import { router, usePage } from '@inertiajs/react'
+import { Check } from 'lucide-react'
 
-const NotificationsPage: FC = () => {
+type VendorNotification = {
+  id: string
+  sender: string
+  avatar?: string | null
+  message: string
+  time?: string | null
+  isRead: boolean
+}
 
-  // Mock notifications data based on your screenshot
-  const notifications = [
-    {
-      id: 1,
-      sender: 'Brian Griffin',
-      avatar: 'https://via.placeholder.com/40/ffffff/000000?text=BG', // Replace with real avatars if available
-      message: 'wants to collaborate',
-      time: '5 days ago',
-      isRead: false,
-    },
-    {
-      id: 2,
-      sender: 'Adam',
-      avatar: 'https://via.placeholder.com/40/ffffff/000000?text=A',
-      message: "Hey Peter, we've got a new user research opportunity for you. Adam from The Mayor's Office is looking for people like you.",
-      time: '1 month ago',
-      isRead: true,
-    },
-    {
-      id: 3,
-      sender: 'Neil',
-      avatar: 'https://via.placeholder.com/40/ffffff/000000?text=N',
-      message: "Hey Peter, we've got a new user research opportunity for you. Neil is looking for people like you.",
-      time: '1 month ago',
-      isRead: true,
-    },
-    {
-      id: 4,
-      sender: 'Quagmire',
-      avatar: 'https://via.placeholder.com/40/ffffff/000000?text=Q',
-      message: "Hey Peter, we've got a new user research opportunity for you. Quagmire from Giggitty Co. is looking for people like you.",
-      time: '1 month ago',
-      isRead: true,
-    },
-    {
-      id: 5,
-      sender: 'Herbert',
-      avatar: 'https://via.placeholder.com/40/ffffff/000000?text=H',
-      message: "Hey Peter, we've got a new side project opportunity for you. Herbert from Children's Program is looking for people like you.",
-      time: '1 month ago',
-      isRead: true,
-    },
-    {
-      id: 6,
-      sender: 'Cleveland',
-      avatar: 'https://via.placeholder.com/40/ffffff/000000?text=C',
-      message: "Hey Peter, we've got a new side project opportunity for you. Cleveland from The Post Office is looking for people like you.",
-      time: '2 months ago',
-      isRead: true,
-    },
-  ];
+interface VendorNotificationsPageProps extends Record<string, unknown> {
+  notifications: VendorNotification[]
+}
+
+export default function NotificationsPage() {
+  const { notifications } = usePage<VendorNotificationsPageProps>().props
+
+  const handleMarkAllRead = () => {
+    router.post(
+      route('vendor.notification.mark-all-read'),
+      {},
+      {
+        preserveScroll: true,
+      },
+    )
+  }
+
+  const handleMarkRead = (id: string) => {
+    router.post(
+      route('vendor.notification.read', { notification: id }),
+      {},
+      {
+        preserveScroll: true,
+      },
+    )
+  }
 
   return (
     <VendorLayout activeSlug="dashboard">
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-semibold">Notifications</h2>
-        <button className="flex items-center gap-2 text-sm text-navy hover:text-blue-400">
-          <Check size={16} />
-          Mark All Read
-        </button>
+        {notifications.length > 0 && (
+          <button
+            type="button"
+            onClick={handleMarkAllRead}
+            className="flex items-center gap-2 text-sm text-navy hover:text-blue-400"
+          >
+            <Check size={16} />
+            Mark All Read
+          </button>
+        )}
       </div>
 
       <div className="space-y-4">
         {notifications.map((notif) => (
           <div
             key={notif.id}
-            className={`p-4 rounded-lg border ${notif.isRead ? 'bg-gray-900 border-gray-800' : 'bg-gray-800 border-gray-700'
-              } hover:bg-gray-800 transition-colors`}
+            className={`rounded-lg border p-4 ${notif.isRead ? 'border-gray-800 bg-gray-900' : 'border-gray-700 bg-gray-800'} hover:bg-gray-800 transition-colors`}
           >
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                <img src={notif.avatar} alt={notif.sender} className="w-full h-full object-cover" />
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-700">
+                {notif.avatar ? (
+                  <img src={notif.avatar} alt={notif.sender} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-sm font-semibold text-white">
+                    {notif.sender.charAt(0).toUpperCase()}
+                  </span>
+                )}
               </div>
               <div className="flex-1">
                 <p className="font-medium">
                   <span className="text-white">{notif.sender}</span>{' '}
                   {notif.message}
                 </p>
-                <p className="text-sm text-gray-500 mt-1">{notif.time}</p>
+                {notif.time && <p className="mt-1 text-sm text-gray-500">{notif.time}</p>}
               </div>
               {!notif.isRead && (
-                <button className="text-xs text-navy hover:text-blue-400 whitespace-nowrap">
+                <button
+                  type="button"
+                  onClick={() => handleMarkRead(notif.id)}
+                  className="whitespace-nowrap text-xs text-navy hover:text-blue-400"
+                >
                   Mark Read
                 </button>
               )}
             </div>
           </div>
         ))}
+
+        {notifications.length === 0 && (
+          <div className="rounded-lg border border-dashed border-gray-700 bg-gray-900/40 p-8 text-center text-sm text-gray-400">
+            You have no notifications yet.
+          </div>
+        )}
       </div>
     </VendorLayout>
-  );
-};
-
-export default NotificationsPage;
+  )
+}

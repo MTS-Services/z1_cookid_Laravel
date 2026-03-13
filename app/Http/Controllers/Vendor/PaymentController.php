@@ -75,14 +75,14 @@ class PaymentController extends Controller
             ->get()
             ->map(function (VendorPayoutAccount $account) {
                 $maskedNumber = $account->account_number
-                    ? str_repeat('•', max(0, strlen($account->account_number) - 4)).substr($account->account_number, -4)
+                    ? str_repeat('•', max(0, strlen($account->account_number) - 4)) . substr($account->account_number, -4)
                     : null;
 
                 return [
                     'id' => $account->id,
                     'label' => trim(
                         ($account->account_holder_name ?: 'Payout account')
-                        .($maskedNumber ? " ••••{$maskedNumber}" : '')
+                            . ($maskedNumber ? " ••••{$maskedNumber}" : '')
                     ),
                     'accountType' => $account->account_type->value,
                     'isDefault' => (bool) $account->is_default,

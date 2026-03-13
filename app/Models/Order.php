@@ -20,7 +20,7 @@ class Order extends Model
      */
     public static function generateOrderNumber(): string
     {
-        $prefix = 'ORD-' . now()->format('Ymd');
+        $prefix = 'ORD-'.now()->format('Ymd');
         $suffix = strtoupper(Str::random(6));
 
         do {
@@ -33,7 +33,6 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'service_id',
-        'address_id',
         'order_number',
         'payment_method',
         'scheduled_at',
@@ -70,9 +69,9 @@ class Order extends Model
         return $this->belongsTo(Service::class);
     }
 
-    public function address(): BelongsTo
+    public function address(): HasOne
     {
-        return $this->belongsTo(OrderAddress::class, 'address_id');
+        return $this->hasOne(OrderAddress::class);
     }
 
     public function payments(): HasMany

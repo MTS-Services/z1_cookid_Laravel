@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
 type Address = {
+    order_id:   string;
     first_name: string;
     last_name:  string;
     email:      string;
@@ -32,6 +33,7 @@ type BillingAddressProps = {
 
 export default function BillingAddress({ address, summary, supportPhone }: BillingAddressProps) {
     const { data, setData, post, processing, errors } = useForm({
+        order_id:       address?.order_id ?? '',
         service_id:     summary.id,
         first_name:     address?.first_name ?? '',
         last_name:      address?.last_name  ?? '',
@@ -79,6 +81,7 @@ export default function BillingAddress({ address, summary, supportPhone }: Billi
                                 </p>
 
                                 <div className="mt-8 space-y-6">
+                                    <input type="hidden" name="order_id" value={data.order_id} />
 
                                     {/* Name Row */}
                                     <div className="grid gap-5 md:grid-cols-2">

@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class OrderAddress extends Model
 {
     protected $fillable = [
+        'order_id',
         'user_id',
         'first_name',
         'last_name',
@@ -20,13 +20,13 @@ class OrderAddress extends Model
         'zip_code',
     ];
 
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class, 'address_id');
     }
 }

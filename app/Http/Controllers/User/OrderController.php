@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\User;
 
 use App\Enums\ActiveInactiveStatus;
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\OrderAddress;
 use App\Models\Service;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\RedirectResponse;
@@ -49,28 +51,35 @@ class OrderController extends Controller
     public function billingAddress(Request $request, string $serviceId): Response
     {
         $service = $this->resolveService($serviceId);
+        $user = $request->user();
 
-        $address = $request->user()
-            ->orderAddresses()
-            ->latest()
-            ->first();
+        $order = Order::create([
+            'user_id' => $request->user()->id,
+            'service_id' => $service->id,
+            'order_number' => Order::generateOrderNumber(),
+            'subtotal' => $service->price,
+            'discount' => 0,
+            'total' => $service->price,
+            'status' => OrderStatus::Pending->value,
+        ]);
 
         return Inertia::render('frontend/billing-address', [
-            'address' => $address ? [
-                'first_name' => $address->first_name,
-                'last_name'  => $address->last_name,
-                'email'      => $address->email,
-                'phone'      => $address->phone,
-                'address'    => $address->address,
-                'state'      => $address->state,
-                'city'       => $address->city,
-                'zip_code'   => $address->zip_code,
-            ] : null,
+            'address' => [
+                'order_id' => $order->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'address' => null,
+                'state' => null,
+                'city' => null,
+                'zip_code' => null,
+            ],
             'summary' => [
                 // Pass encrypted service id — never raw id
-                'id'      => $serviceId,
+                'id' => $serviceId,
                 'service' => $service->title,
-                'price'   => (float) $service->price,
+                'price' => (float) $service->price,
             ],
             'supportPhone' => config('app.support_phone', '(219) 555-0114'),
         ]);
@@ -80,16 +89,17 @@ class OrderController extends Controller
     public function billingAddressStore(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'service_id'     => ['required', 'string'],
-            'first_name'     => ['required', 'string', 'max:255'],
-            'last_name'      => ['required', 'string', 'max:255'],
-            'email'          => ['required', 'email', 'max:255'],
-            'phone'          => ['required', 'string', 'max:50'],
-            'address'        => ['required', 'string', 'max:500'],
-            'state'          => ['required', 'string', 'max:255'],
-            'city'           => ['required', 'string', 'max:255'],
-            'zip_code'       => ['required', 'string', 'max:20'],
-            'comments'       => ['nullable', 'string', 'max:1000'],
+            'order_id' => ['required', 'exists:orders,id'],
+            'service_id' => ['required', 'string'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'phone' => ['required', 'string', 'max:50'],
+            'address' => ['required', 'string', 'max:500'],
+            'state' => ['required', 'string', 'max:255'],
+            'city' => ['required', 'string', 'max:255'],
+            'zip_code' => ['required', 'string', 'max:20'],
+            'comments' => ['nullable', 'string', 'max:1000'],
             'payment_method' => ['required', 'in:paypal,stripe'],
         ]);
 
@@ -97,9 +107,11 @@ class OrderController extends Controller
         $service = $this->resolveService($validated['service_id'], true);
 
         // Save address
-        $address = $request->user()->orderAddresses()->create(
+        $address = OrderAddress::updateOrCreate(
+            ['order_id' => $validated['order_id']],
             collect($validated)
-                ->only(['first_name', 'last_name', 'email', 'phone', 'address', 'state', 'city', 'zip_code'])
+                ->only(['order_id', 'first_name', 'last_name', 'email', 'phone', 'address', 'state', 'city', 'zip_code'])
+                ->merge(['user_id' => $request->user()->id])
                 ->toArray()
         );
 
@@ -108,8 +120,9 @@ class OrderController extends Controller
         session([
             'payment_pending' => [
                 'encrypted_service_id' => $validated['service_id'],
-                'address_id'           => $address->id,
-                'payment_method'       => $validated['payment_method'],
+                'address_id' => $address->id,
+                'payment_method' => $validated['payment_method'],
+                'order_id' => $validated['order_id'],
             ],
         ]);
 

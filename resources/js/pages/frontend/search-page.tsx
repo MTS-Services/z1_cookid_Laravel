@@ -40,12 +40,10 @@ export default function SearchPage() {
 
     const priceOptions = [
         { label: "All Price", min: 0, max: 10000 },
-        { label: "Under $20", min: 0, max: 20 },
-        { label: "$25 to $100", min: 25, max: 100 },
-        { label: "$100 to $300", min: 100, max: 300 },
-        { label: "$300 to $500", min: 300, max: 500 },
-        { label: "$500 to $1,000", min: 500, max: 1000 },
-        { label: "$1,000 to $10,000", min: 1000, max: 10000 },
+        { label: "$100 - $300", min: 100, max: 300 },
+        { label: "$300 - $500", min: 300, max: 500 },
+        { label: "$500 - $1,000", min: 500, max: 1000 },
+        { label: "$1,000 - $10,000", min: 1000, max: 10000 },
     ];
 
     const [activePrice, setActivePrice] = useState("All Price");

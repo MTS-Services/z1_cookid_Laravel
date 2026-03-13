@@ -240,7 +240,7 @@ export function WithdrawalSuccessModal({
 type VerifyAccountModalProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
-    phoneNumber?: string
+    email?: string
     onContinue?: (code: string) => void
     isSubmitting?: boolean
     errorMessage?: string | null
@@ -253,11 +253,11 @@ type VerifyAccountModalProps = {
 export function VerifyAccountModal({
     open,
     onOpenChange,
-    phoneNumber = '+61 412 345 678',
+    email = 'example@gmail.com',
     onContinue,
     isSubmitting = false,
     errorMessage = null,
-    otpLength = 4,
+    otpLength = 6,
     resendAfterSeconds = 60,
     onResend,
     onCodeChange,
@@ -369,8 +369,7 @@ export function VerifyAccountModal({
                 <div>
                     <h2 className="text-2xl font-semibold">Verify Your Account</h2>
                     <p className="mt-2 text-sm text-text-gray">
-                        We’ve sent a {otpLength}-digit verification code to your mobile number {phoneNumber}. Enter the code below to
-                        continue.
+                        We’ve sent a {otpLength}-digit verification code to your email address {email}. Enter the code below to continue.
                     </p>
                 </div>
 

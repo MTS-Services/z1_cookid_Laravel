@@ -116,11 +116,20 @@ export default function Payment() {
   const handleAccountEmailContinue = (email: string) => {
     setAccountEmail(email)
     setNewAccountDraft((prev) => (prev ? { ...prev, email } : prev))
-    setIsAddAccountEmailOpen(false)
-    setIsAccountVerifyOpen(true)
+    router.post(
+      route('vendor.payout-accounts.otp.send'),
+      { email },
+      {
+        preserveScroll: true,
+        onSuccess: () => {
+          setIsAddAccountEmailOpen(false)
+          setIsAccountVerifyOpen(true)
+        },
+      },
+    )
   }
 
-  const handleAccountVerifyComplete = (_code: string) => {
+  const handleAccountVerifyComplete = (code: string) => {
     if (!newAccountDraft) {
       setLinkAccountError('Account details missing. Please restart the flow.')
       return
@@ -129,22 +138,50 @@ export default function Payment() {
     setIsLinkingAccount(true)
     setLinkAccountError(null)
 
-    router.post(route('vendor.payout-accounts.store'), newAccountDraft, {
-      preserveScroll: true,
-      onSuccess: () => {
-        setIsLinkingAccount(false)
-        setIsAccountVerifyOpen(false)
-        setIsAccountSuccessOpen(true)
-        setNewAccountDraft(null)
-        router.reload({ only: ['payoutAccounts'] })
+    router.post(
+      route('vendor.payout-accounts.store'),
+      {
+        ...newAccountDraft,
+        email: accountEmail,
+        otp: code,
       },
-      onError: (errors) => {
-        setIsLinkingAccount(false)
-        const firstError = Object.values(errors)[0]
-        setLinkAccountError(typeof firstError === 'string' ? firstError : 'Unable to link payout account. Please review details.')
+      {
+        preserveScroll: true,
+        onSuccess: () => {
+          setIsLinkingAccount(false)
+          setIsAccountVerifyOpen(false)
+          setIsAccountSuccessOpen(true)
+          setNewAccountDraft(null)
+          router.reload({ only: ['payoutAccounts'] })
+        },
+        onError: (errors) => {
+          setIsLinkingAccount(false)
+          const firstError = Object.values(errors)[0]
+          setLinkAccountError(
+            typeof firstError === 'string' ? firstError : 'Unable to link payout account. Please review details.',
+          )
+        },
       },
-    })
+    )
   }
+
+  const handleResendAccountOtp = useCallback(() => {
+    if (!accountEmail) {
+      return Promise.resolve()
+    }
+
+    return new Promise<void>((resolve) => {
+      router.post(
+        route('vendor.payout-accounts.otp.send'),
+        { email: accountEmail },
+        {
+          preserveScroll: true,
+          preserveState: true,
+          onFinish: () => resolve(),
+        },
+      )
+    })
+  }, [accountEmail])
 
   const handleStartAddAccount = useCallback(() => {
     setLinkAccountError(null)
@@ -353,6 +390,8 @@ export default function Payment() {
         onContinue={handleAccountVerifyComplete}
         isSubmitting={isLinkingAccount}
         errorMessage={linkAccountError}
+        email={accountEmail}
+        onResend={handleResendAccountOtp}
       />
       <WithdrawalSuccessModal
         open={isAccountSuccessOpen}

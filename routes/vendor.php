@@ -38,6 +38,7 @@ Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function (
     Route::get('notification', [VendorDashboardController::class, 'notification'])->name('notification');
     Route::get('payments', [PaymentController::class, 'index'])->name('payments');
     Route::post('payments/withdraw', [PaymentController::class, 'withdraw'])->name('payments.withdraw');
+    Route::post('payout-accounts/otp/send', [PayoutAccountController::class, 'sendOtp'])->name('payout-accounts.otp.send');
     Route::post('payout-accounts', [PayoutAccountController::class, 'store'])->name('payout-accounts.store');
     Route::get('performance', [PerformanceController::class, 'index'])->name('performance');
     Route::get('account', [AccountController::class, 'index'])->name('account');

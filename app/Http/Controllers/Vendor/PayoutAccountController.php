@@ -4,20 +4,52 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Enums\AccountTypeMethod;
 use App\Enums\ActiveInactiveStatus;
+use App\Enums\OtpPurpose;
 use App\Http\Controllers\Controller;
+use App\Mail\Otp\VendorOtpMail;
 use App\Models\VendorPayoutAccount;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Enum;
 
 class PayoutAccountController extends Controller
 {
+    public function sendOtp(Request $request): RedirectResponse
+    {
+        $vendor = $request->user('vendor');
+
+        abort_unless($vendor, 403);
+
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+        ]);
+
+        $otp = random_int(100000, 999999);
+        $expiresAt = now()->addMinutes(5);
+
+        $vendor->forceFill([
+            'otp_code' => $otp,
+            'otp_purpose' => OtpPurpose::PAYOUT_ACCOUNT,
+            'otp_expires_at' => $expiresAt,
+        ])->save();
+
+        Mail::to($validated['email'])->send(new VendorOtpMail($vendor, $otp));
+
+        return back()->with('success', 'A verification code has been sent to your email.');
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $vendor = $request->user('vendor');
 
         abort_unless($vendor, 403);
+
+        $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+            'otp' => ['required', 'digits:6'],
+        ]);
 
         $validator = Validator::make($request->all(), [
             'account_type' => ['required', new Enum(AccountTypeMethod::class)],
@@ -52,6 +84,24 @@ class PayoutAccountController extends Controller
         });
 
         $validated = $validator->validate();
+
+        if (
+            ! $vendor->otp_code
+            || (string) $vendor->otp_code !== (string) $request->string('otp')
+            || ! $vendor->otp_expires_at
+            || $vendor->otp_expires_at->isPast()
+        ) {
+            return back()
+                ->withErrors(['otp' => 'The provided verification code is invalid or has expired.'])
+                ->withInput($request->except('otp'));
+        }
+
+        $vendor->forceFill([
+            'otp_code' => null,
+            'otp_purpose' => null,
+            'otp_expires_at' => null,
+            'otp_verified_at' => now(),
+        ])->save();
 
         $isFirstAccount = ! VendorPayoutAccount::where('vendor_id', $vendor->id)->exists();
         $shouldBeDefault = $isFirstAccount || $request->boolean('is_default');

@@ -53,15 +53,26 @@ class OrderController extends Controller
         $service = $this->resolveService($serviceId);
         $user = $request->user();
 
-        $order = Order::create([
-            'user_id' => $request->user()->id,
-            'service_id' => $service->id,
-            'order_number' => Order::generateOrderNumber(),
-            'subtotal' => $service->price,
-            'discount' => 0,
-            'total' => $service->price,
-            'status' => OrderStatus::Pending->value,
-        ]);
+        // Reuse existing pending order for this user + service if it exists,
+        // so simple page reloads do not create duplicate orders.
+        $order = Order::query()
+            ->where('user_id', $user->id)
+            ->where('service_id', $service->id)
+            ->where('status', OrderStatus::Pending->value)
+            ->latest('id')
+            ->first();
+
+        if (! $order) {
+            $order = Order::create([
+                'user_id' => $user->id,
+                'service_id' => $service->id,
+                'order_number' => Order::generateOrderNumber(),
+                'subtotal' => $service->price,
+                'discount' => 0,
+                'total' => $service->price,
+                'status' => OrderStatus::Pending->value,
+            ]);
+        }
 
         return Inertia::render('frontend/billing-address', [
             'address' => [

@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\Vendor\OrderManagement;
 
-use App\Http\Controllers\Controller;
+use App\Enums\CommissionType;
 use App\Enums\OrderStatus;
+use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\VendorEarning;
 use App\Services\DataTableService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class OrderController extends Controller
 {
-    public function __construct(protected DataTableService $dataTableService)
-    {
-    }
+    public function __construct(protected DataTableService $dataTableService) {}
 
     public function index(Request $request): Response
     {
@@ -63,7 +64,8 @@ class OrderController extends Controller
 
         // Transform orders to the shape expected by the frontend (reference = real id for URLs)
         $orders = collect($result['data'])->map(function (Order $order) {
-            $customerName = $order->service?->vendor?->first_name . ' ' . $order->service?->vendor?->last_name ?? 'N/A';
+            $customerName = $order->service?->vendor?->first_name.' '.$order->service?->vendor?->last_name ?? 'N/A';
+
             return [
                 'id' => $order->order_number,
                 'reference' => (string) $order->order_primary_id,
@@ -87,6 +89,7 @@ class OrderController extends Controller
             'sortOrder' => $result['sort_order'],
         ]);
     }
+
     public function orderDetails(Order $order): Response
     {
         $order = $this->loadVendorOrder($order);
@@ -110,7 +113,6 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $vendor = auth()->guard('vendor')->user();
-
         // Ensure this order belongs to the current vendor
         if (! $order->service || $order->service->vendor_id !== $vendor->id) {
             abort(403);
@@ -121,7 +123,7 @@ class OrderController extends Controller
         ]);
 
         $status = $validated['status'];
-        
+
         $order->status = match ($status) {
             'pending' => OrderStatus::Pending,
             'confirmed' => OrderStatus::Confirmed,
@@ -130,7 +132,40 @@ class OrderController extends Controller
             'cancelled' => OrderStatus::Cancelled,
         };
 
-        $order->save();
+        DB::transaction(function () use ($order) {
+            $order->save();
+
+            if ($order->status == OrderStatus::Completed) {
+                $order->update([
+                    'completed_at' => now(),
+                ]);
+
+                $service = $order->service;
+                $vendor = $service?->vendor;
+
+                if ($vendor) {
+                    $grossAmount = (float) $order->total;
+                    $commissionRate = (float) $vendor->commission;
+                    $commissionType = commissionType::Percentage->value;
+
+                    $commissionAmount = $commissionType === CommissionType::Percentage->value
+                        ? round($grossAmount * ($commissionRate / 100), 2)
+                        : $commissionRate;
+
+                    $netAmount = $grossAmount - $commissionAmount;
+
+                    VendorEarning::create([
+                        'vendor_id' => $vendor->id,
+                        'order_id' => $order->id,
+                        'gross_amount' => $grossAmount,
+                        'commission' => $commissionAmount,
+                        'commission_type' => $commissionType,
+                        'net_amount' => $netAmount,
+                        'released_at' => now(),
+                    ]);
+                }
+            }
+        });
 
         return redirect()->route('vendor.order.index', ['type' => $order->status->value]);
     }

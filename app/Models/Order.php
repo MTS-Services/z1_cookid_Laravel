@@ -83,4 +83,9 @@ class Order extends Model
     {
         return $this->hasOne(Review::class);
     }
+
+    public function vendorEarning(): HasMany
+    {
+        return $this->hasMany(VendorEarning::class);
+    }
 }

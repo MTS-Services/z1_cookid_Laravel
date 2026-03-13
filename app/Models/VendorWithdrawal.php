@@ -10,12 +10,8 @@ class VendorWithdrawal extends Model
 {
     protected $fillable = [
         'vendor_id',
+        'payout_account_id',
         'amount',
-        'method',
-        'account_name',
-        'account_number',
-        'bank_name',
-        'routing_number',
         'note',
         'status',
         'reviewed_by',
@@ -39,9 +35,13 @@ class VendorWithdrawal extends Model
         return $this->belongsTo(Vendor::class);
     }
 
+    public function payoutAccount(): BelongsTo
+    {
+        return $this->belongsTo(VendorPayoutAccount::class, 'payout_account_id');
+    }
+
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'reviewed_by');
     }
 }
-

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\WithdrawalStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,15 +11,11 @@ return new class extends Migration
     {
         Schema::create('vendor_withdrawals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vendor_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
+            $table->foreignId('payout_account_id')->nullable()->constrained('vendor_payout_accounts')->nullOnDelete();
             $table->decimal('amount', 10, 2);
-            $table->string('method');
-            $table->string('account_name')->nullable();
-            $table->string('account_number')->nullable();
-            $table->string('bank_name')->nullable();
-            $table->string('routing_number')->nullable();
             $table->text('note')->nullable();
-            $table->string('status')->default('pending');
+            $table->string('status')->default(WithdrawalStatus::Pending->value);
             $table->foreignId('reviewed_by')->nullable()->constrained('admins')->nullOnDelete();
             $table->timestamp('reviewed_at')->nullable();
             $table->timestamp('processed_at')->nullable();
@@ -32,4 +29,3 @@ return new class extends Migration
         Schema::dropIfExists('vendor_withdrawals');
     }
 };
-

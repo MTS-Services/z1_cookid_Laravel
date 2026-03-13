@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Vendor;
 
-use App\Http\Controllers\Controller;
 use App\Enums\WithdrawalStatus;
+use App\Http\Controllers\Controller;
 use App\Models\VendorBalance;
 use App\Models\VendorEarning;
+use App\Models\VendorPayoutAccount;
 use App\Models\VendorWithdrawal;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class PaymentController extends Controller
 {
     public function __construct()
     {
-        // 
+        //
     }
 
     public function index(Request $request): Response
@@ -66,6 +67,31 @@ class PaymentController extends Controller
             })
             ->values();
 
+        $payoutAccounts = VendorPayoutAccount::query()
+            ->where('vendor_id', $vendor->id)
+            ->active()
+            ->orderByDesc('is_default')
+            ->orderByDesc('id')
+            ->get()
+            ->map(function (VendorPayoutAccount $account) {
+                $maskedNumber = $account->account_number
+                    ? str_repeat('•', max(0, strlen($account->account_number) - 4)).substr($account->account_number, -4)
+                    : null;
+
+                return [
+                    'id' => $account->id,
+                    'label' => trim(
+                        ($account->account_holder_name ?: 'Payout account')
+                        .($maskedNumber ? " ••••{$maskedNumber}" : '')
+                    ),
+                    'accountType' => $account->account_type->value,
+                    'isDefault' => (bool) $account->is_default,
+                    'email' => $account->email,
+                    'maskedNumber' => $maskedNumber,
+                ];
+            })
+            ->values();
+
         return Inertia::render('vendor/payments', [
             'stats' => [
                 'totalEarned' => (float) $totalEarned,
@@ -74,6 +100,7 @@ class PaymentController extends Controller
                 'totalWithdrawn' => (float) $totalWithdrawn,
             ],
             'withdrawals' => $withdrawals,
+            'payoutAccounts' => $payoutAccounts,
         ]);
     }
 
@@ -97,7 +124,7 @@ class PaymentController extends Controller
 
         $validated = $request->validate([
             'amount' => ['required', 'numeric', 'min:1'],
-            'method' => ['required', 'string', 'max:255'],
+            'payout_account_id' => ['required', 'integer', 'exists:vendor_payout_accounts,id'],
             'note' => ['nullable', 'string'],
         ]);
 
@@ -109,8 +136,8 @@ class PaymentController extends Controller
 
         VendorWithdrawal::create([
             'vendor_id' => $vendor->id,
+            'payout_account_id' => $validated['payout_account_id'],
             'amount' => $validated['amount'],
-            'method' => $validated['method'],
             'note' => $validated['note'] ?? null,
             'status' => WithdrawalStatus::Pending,
         ]);

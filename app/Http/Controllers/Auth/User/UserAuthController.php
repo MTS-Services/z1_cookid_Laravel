@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\Otp\UserOtpMail;
 use App\Mail\UserWelcomeMail;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -19,13 +20,15 @@ use Inertia\Response;
 
 class UserAuthController extends Controller
 {
-    public function showLogin()
+    public function showLogin(Request $request): Response|RedirectResponse
     {
         if (Auth::check()) {
             return redirect()->route('user.profile');
         }
 
-        return Inertia::render('auth/login');
+        return Inertia::render('auth/login', [
+            'redirect' => $request->query('redirect'),
+        ]);
     }
 
     public function store(Request $request)
@@ -54,7 +57,7 @@ class UserAuthController extends Controller
 
             Mail::to($user->email)->send(new UserWelcomeMail($user));
 
-            return redirect()->intended(route('user.profile'));
+            return redirect()->intended($request->query('redirect') ?? route('user.profile'));
         }
 
         $otp = rand(100000, 999999);
@@ -72,6 +75,7 @@ class UserAuthController extends Controller
         return redirect()->route('user.auth.otp-verify', [
             'email' => $user->email,
             'expires_at' => $expiresAt->toIso8601String(),
+            'redirect' => $request->query('redirect'),
         ]);
     }
 

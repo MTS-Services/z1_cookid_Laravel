@@ -113,14 +113,23 @@ export default function PremiumCarDetailingCard({ service }: PremiumCarDetailing
                 <p className="text-4xl font-bold mb-5">${service.price.toLocaleString()}</p>
 
                 <div className="flex gap-4">
-                    <Link
-                        href={route('user.order.billing-address', { service_id: service.encryptedId ?? service.id })}
-                        className="flex-1"
+                    <Button
+                        type="button"
+                        className="flex-1 w-full bg-navy hover:bg-navy text-white rounded-lg py-6 text-base font-medium"
+                        onClick={() => {
+                            const billingUrl = route('user.order.billing-address', {
+                                service_id: service.encryptedId,
+                            });
+
+                            if (isLoggedIn) {
+                                router.visit(billingUrl);
+                            } else {
+                                router.visit(route('user.auth.login', { redirect: billingUrl }));
+                            }
+                        }}
                     >
-                        <Button className="w-full bg-navy hover:bg-navy text-white rounded-lg py-6 text-base font-medium">
-                            Book Now
-                        </Button>
-                    </Link>
+                        Book Now
+                    </Button>
                     {isLoggedIn ? (
                         <Button
                             type="button"

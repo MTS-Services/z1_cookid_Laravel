@@ -2,7 +2,7 @@ import { ActionButton } from '@/components/ui/action-button'
 import VendorLayout from '@/layouts/vendor-layout'
 import { router, usePage } from '@inertiajs/react'
 import { Banknote, CheckCircle2, Clock3, Plus, TrendingUp } from 'lucide-react'
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import {
   AddAccountEmailModal,
   AddAccountModal,
@@ -10,6 +10,7 @@ import {
   VerifyAccountModal,
   WithdrawFundsModal,
   WithdrawalSuccessModal,
+  type PayoutAccountDraft,
 } from '@/components/section/vendors/payments/withdrwal-modal'
 
 type WithdrawalStatus = 'pending' | 'approved' | 'processing' | 'completed' | 'rejected'
@@ -32,6 +33,14 @@ interface VendorWithdrawalItem {
 interface VendorPaymentsPageProps extends Record<string, unknown> {
   stats: VendorPaymentsStats
   withdrawals: VendorWithdrawalItem[]
+  payoutAccounts: {
+    id: number
+    label: string
+    accountType: string
+    isDefault: boolean
+    email?: string | null
+    maskedNumber?: string | null
+  }[]
 }
 
 const formatCurrency = (value: number) =>
@@ -42,7 +51,7 @@ const formatCurrency = (value: number) =>
   }).format(value ?? 0)
 
 export default function Payment() {
-  const { stats, withdrawals } = usePage<VendorPaymentsPageProps>().props
+  const { stats, withdrawals, payoutAccounts } = usePage<VendorPaymentsPageProps>().props
 
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
@@ -52,13 +61,20 @@ export default function Payment() {
   const [isAddAccountEmailOpen, setIsAddAccountEmailOpen] = useState(false)
   const [isAccountVerifyOpen, setIsAccountVerifyOpen] = useState(false)
   const [isAccountSuccessOpen, setIsAccountSuccessOpen] = useState(false)
-  const [accountEmail, setAccountEmail] = useState('example@gmail.com')
+  const [accountEmail, setAccountEmail] = useState('')
   const [linkedAccountLabel, setLinkedAccountLabel] = useState<string | null>(null)
+  const [newAccountDraft, setNewAccountDraft] = useState<(PayoutAccountDraft & { email?: string | null }) | null>(null)
+  const [isLinkingAccount, setIsLinkingAccount] = useState(false)
+  const [linkAccountError, setLinkAccountError] = useState<string | null>(null)
 
-  const [withdrawDetails, setWithdrawDetails] = useState<{ amount: string; method: string } | null>(null)
+  const [withdrawDetails, setWithdrawDetails] = useState<{
+    amount: string
+    payoutAccountId: number
+    methodLabel: string
+  } | null>(null)
 
   // Step 1: Withdraw -> Confirm
-  const handleWithdrawContinue = (details: { amount: string; method: string }) => {
+  const handleWithdrawContinue = (details: { amount: string; payoutAccountId: number; methodLabel: string }) => {
     setWithdrawDetails(details)
     setIsWithdrawOpen(false)
     setIsConfirmOpen(true)
@@ -72,7 +88,7 @@ export default function Payment() {
       route('vendor.payments.withdraw'),
       {
         amount: withdrawDetails.amount,
-        method: withdrawDetails.method,
+        payout_account_id: withdrawDetails.payoutAccountId,
       },
       {
         preserveScroll: true,
@@ -85,30 +101,64 @@ export default function Payment() {
   }
 
   // Step 3: Verify -> Success
-  const handleVerifyComplete = (code: string) => {
-    console.log("Verifying code:", code)
-    // Add API call logic here
+  const handleVerifyComplete = (_code: string) => {
     setIsVerifyOpen(false)
     setIsSuccessOpen(true)
   }
 
-  const handleAddAccountContinue = (accountLabel: string) => {
-    setLinkedAccountLabel(accountLabel)
+  const handleAddAccountContinue = ({ payload, displayLabel }: { payload: PayoutAccountDraft; displayLabel: string }) => {
+    setNewAccountDraft(payload)
+    setLinkedAccountLabel(displayLabel)
     setIsAddAccountOpen(false)
     setIsAddAccountEmailOpen(true)
   }
 
   const handleAccountEmailContinue = (email: string) => {
     setAccountEmail(email)
+    setNewAccountDraft((prev) => (prev ? { ...prev, email } : prev))
     setIsAddAccountEmailOpen(false)
     setIsAccountVerifyOpen(true)
   }
 
-  const handleAccountVerifyComplete = (code: string) => {
-    console.log('Account verification code:', code)
-    setIsAccountVerifyOpen(false)
-    setIsAccountSuccessOpen(true)
+  const handleAccountVerifyComplete = (_code: string) => {
+    if (!newAccountDraft) {
+      setLinkAccountError('Account details missing. Please restart the flow.')
+      return
+    }
+
+    setIsLinkingAccount(true)
+    setLinkAccountError(null)
+
+    router.post(route('vendor.payout-accounts.store'), newAccountDraft, {
+      preserveScroll: true,
+      onSuccess: () => {
+        setIsLinkingAccount(false)
+        setIsAccountVerifyOpen(false)
+        setIsAccountSuccessOpen(true)
+        setNewAccountDraft(null)
+        router.reload({ only: ['payoutAccounts'] })
+      },
+      onError: (errors) => {
+        setIsLinkingAccount(false)
+        const firstError = Object.values(errors)[0]
+        setLinkAccountError(typeof firstError === 'string' ? firstError : 'Unable to link payout account. Please review details.')
+      },
+    })
   }
+
+  const handleStartAddAccount = useCallback(() => {
+    setLinkAccountError(null)
+    setLinkedAccountLabel(null)
+    setNewAccountDraft(null)
+    setAccountEmail('')
+    setIsAddAccountOpen(true)
+  }, [])
+
+  const payoutMethodOptions = useMemo(
+    () => payoutAccounts.map(({ id, label }) => ({ id, label })),
+    [payoutAccounts],
+  )
+
   return (
     <VendorLayout activeSlug="vendor.payments">
       <section className="space-y-8 text-white">
@@ -163,21 +213,20 @@ export default function Payment() {
                 <p className="text-md font-medium text-text-gray">Platform Earnings</p>
                 <h2 className="text-xl font-semibold text-white">Linked Accounts</h2>
               </div>
-              <ActionButton
-                onClick={() => setIsAddAccountOpen(true)}
-                IconNode={Plus}
-                className="mt-4"
-              >
+              <ActionButton onClick={handleStartAddAccount} IconNode={Plus} className="mt-4">
                 Add Account
               </ActionButton>
             </div>
+
             <article className="rounded-2xl bg-(--color-card-darker) p-4">
               <div className="flex items-center justify-between text-sm text-text-gray-50">
                 <div>
-                  {linkedAccountLabel ? (
+                  {payoutAccounts.length > 0 ? (
                     <>
-                      <p className="text-white">{linkedAccountLabel}</p>
-                      <p className="text-xs text-text-gray">{accountEmail}</p>
+                      <p className="text-white">{payoutAccounts[0].label}</p>
+                      {payoutAccounts[0].email && (
+                        <p className="text-xs text-text-gray">{payoutAccounts[0].email}</p>
+                      )}
                     </>
                   ) : (
                     <>
@@ -187,7 +236,7 @@ export default function Payment() {
                   )}
                 </div>
                 <span className="rounded-full bg-(--color-accent-blue)/20 px-3 py-1 text-xs font-semibold text-(--color-accent-blue)">
-                  {linkedAccountLabel ? 'Primary' : 'None'}
+                  {payoutAccounts.length > 0 ? 'Primary' : 'None'}
                 </span>
               </div>
             </article>
@@ -229,7 +278,7 @@ export default function Payment() {
               </thead>
               <tbody className="divide-y divide-white/5">
                 {withdrawals.map((withdrawal) => (
-                  <tr key={`${withdrawal.date}-${withdrawal.amount}`} className="text-text-gray-50">
+                  <tr key={withdrawal.id} className="text-text-gray-50">
                     <td className="px-6 py-4 text-white">{withdrawal.date}</td>
                     <td className="px-6 py-4 text-white">{withdrawal.amount}</td>
                     <td className="px-6 py-4">
@@ -259,6 +308,7 @@ export default function Payment() {
         open={isWithdrawOpen}
         onOpenChange={setIsWithdrawOpen}
         availableBalance={formatCurrency(stats.availableBalance)}
+        methods={payoutMethodOptions}
         onContinue={handleWithdrawContinue}
       />
 
@@ -267,7 +317,7 @@ export default function Payment() {
         open={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
         amount={withdrawDetails?.amount}
-        methodLabel={withdrawDetails?.method}
+        methodLabel={withdrawDetails?.methodLabel}
         onConfirm={handleConfirmSend}
       />
 
@@ -294,19 +344,22 @@ export default function Payment() {
       <AddAccountEmailModal
         open={isAddAccountEmailOpen}
         onOpenChange={setIsAddAccountEmailOpen}
+        initialEmail={accountEmail}
         onContinue={handleAccountEmailContinue}
       />
       <VerifyAccountModal
         open={isAccountVerifyOpen}
         onOpenChange={setIsAccountVerifyOpen}
         onContinue={handleAccountVerifyComplete}
+        isSubmitting={isLinkingAccount}
+        errorMessage={linkAccountError}
       />
       <WithdrawalSuccessModal
         open={isAccountSuccessOpen}
         onOpenChange={setIsAccountSuccessOpen}
         amount=""
         title="Account Added Successfully!"
-        description={`Your payout account (${accountEmail}) is ready to receive funds.`}
+        description={`Your payout account (${linkedAccountLabel ?? accountEmail}) is ready to receive funds.`}
       />
     </VendorLayout>
   )

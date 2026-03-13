@@ -2,8 +2,8 @@ import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { Banknote, CheckCircle2, CreditCard, X } from 'lucide-react'
-import { useMemo, useRef, useState } from 'react'
+import { CreditCard, X } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 type ModalBaseProps = {
     open: boolean
@@ -38,24 +38,19 @@ type WithdrawFundsModalProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
     availableBalance?: string
-    methods?: { label: string; value: string }[]
-    onContinue?: (details: { amount: string; method: string }) => void
+    methods: { id: number; label: string }[]
+    onContinue?: (details: { amount: string; payoutAccountId: number; methodLabel: string }) => void
 }
-
-const defaultMethods = [
-    { label: 'Bank Account ••••1234', value: 'bank:1234' },
-    { label: 'HSBC Business Account', value: 'hsbc' },
-]
 
 export function WithdrawFundsModal({
     open,
     onOpenChange,
-    availableBalance = '$12,000.50',
-    methods = defaultMethods,
+    availableBalance = '$0.00',
+    methods,
     onContinue,
 }: WithdrawFundsModalProps) {
-    const [amount, setAmount] = useState('120.00')
-    const [selectedMethod, setSelectedMethod] = useState(methods[0]?.value ?? '')
+    const [amount, setAmount] = useState('')
+    const [selectedMethodId, setSelectedMethodId] = useState<number | undefined>(methods[0]?.id)
 
     return (
         <PaymentModalShell open={open} onOpenChange={onOpenChange}>
@@ -86,11 +81,14 @@ export function WithdrawFundsModal({
                     <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-1">
                         <select
                             className="w-full bg-transparent py-2 text-white focus:outline-none"
-                            value={selectedMethod}
-                            onChange={(event) => setSelectedMethod(event.target.value)}
+                            value={selectedMethodId ?? ''}
+                            onChange={(event) => setSelectedMethodId(Number(event.target.value))}
                         >
+                            <option value="" disabled className="bg-bg-black text-black">
+                                Select payout account
+                            </option>
                             {methods.map((method) => (
-                                <option key={method.value} value={method.value} className="bg-bg-black text-black">
+                                <option key={method.id} value={method.id} className="bg-bg-black text-black">
                                     {method.label}
                                 </option>
                             ))}
@@ -109,7 +107,14 @@ export function WithdrawFundsModal({
                     <Button
                         className="w-full rounded-2xl bg-(--color-accent-blue) text-white hover:bg-(--color-accent-blue-dark)"
                         onClick={() => {
-                            onContinue?.({ amount, method: selectedMethod })
+                            if (!selectedMethodId) {
+                                return
+                            }
+                            const method = methods.find((item) => item.id === selectedMethodId)
+                            if (!method) {
+                                return
+                            }
+                            onContinue?.({ amount, payoutAccountId: selectedMethodId, methodLabel: method.label })
                         }}
                     >
                         Continue
@@ -118,6 +123,19 @@ export function WithdrawFundsModal({
             </div>
         </PaymentModalShell>
     )
+}
+
+export type PayoutAccountDraft = {
+    account_type: 'card' | 'paypal' | 'stripe'
+    account_holder_name: string
+    account_number?: string | null
+    bank_name?: string | null
+    routing_number?: string | null
+    card_expiry_month?: string | null
+    card_expiry_year?: string | null
+    security_code?: string | null
+    email?: string | null
+    is_default?: boolean
 }
 
 type ConfirmWithdrawalModalProps = {
@@ -224,6 +242,12 @@ type VerifyAccountModalProps = {
     onOpenChange: (open: boolean) => void
     phoneNumber?: string
     onContinue?: (code: string) => void
+    isSubmitting?: boolean
+    errorMessage?: string | null
+    otpLength?: number
+    resendAfterSeconds?: number
+    onResend?: () => void
+    onCodeChange?: (code: string) => void
 }
 
 export function VerifyAccountModal({
@@ -231,12 +255,51 @@ export function VerifyAccountModal({
     onOpenChange,
     phoneNumber = '+61 412 345 678',
     onContinue,
+    isSubmitting = false,
+    errorMessage = null,
+    otpLength = 4,
+    resendAfterSeconds = 60,
+    onResend,
+    onCodeChange,
 }: VerifyAccountModalProps) {
-    const otpLength = 4
     const [code, setCode] = useState(Array(otpLength).fill(''))
+    const [secondsLeft, setSecondsLeft] = useState(resendAfterSeconds)
+    const [isResending, setIsResending] = useState(false)
     const inputRefs = useRef<HTMLInputElement[]>([])
 
     const codeValue = useMemo(() => code.join(''), [code])
+
+    useEffect(() => {
+        onCodeChange?.(codeValue)
+    }, [codeValue, onCodeChange])
+
+    useEffect(() => {
+        if (!open) {
+            return
+        }
+
+        setCode(Array(otpLength).fill(''))
+        setSecondsLeft(resendAfterSeconds)
+        setIsResending(false)
+
+        const timeout = setTimeout(() => {
+            inputRefs.current[0]?.focus()
+        }, 150)
+
+        return () => clearTimeout(timeout)
+    }, [open, otpLength, resendAfterSeconds])
+
+    useEffect(() => {
+        if (!open || secondsLeft <= 0) {
+            return
+        }
+
+        const interval = setInterval(() => {
+            setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0))
+        }, 1000)
+
+        return () => clearInterval(interval)
+    }, [open, secondsLeft])
 
     const handleChange = (index: number, value: string) => {
         if (!/^\d?$/.test(value)) {
@@ -262,6 +325,41 @@ export function VerifyAccountModal({
         }
     }
 
+    const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+        event.preventDefault()
+        const pasted = event.clipboardData.getData('text').replace(/\D/g, '').slice(0, otpLength)
+        if (!pasted) {
+            return
+        }
+
+        const next = Array(otpLength)
+            .fill('')
+            .map((_, idx) => pasted[idx] ?? '')
+        setCode(next)
+
+        const nextEmptyIndex = next.findIndex((digit) => digit === '')
+        const focusIndex = nextEmptyIndex === -1 ? otpLength - 1 : nextEmptyIndex
+        inputRefs.current[focusIndex]?.focus()
+    }
+
+    const handleResend = async () => {
+        if (!onResend || secondsLeft > 0) {
+            return
+        }
+
+        setIsResending(true)
+        try {
+            await onResend()
+            setSecondsLeft(resendAfterSeconds)
+            setCode(Array(otpLength).fill(''))
+            inputRefs.current[0]?.focus()
+        } finally {
+            setIsResending(false)
+        }
+    }
+
+    const isCodeComplete = codeValue.length === otpLength && !code.includes('')
+
     return (
         <PaymentModalShell open={open} onOpenChange={onOpenChange} size="sm">
             <div className="space-y-6 text-center">
@@ -271,7 +369,7 @@ export function VerifyAccountModal({
                 <div>
                     <h2 className="text-2xl font-semibold">Verify Your Account</h2>
                     <p className="mt-2 text-sm text-text-gray">
-                        We’ve sent a 4-digit verification code to your mobile number {phoneNumber}. Enter the code below to
+                        We’ve sent a {otpLength}-digit verification code to your mobile number {phoneNumber}. Enter the code below to
                         continue.
                     </p>
                 </div>
@@ -288,21 +386,39 @@ export function VerifyAccountModal({
                             value={digit}
                             onChange={(event) => handleChange(index, event.target.value)}
                             onKeyDown={(event) => handleKeyDown(index, event)}
+                            onPaste={handlePaste}
                             maxLength={1}
+                            inputMode="numeric"
                             className="h-14 w-14 rounded-2xl border border-white/10 bg-black/20 text-center text-2xl font-semibold text-white focus:outline-none focus:ring-2 focus:ring-(--color-accent-blue)"
                         />
                     ))}
                 </div>
 
-                <p className="text-xs text-text-gray">
-                    Didn’t receive the code? <button className="text-(--color-accent-blue)">Resend Code (wait 60s)</button>
-                </p>
+                <div className="text-xs text-text-gray">
+                    {secondsLeft > 0 ? (
+                        <p>
+                            Didn’t receive the code? Resend available in{' '}
+                            <span className="font-semibold text-white">00:{secondsLeft.toString().padStart(2, '0')}</span>
+                        </p>
+                    ) : (
+                        <button
+                            className="text-(--color-accent-blue) disabled:cursor-not-allowed"
+                            disabled={isResending}
+                            onClick={handleResend}
+                        >
+                            {isResending ? 'Sending…' : 'Resend Code'}
+                        </button>
+                    )}
+                </div>
+
+                {errorMessage && <p className="text-sm text-red-400">{errorMessage}</p>}
 
                 <Button
                     className="w-full rounded-2xl bg-(--color-accent-blue) text-white hover:bg-(--color-accent-blue-dark)"
-                    onClick={() => onContinue?.(codeValue)}
+                    disabled={isSubmitting || !isCodeComplete}
+                    onClick={() => isCodeComplete && onContinue?.(codeValue)}
                 >
-                    Continue
+                    {isSubmitting ? 'Linking Account…' : 'Continue'}
                 </Button>
             </div>
         </PaymentModalShell>
@@ -312,19 +428,37 @@ export function VerifyAccountModal({
 type AddAccountModalProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
-    onContinue?: (accountLabel: string) => void
+    onContinue?: (details: { payload: PayoutAccountDraft; displayLabel: string }) => void
 }
 
-const providerTabs = [
+const providerTabs: { id: PayoutAccountDraft['account_type']; label: string }[] = [
     { id: 'card', label: 'Card' },
     { id: 'paypal', label: 'PayPal' },
     { id: 'stripe', label: 'Stripe' },
 ]
 
 export function AddAccountModal({ open, onOpenChange, onContinue }: AddAccountModalProps) {
-    const [provider, setProvider] = useState('card')
-    const [cardHolder, setCardHolder] = useState('')
-    const [cardNumber, setCardNumber] = useState('')
+    const [provider, setProvider] = useState<PayoutAccountDraft['account_type']>('card')
+    const baseFormState = {
+        accountHolder: '',
+        accountNumber: '',
+        bankName: '',
+        routingNumber: '',
+        expiryMonth: '',
+        expiryYear: '',
+        securityCode: '',
+        isDefault: true,
+    }
+    const [form, setForm] = useState(baseFormState)
+    const [formError, setFormError] = useState<string | null>(null)
+
+    useEffect(() => {
+        if (!open) {
+            setProvider('card')
+            setForm(baseFormState)
+            setFormError(null)
+        }
+    }, [open])
 
     return (
         <PaymentModalShell open={open} onOpenChange={onOpenChange} size="lg">
@@ -351,7 +485,7 @@ export function AddAccountModal({ open, onOpenChange, onContinue }: AddAccountMo
                     ))}
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4 space-y-4">
                     <div className="mb-4 flex items-center gap-2 text-sm font-semibold">
                         <CreditCard className="h-4 w-4" />
                         {provider === 'card' ? 'Add Credit / Debit Card' : 'Link payout account'}
@@ -359,34 +493,113 @@ export function AddAccountModal({ open, onOpenChange, onContinue }: AddAccountMo
                     <div className="space-y-4 text-sm">
                         <Input
                             placeholder="Account holder’s name"
-                            value={cardHolder}
-                            onChange={(event) => setCardHolder(event.target.value)}
+                            value={form.accountHolder}
+                            onChange={(event) => setForm((prev) => ({ ...prev, accountHolder: event.target.value }))}
                             className="rounded-xl border-white/10 bg-black/30 text-white"
                         />
                         <Input
-                            placeholder={provider === 'card' ? 'Card Number' : 'Account Identifier'}
-                            value={cardNumber}
-                            onChange={(event) => setCardNumber(event.target.value)}
+                            placeholder={provider === 'card' ? 'Card Number' : 'Account Identifier (optional)'}
+                            value={form.accountNumber}
+                            onChange={(event) => setForm((prev) => ({ ...prev, accountNumber: event.target.value }))}
                             className="rounded-xl border-white/10 bg-black/30 text-white"
                         />
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <Input placeholder="Month" className="rounded-xl border-white/10 bg-black/30 text-white" />
-                            <Input placeholder="Year" className="rounded-xl border-white/10 bg-black/30 text-white" />
-                        </div>
-                        <Input placeholder="Security Code" className="rounded-xl border-white/10 bg-black/30 text-white" />
+                        {provider === 'card' ? (
+                            <div className="grid gap-4 sm:grid-cols-3">
+                                <Input
+                                    placeholder="MM"
+                                    maxLength={2}
+                                    value={form.expiryMonth}
+                                    onChange={(event) => setForm((prev) => ({ ...prev, expiryMonth: event.target.value }))}
+                                    className="rounded-xl border-white/10 bg-black/30 text-white"
+                                />
+                                <Input
+                                    placeholder="YYYY"
+                                    maxLength={4}
+                                    value={form.expiryYear}
+                                    onChange={(event) => setForm((prev) => ({ ...prev, expiryYear: event.target.value }))}
+                                    className="rounded-xl border-white/10 bg-black/30 text-white"
+                                />
+                                <Input
+                                    placeholder="CVV"
+                                    maxLength={4}
+                                    value={form.securityCode}
+                                    onChange={(event) => setForm((prev) => ({ ...prev, securityCode: event.target.value }))}
+                                    className="rounded-xl border-white/10 bg-black/30 text-white"
+                                />
+                            </div>
+                        ) : (
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <Input
+                                    placeholder="Bank Name (optional)"
+                                    value={form.bankName}
+                                    onChange={(event) => setForm((prev) => ({ ...prev, bankName: event.target.value }))}
+                                    className="rounded-xl border-white/10 bg-black/30 text-white"
+                                />
+                                <Input
+                                    placeholder="Routing Number (optional)"
+                                    value={form.routingNumber}
+                                    onChange={(event) => setForm((prev) => ({ ...prev, routingNumber: event.target.value }))}
+                                    className="rounded-xl border-white/10 bg-black/30 text-white"
+                                />
+                            </div>
+                        )}
+                        <label className="flex items-center gap-2 text-xs text-text-gray">
+                            <input
+                                type="checkbox"
+                                className="h-4 w-4 rounded border-white/20 bg-black/40"
+                                checked={form.isDefault}
+                                onChange={(event) => setForm((prev) => ({ ...prev, isDefault: event.target.checked }))}
+                            />
+                            Set as default payout account
+                        </label>
+                        {formError && <p className="text-sm text-red-400">{formError}</p>}
                     </div>
                 </div>
 
                 <Button
                     className="w-full rounded-2xl bg-(--color-accent-blue) text-white hover:bg-(--color-accent-blue-dark)"
                     onClick={() => {
-                        const digits = cardNumber.replace(/\D/g, '')
+                        if (!form.accountHolder.trim()) {
+                            setFormError('Account holder name is required.')
+                            return
+                        }
+                        if (provider === 'card') {
+                            if (!form.accountNumber.trim()) {
+                                setFormError('Card number is required for card payouts.')
+                                return
+                            }
+                            if (!form.expiryMonth.trim() || !form.expiryYear.trim()) {
+                                setFormError('Card expiry details are required.')
+                                return
+                            }
+                            if (!form.securityCode.trim()) {
+                                setFormError('Security code is required for cards.')
+                                return
+                            }
+                        }
+
+                        const digits = form.accountNumber.replace(/\D/g, '')
                         const last4 = digits.slice(-4)
-                        const label =
-                            cardHolder && last4
-                                ? `${cardHolder} ••••${last4}`
-                                : cardHolder || (provider === 'card' ? 'Card payout account' : 'Payout account')
-                        onContinue?.(label)
+                        const displayLabel = form.accountHolder
+                            ? `${form.accountHolder}${last4 ? ` ••••${last4}` : ''}`
+                            : provider === 'card'
+                                ? 'Card payout account'
+                                : 'Payout account'
+
+                        const payload: PayoutAccountDraft = {
+                            account_type: provider,
+                            account_holder_name: form.accountHolder.trim(),
+                            account_number: form.accountNumber.trim() || null,
+                            bank_name: form.bankName.trim() || null,
+                            routing_number: form.routingNumber.trim() || null,
+                            card_expiry_month: form.expiryMonth.trim() || null,
+                            card_expiry_year: form.expiryYear.trim() || null,
+                            security_code: form.securityCode.trim() || null,
+                            is_default: form.isDefault,
+                        }
+
+                        setFormError(null)
+                        onContinue?.({ payload, displayLabel })
                     }}
                 >
                     Continue
@@ -399,11 +612,20 @@ export function AddAccountModal({ open, onOpenChange, onContinue }: AddAccountMo
 type AddAccountEmailModalProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
+    initialEmail?: string
     onContinue?: (email: string) => void
 }
 
-export function AddAccountEmailModal({ open, onOpenChange, onContinue }: AddAccountEmailModalProps) {
-    const [email, setEmail] = useState('example@gmail.com')
+export function AddAccountEmailModal({ open, onOpenChange, onContinue, initialEmail }: AddAccountEmailModalProps) {
+    const [email, setEmail] = useState(initialEmail ?? '')
+    const [error, setError] = useState<string | null>(null)
+
+    useEffect(() => {
+        if (open) {
+            setEmail(initialEmail ?? '')
+            setError(null)
+        }
+    }, [open, initialEmail])
 
     return (
         <PaymentModalShell open={open} onOpenChange={onOpenChange} size="sm">
@@ -419,9 +641,17 @@ export function AddAccountEmailModal({ open, onOpenChange, onContinue }: AddAcco
                     className="rounded-2xl border-white/10 bg-black/20 text-white"
                     placeholder="example@gmail.com"
                 />
+                {error && <p className="text-sm text-red-400">{error}</p>}
                 <Button
                     className="w-full rounded-2xl bg-(--color-accent-blue) text-white hover:bg-(--color-accent-blue-dark)"
-                    onClick={() => onContinue?.(email)}
+                    onClick={() => {
+                        if (!email.trim()) {
+                            setError('Email is required to continue.')
+                            return
+                        }
+                        setError(null)
+                        onContinue?.(email.trim())
+                    }}
                 >
                     Continue
                 </Button>

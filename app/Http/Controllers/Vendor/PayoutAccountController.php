@@ -129,4 +129,22 @@ class PayoutAccountController extends Controller
             ->route('vendor.payments')
             ->with('success', 'Payout account added successfully.');
     }
+
+    public function setDefault(Request $request, VendorPayoutAccount $payoutAccount): RedirectResponse
+    {
+        $vendor = $request->user('vendor');
+
+        abort_unless($vendor, 403);
+
+        if ($payoutAccount->vendor_id !== $vendor->id) {
+            abort(404);
+        }
+
+        VendorPayoutAccount::where('vendor_id', $vendor->id)->update(['is_default' => false]);
+        $payoutAccount->update(['is_default' => true]);
+
+        return redirect()
+            ->route('vendor.payments')
+            ->with('success', 'Default payout account updated.');
+    }
 }

@@ -3,6 +3,7 @@ import VendorLayout from '@/layouts/vendor-layout'
 import { router, usePage } from '@inertiajs/react'
 import { Banknote, CheckCircle2, Clock3, Plus, TrendingUp } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   AddAccountEmailModal,
   AddAccountModal,
@@ -72,6 +73,9 @@ export default function Payment() {
     payoutAccountId: number
     methodLabel: string
   } | null>(null)
+
+  const [isChangeDefaultOpen, setIsChangeDefaultOpen] = useState(false)
+  const [isSettingDefault, setIsSettingDefault] = useState(false)
 
   // Step 1: Withdraw -> Confirm
   const handleWithdrawContinue = (details: { amount: string; payoutAccountId: number; methodLabel: string }) => {
@@ -191,6 +195,27 @@ export default function Payment() {
     setIsAddAccountOpen(true)
   }, [])
 
+  const defaultAccount = payoutAccounts.length > 0 ? payoutAccounts[0] : null
+  const handleSetDefaultAccount = useCallback(
+    (accountId: number) => {
+      setIsSettingDefault(true)
+      router.patch(
+        route('vendor.payout-accounts.set-default', { payoutAccount: accountId }),
+        {},
+        {
+          preserveScroll: true,
+          onSuccess: () => {
+            setIsChangeDefaultOpen(false)
+            setIsSettingDefault(false)
+          },
+          onError: () => setIsSettingDefault(false),
+          onFinish: () => setIsSettingDefault(false),
+        },
+      )
+    },
+    [],
+  )
+
   const payoutMethodOptions = useMemo(
     () => payoutAccounts.map(({ id, label }) => ({ id, label })),
     [payoutAccounts],
@@ -256,13 +281,13 @@ export default function Payment() {
             </div>
 
             <article className="rounded-2xl bg-(--color-card-darker) p-4">
-              <div className="flex items-center justify-between text-sm text-text-gray-50">
-                <div>
-                  {payoutAccounts.length > 0 ? (
+              <div className="flex items-center justify-between gap-3 text-sm text-text-gray-50">
+                <div className="min-w-0 flex-1">
+                  {defaultAccount ? (
                     <>
-                      <p className="text-white">{payoutAccounts[0].label}</p>
-                      {payoutAccounts[0].email && (
-                        <p className="text-xs text-text-gray">{payoutAccounts[0].email}</p>
+                      <p className="text-white">{defaultAccount.label}</p>
+                      {defaultAccount.email && (
+                        <p className="text-xs text-text-gray">{defaultAccount.email}</p>
                       )}
                     </>
                   ) : (
@@ -272,11 +297,62 @@ export default function Payment() {
                     </>
                   )}
                 </div>
-                <span className="rounded-full bg-(--color-accent-blue)/20 px-3 py-1 text-xs font-semibold text-(--color-accent-blue)">
-                  {payoutAccounts.length > 0 ? 'Primary' : 'None'}
-                </span>
+                <div className="flex shrink-0 items-center gap-2">
+                  <span className="rounded-full bg-(--color-accent-blue)/20 px-3 py-1 text-xs font-semibold text-(--color-accent-blue)">
+                    {defaultAccount ? 'Primary' : 'None'}
+                  </span>
+                  {payoutAccounts.length >= 2 && (
+                    <button
+                      type="button"
+                      onClick={() => setIsChangeDefaultOpen(true)}
+                      className="rounded-full border border-white/20 px-3 py-1 text-xs font-medium text-white hover:bg-white/10"
+                    >
+                      Change
+                    </button>
+                  )}
+                </div>
               </div>
             </article>
+
+            <Dialog open={isChangeDefaultOpen} onOpenChange={setIsChangeDefaultOpen}>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Change default payout account</DialogTitle>
+                </DialogHeader>
+                <p className="text-sm text-text-gray">
+                  Choose which account to use as primary for new withdrawals.
+                </p>
+                <ul className="space-y-2">
+                  {payoutAccounts.map((account) => (
+                    <li
+                      key={account.id}
+                      className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-(--color-card-darker) p-3"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-white">{account.label}</p>
+                        {account.email && (
+                          <p className="text-xs text-text-gray">{account.email}</p>
+                        )}
+                      </div>
+                      {account.isDefault ? (
+                        <span className="shrink-0 rounded-full bg-(--color-accent-blue)/20 px-2 py-0.5 text-xs font-semibold text-(--color-accent-blue)">
+                          Primary
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={isSettingDefault}
+                          onClick={() => handleSetDefaultAccount(account.id)}
+                          className="shrink-0 rounded-full border border-(--color-accent-blue)/50 bg-(--color-accent-blue)/10 px-3 py-1 text-xs font-semibold text-(--color-accent-blue) hover:bg-(--color-accent-blue)/20 disabled:opacity-50"
+                        >
+                          {isSettingDefault ? 'Updating…' : 'Set as default'}
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </DialogContent>
+            </Dialog>
           </section>
 
           <section className="space-y-4 rounded-2xl border border-white/5 bg-bg-gray p-6">

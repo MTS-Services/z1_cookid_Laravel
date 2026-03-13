@@ -1,7 +1,5 @@
 // Pagination.tsx
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Link } from '@inertiajs/react';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 interface PaginationProps {
@@ -15,12 +13,10 @@ export default function Pagination({
     totalPages,
     onPageChange,
 }: PaginationProps) {
-    // Limit visible pages for better UX (you can adjust this)
     const maxVisiblePages = 7;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
-    // Adjust if we're near the end
     if (endPage - startPage + 1 < maxVisiblePages) {
         startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
@@ -36,59 +32,49 @@ export default function Pagination({
         }
     };
 
+    const btnBase =
+        'flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 border';
+    const btnDisabled = 'bg-gray-800/50 text-gray-600 cursor-not-allowed border-gray-800';
+    const btnPrevNext =
+        'bg-gray-800/80 hover:bg-navy/30 text-blue-400 hover:text-navy/50 border-blue-900/40 hover:border-navy/60';
+    const btnPage =
+        'text-sm font-medium bg-gray-800/70 text-gray-300 hover:bg-gray-700/90 border-gray-700 hover:border-gray-500';
+    const btnPageActive =
+        'bg-navy text-white border-2 border-transparent shadow-lg shadow-navy/20 scale-110';
+
     return (
         <div className="flex items-center justify-center gap-2 md:gap-3 py-6 px-4">
-            {/* Previous button */}
-            <Link
+            <button
+                type="button"
                 onClick={() => handlePageClick(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={`
-          flex items-center justify-center w-10 h-10 rounded-full 
-          transition-all duration-200
-          ${currentPage === 1
-                        ? 'bg-gray-800/50 text-gray-600 cursor-not-allowed'
-                        : 'bg-gray-800/80 hover:bg-navy/30 text-blue-400 hover:text-navy/50 border border-blue-900/40 hover:border-navy/60'
-                    }
-        `}
+                className={`${btnBase} ${currentPage === 1 ? btnDisabled : btnPrevNext}`}
                 aria-label="Previous page"
             >
                 <FaArrowLeft size={18} strokeWidth={2.5} />
-            </Link>
+            </button>
 
-            {/* Page numbers */}
             {pages.map((page) => (
-                <Link
+                <button
                     key={page}
+                    type="button"
                     onClick={() => handlePageClick(page)}
-                    className={`
-            flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium
-            transition-all duration-200
-            ${page === currentPage
-                            ? 'bg-navy text-white border-2 border-transparent shadow-lg shadow-navy/20 scale-110'
-                            : 'bg-gray-800/70 text-gray-300 hover:bg-gray-700/90 border border-gray-700 hover:border-gray-500'
-                        }
-          `}
+                    className={`${btnBase} ${btnPage} ${page === currentPage ? btnPageActive : ''}`}
+                    aria-label={`Page ${page}`}
                 >
                     {page.toString().padStart(2, '0')}
-                </Link>
+                </button>
             ))}
 
-            {/* Next button */}
-            <Link
+            <button
+                type="button"
                 onClick={() => handlePageClick(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className={`
-          flex items-center justify-center w-10 h-10 rounded-full 
-          transition-all duration-200
-          ${currentPage === totalPages
-                        ? 'bg-gray-800/50 text-gray-600 cursor-not-allowed'
-                        : 'bg-gray-800/80 hover:bg-navy/30 text-blue-400 hover:text-navy/50 border border-blue-900/40 hover:border-navy/60'
-                    }
-        `}
+                className={`${btnBase} ${currentPage === totalPages ? btnDisabled : btnPrevNext}`}
                 aria-label="Next page"
             >
-                <FaArrowRight  size={18} strokeWidth={2.5} />
-            </Link>
+                <FaArrowRight size={18} strokeWidth={2.5} />
+            </button>
         </div>
     );
 }

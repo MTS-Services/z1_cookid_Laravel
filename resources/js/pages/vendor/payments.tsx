@@ -197,7 +197,7 @@ export default function Payment() {
   )
 
   return (
-    <VendorLayout activeSlug="vendor.payments">
+    <VendorLayout activeSlug="payments">
       <section className="space-y-8 text-white">
         <header>
           <h1 className="text-2xl font-semibold text-white">Payments &amp; Earnings</h1>

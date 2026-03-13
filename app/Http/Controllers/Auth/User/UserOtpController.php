@@ -31,6 +31,7 @@ class UserOtpController extends Controller
         return Inertia::render('auth/otp-verify', [
             'email' => $email,
             'expires_at' => $user->otp_expires_at?->toIso8601String(),
+            'redirect' => $request->query('redirect'),
         ]);
     }
 
@@ -73,7 +74,7 @@ class UserOtpController extends Controller
 
         Mail::to($user->email)->send(new UserWelcomeMail($user));
 
-        return redirect()->intended(route('user.profile'));
+        return redirect()->intended($request->query('redirect') ?? route('user.profile'));
     }
 
     public function resend(Request $request): RedirectResponse
@@ -104,6 +105,7 @@ class UserOtpController extends Controller
         return redirect()->route('user.auth.otp-verify', [
             'email' => $user->email,
             'expires_at' => $expiresAt->toIso8601String(),
+            'redirect' => $request->query('redirect'),
         ])->with('message', 'A new OTP has been sent.');
     }
 }

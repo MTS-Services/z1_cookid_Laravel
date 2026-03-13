@@ -5,9 +5,10 @@ import AuthLayout from '@/layouts/auth-layout';
 interface OtpVerifyProps {
     email: string;
     expires_at: string; // Passed from Laravel
+    redirect?: string | null;
 }
 
-const OtpVerifyPage: FC<OtpVerifyProps> = ({ email, expires_at }) => {
+const OtpVerifyPage: FC<OtpVerifyProps> = ({ email, expires_at, redirect }) => {
     const inputs = useRef<Array<HTMLInputElement | null>>([]);
 
     // Logic to calculate remaining seconds from the ISO string
@@ -73,12 +74,20 @@ const OtpVerifyPage: FC<OtpVerifyProps> = ({ email, expires_at }) => {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('user.auth.otp.verify'));
+        if (redirect) {
+            post(route('user.auth.otp.verify', { redirect }));
+        } else {
+            post(route('user.auth.otp.verify'));
+        }
     };
 
     const resendOtp = () => {
         if (timer > 0) return;
-        router.post(route('user.auth.otp.resend'), { email });
+        if (redirect) {
+            router.post(route('user.auth.otp.resend', { redirect }), { email });
+        } else {
+            router.post(route('user.auth.otp.resend'), { email });
+        }
     };
 
     // Format seconds to MM:SS

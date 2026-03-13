@@ -58,7 +58,7 @@ const NotificationsPage: FC = () => {
   ];
 
   return (
-    <VendorLayout activeSlug="home">
+    <VendorLayout activeSlug="dashboard">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold">Notifications</h2>
         <button className="flex items-center gap-2 text-sm text-navy hover:text-blue-400">

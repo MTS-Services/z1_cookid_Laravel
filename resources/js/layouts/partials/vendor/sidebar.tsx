@@ -13,7 +13,7 @@ const adminNavItems: NavItemType[] = [
         title: "Home",
         href: route("vendor.dashboard"),
         icon: Home,
-        slug: "home",
+        slug: "dashboard",
     },
     {
         title: "Listing Management",

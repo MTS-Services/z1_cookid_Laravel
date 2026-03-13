@@ -9,6 +9,7 @@ use App\Http\Controllers\Vendor\ListingManagement\CategoryController;
 use App\Http\Controllers\Vendor\ListingManagement\ListingController;
 use App\Http\Controllers\Vendor\OrderManagement\OrderController;
 use App\Http\Controllers\Vendor\PaymentController;
+use App\Http\Controllers\Vendor\PayoutAccountController;
 use App\Http\Controllers\Vendor\PerformanceController;
 use App\Http\Controllers\Vendor\VendorDashboardController;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +37,10 @@ Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function (
     Route::get('dashboard', [VendorDashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('notification', [VendorDashboardController::class, 'notification'])->name('notification');
     Route::get('payments', [PaymentController::class, 'index'])->name('payments');
+    Route::post('payments/withdraw', [PaymentController::class, 'withdraw'])->name('payments.withdraw');
+    Route::post('payout-accounts/otp/send', [PayoutAccountController::class, 'sendOtp'])->name('payout-accounts.otp.send');
+    Route::post('payout-accounts', [PayoutAccountController::class, 'store'])->name('payout-accounts.store');
+    Route::patch('payout-accounts/{payoutAccount}/default', [PayoutAccountController::class, 'setDefault'])->name('payout-accounts.set-default');
     Route::get('performance', [PerformanceController::class, 'index'])->name('performance');
     Route::get('account', [AccountController::class, 'index'])->name('account');
     Route::patch('account', [AccountController::class, 'update'])->name('account.update');

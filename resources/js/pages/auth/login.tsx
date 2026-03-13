@@ -1,11 +1,14 @@
 // src/pages/Login.tsx
 import { FC, useState } from 'react';
-import { useForm, Link } from '@inertiajs/react';
+import { useForm, Link, usePage } from '@inertiajs/react';
 import { Eye, EyeOff } from 'lucide-react';
 import AuthLayout from '@/layouts/auth-layout';
 
 const LoginPage: FC = () => {
     const [showPassword, setShowPassword] = useState(false);
+
+    const page = usePage<{ redirect?: string }>();
+    const redirect = (page.props.redirect as string | undefined) ?? undefined;
 
     const { data, setData, post, processing, errors } = useForm({
         email: '',
@@ -15,7 +18,11 @@ const LoginPage: FC = () => {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('user.auth.login'));
+        if (redirect) {
+            post(route('user.auth.login', { redirect }));
+        } else {
+            post(route('user.auth.login'));
+        }
     };
 
     return (

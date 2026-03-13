@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\OrderAddress;
 use App\Models\Payment;
 use App\Models\Service;
+use App\Notifications\VendorGenericNotification;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -188,9 +189,26 @@ class PaymentController extends Controller
                 'stripe_payment_intent_id' => $paymentIntentId,
                 'stripe_charge_id' => $chargeId,
             ]);
-            $payment->order->update([
+
+            $order = $payment->order;
+            $order->update([
                 'status' => OrderStatus::Confirmed->value,
             ]);
+
+            $order->loadMissing('service.vendor', 'user');
+            $vendor = $order->service?->vendor;
+
+            if ($vendor) {
+                $vendor->notify(new VendorGenericNotification(
+                    sender: $order->user?->full_name ?? 'New booking',
+                    message: sprintf(
+                        'placed a new order %s for %s.',
+                        $order->order_number,
+                        $order->service?->title ?? 'a service'
+                    ),
+                    avatarUrl: $order->user?->avatar_url ?? null,
+                ));
+            }
         });
 
         return redirect()->route('frontend.booking-confirm', ['order' => $payment->order->id])
@@ -256,9 +274,26 @@ class PaymentController extends Controller
                 'paypal_capture_id' => $captureId,
                 'paypal_payer_id' => $payerId,
             ]);
-            $payment->order->update([
+
+            $order = $payment->order;
+            $order->update([
                 'status' => OrderStatus::Confirmed->value,
             ]);
+
+            $order->loadMissing('service.vendor', 'user');
+            $vendor = $order->service?->vendor;
+
+            if ($vendor) {
+                $vendor->notify(new VendorGenericNotification(
+                    sender: $order->user?->full_name ?? 'New booking',
+                    message: sprintf(
+                        'placed a new order %s for %s.',
+                        $order->order_number,
+                        $order->service?->title ?? 'a service'
+                    ),
+                    avatarUrl: $order->user?->avatar_url ?? null,
+                ));
+            }
         });
 
         return redirect()->route('frontend.booking-confirm', ['order' => $payment->order->id])

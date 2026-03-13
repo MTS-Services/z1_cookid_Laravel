@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\User;
 
 use App\Enums\ActiveInactiveStatus;
+use App\Enums\CommissionType;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderAddress;
 use App\Models\Service;
+use App\Models\VendorEarning;
+use App\Notifications\VendorGenericNotification;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -72,6 +75,31 @@ class OrderController extends Controller
                 'total' => $service->price,
                 'status' => OrderStatus::Pending->value,
             ]);
+
+            VendorEarning::create([
+                'vendor_id' => $service->vendor_id,
+                'order_id' => $order->id,
+                'gross_amount' => $service->price,
+                'commission' => 0,
+                'commission_type' => CommissionType::Percentage->value,
+                'net_amount' => $service->price,
+                'released_at' => null,
+            ]);
+
+            $service->loadMissing('vendor');
+            $vendor = $service->vendor;
+
+            if ($vendor) {
+                $vendor->notify(new VendorGenericNotification(
+                    sender: $user->full_name ?? 'New booking',
+                    message: sprintf(
+                        'started a new booking %s for %s. Awaiting payment confirmation.',
+                        $order->order_number,
+                        $service->title
+                    ),
+                    avatarUrl: $user->avatar_url ?? null,
+                ));
+            }
         }
 
         return Inertia::render('frontend/billing-address', [

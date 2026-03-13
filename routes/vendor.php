@@ -7,6 +7,7 @@ use App\Http\Controllers\Vendor\AccountController;
 use App\Http\Controllers\Vendor\ListingManagement\CarTypeController;
 use App\Http\Controllers\Vendor\ListingManagement\CategoryController;
 use App\Http\Controllers\Vendor\ListingManagement\ListingController;
+use App\Http\Controllers\Vendor\NotificationController;
 use App\Http\Controllers\Vendor\OrderManagement\OrderController;
 use App\Http\Controllers\Vendor\PaymentController;
 use App\Http\Controllers\Vendor\PayoutAccountController;
@@ -35,7 +36,9 @@ Route::prefix('vendor/auth')->name('vendor.auth.')->group(function () {
 Route::middleware('vendor')->prefix('vendor')->name('vendor.')->group(function () {
     Route::post('logout', [VendorAuthController::class, 'logout'])->name('logout');
     Route::get('dashboard', [VendorDashboardController::class, 'dashboard'])->name('dashboard');
-    Route::get('notification', [VendorDashboardController::class, 'notification'])->name('notification');
+    Route::get('notification', [NotificationController::class, 'index'])->name('notification');
+    Route::post('notification/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notification.mark-all-read');
+    Route::post('notification/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notification.read');
     Route::get('payments', [PaymentController::class, 'index'])->name('payments');
     Route::post('payments/withdraw', [PaymentController::class, 'withdraw'])->name('payments.withdraw');
     Route::post('payout-accounts/otp/send', [PayoutAccountController::class, 'sendOtp'])->name('payout-accounts.otp.send');

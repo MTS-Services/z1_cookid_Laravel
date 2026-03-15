@@ -1,12 +1,23 @@
-import React from 'react'
-import { Head, Link, router } from '@inertiajs/react'
-import { ArrowRight, Check, Eye, X } from 'lucide-react'
+import React, { useState } from 'react'
+import { Head, Link, router, usePage } from '@inertiajs/react'
+import { ArrowRight, Check, Eye, Loader2, X } from 'lucide-react'
 import AdminLayout from '@/layouts/admin-layout'
 import { CardContent } from '@/components/ui/card'
 import { DataTable } from '@/components/ui/data-table'
 import { useDataTable } from '@/hooks/use-data-table'
 import type { PaginationData, ColumnConfig } from '@/types/data-table.types'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import InputError from '@/components/input-error'
 
 type WithdrawalStatusKey =
   | 'pending'
@@ -15,7 +26,7 @@ type WithdrawalStatusKey =
   | 'completed'
   | 'rejected'
 
-interface Withdrawal {
+interface Withdrawal extends Record<string, unknown> {
   id: number
   vendor_id: number
   vendor_name: string
@@ -128,6 +139,35 @@ export default function WithdrawalsIndex({
     ],
   })
 
+  const { errors } = usePage().props as { errors?: Record<string, string> }
+  const [rejectModalOpen, setRejectModalOpen] = useState(false)
+  const [rejectingWithdrawal, setRejectingWithdrawal] = useState<Withdrawal | null>(null)
+  const [rejectionReason, setRejectionReason] = useState('')
+  const [isRejecting, setIsRejecting] = useState(false)
+
+  const openRejectModal = (w: Withdrawal) => {
+    setRejectingWithdrawal(w)
+    setRejectionReason('')
+    setRejectModalOpen(true)
+  }
+
+  const closeRejectModal = () => {
+    setRejectModalOpen(false)
+    setRejectingWithdrawal(null)
+    setRejectionReason('')
+  }
+
+  const handleRejectSubmit = () => {
+    if (!rejectingWithdrawal) return
+    setIsRejecting(true)
+    router.post(route('admin.fm.withdrawals.reject', rejectingWithdrawal.id), {
+      rejection_reason: rejectionReason,
+    }, {
+      onFinish: () => setIsRejecting(false),
+      onSuccess: closeRejectModal,
+    })
+  }
+
   const statusKey = (s: string) => (s in statusClassName ? s : 'pending')
   const columns: ColumnConfig<Withdrawal>[] = [
     {
@@ -194,11 +234,7 @@ export default function WithdrawalsIndex({
                 variant="outline"
                 size="sm"
                 className="gap-1.5 text-rose-400 hover:text-rose-300"
-                onClick={() => {
-                  if (confirm('Reject this withdrawal request?')) {
-                    router.post(route('admin.fm.withdrawals.reject', w.id))
-                  }
-                }}
+                onClick={() => openRejectModal(w)}
               >
                 <X className="h-4 w-4" />
                 Reject
@@ -284,7 +320,7 @@ export default function WithdrawalsIndex({
             columns={columns}
             pagination={pagination}
             offset={offset}
-            filters={filterConfig}
+            filters={TAB_TITLES[tab] == 'All Withdrawals' ? filterConfig : []}
             onSearch={handleSearch}
             onFilterChange={handleFilterChange}
             onSort={handleSort}
@@ -300,6 +336,50 @@ export default function WithdrawalsIndex({
           />
         </CardContent>
       </div>
+
+      <Dialog open={rejectModalOpen} onOpenChange={(open) => !open && closeRejectModal()}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reject withdrawal</DialogTitle>
+            <DialogDescription>
+              {rejectingWithdrawal && (
+                <>
+                  Provide an optional reason for the vendor. The withdrawal of{' '}
+                  <strong>{formatCurrency(rejectingWithdrawal.amount)}</strong> will be rejected.
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-2 py-4">
+            <Label htmlFor="rejection_reason">Rejection reason (optional)</Label>
+            <Textarea
+              id="rejection_reason"
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+              placeholder="e.g. Invalid payout account"
+              rows={3}
+              className="resize-none text-white"
+            />
+            <InputError message={errors?.rejection_reason} />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={closeRejectModal} disabled={isRejecting}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleRejectSubmit}
+              disabled={isRejecting}
+            >
+              {isRejecting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                'Reject withdrawal'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   )
 }

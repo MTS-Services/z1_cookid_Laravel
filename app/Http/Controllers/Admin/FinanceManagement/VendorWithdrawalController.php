@@ -142,8 +142,10 @@ class VendorWithdrawalController extends Controller
         ]);
     }
 
-    public function approve(Request $request, VendorWithdrawal $withdrawal): RedirectResponse
+    public function approve(Request $request, string $id): RedirectResponse
     {
+        $withdrawalId = Crypt::decryptString($id);
+        $withdrawal = VendorWithdrawal::findOrFail($withdrawalId);
         if ($withdrawal->status !== WithdrawalStatus::Pending) {
             return redirect()->route('admin.fm.withdrawals.show', $withdrawal)
                 ->with('error', 'Only pending withdrawals can be approved.');
@@ -170,8 +172,10 @@ class VendorWithdrawalController extends Controller
             ->with('success', 'Withdrawal approved successfully.');
     }
 
-    public function reject(RejectWithdrawalRequest $request, VendorWithdrawal $withdrawal): RedirectResponse
+    public function reject(RejectWithdrawalRequest $request, string $id): RedirectResponse
     {
+        $withdrawalId = Crypt::decryptString($id);
+        $withdrawal = VendorWithdrawal::findOrFail($withdrawalId);
         if ($withdrawal->status !== WithdrawalStatus::Pending) {
             return redirect()->route('admin.fm.withdrawals.show', $withdrawal)
                 ->with('error', 'Only pending withdrawals can be rejected.');
@@ -199,8 +203,10 @@ class VendorWithdrawalController extends Controller
             ->with('success', 'Withdrawal rejected.');
     }
 
-    public function markProcessing(Request $request, VendorWithdrawal $withdrawal): RedirectResponse
+    public function markProcessing(Request $request, string $id): RedirectResponse
     {
+        $withdrawalId = Crypt::decryptString($id);
+        $withdrawal = VendorWithdrawal::findOrFail($withdrawalId);
         if (! in_array($withdrawal->status, [WithdrawalStatus::Pending, WithdrawalStatus::Approved], true)) {
             return redirect()->route('admin.fm.withdrawals.show', $withdrawal)
                 ->with('error', 'Only pending or approved withdrawals can be marked as processing.');
@@ -216,8 +222,10 @@ class VendorWithdrawalController extends Controller
             ->with('success', 'Withdrawal marked as processing.');
     }
 
-    public function markCompleted(Request $request, VendorWithdrawal $withdrawal): RedirectResponse
+    public function markCompleted(Request $request, string $id): RedirectResponse
     {
+        $withdrawalId = Crypt::decryptString($id);
+        $withdrawal = VendorWithdrawal::findOrFail($withdrawalId);
         if (! in_array($withdrawal->status, [WithdrawalStatus::Approved, WithdrawalStatus::Processing], true)) {
             return redirect()->route('admin.fm.withdrawals.show', $withdrawal)
                 ->with('error', 'Only approved or processing withdrawals can be marked as completed.');

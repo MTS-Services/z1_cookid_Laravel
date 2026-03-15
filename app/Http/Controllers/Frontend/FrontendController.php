@@ -35,8 +35,21 @@ class FrontendController extends Controller
                 'price' => (float) $service->price,
             ]);
 
+        $categories = Category::query()
+            ->where('status', ActiveInactiveStatus::ACTIVE)
+            ->select(['id', 'name', 'image'])
+            ->orderBy('name')
+            ->take(12)
+            ->get()
+            ->map(fn (Category $category) => [
+                'id' => $category->id,
+                'name' => $category->name,
+                'image' => $category->image_url,
+            ]);
+
         return Inertia::render('frontend/index', [
             'services' => $services,
+            'categories' => $categories,
         ]);
     }
 

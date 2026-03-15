@@ -25,47 +25,10 @@ interface TopRelatedService {
 
 interface HomePageProps {
     services: TopRelatedService[]
+    categories: HomeCategory[]
 }
 
-export default function Home({ services }: HomePageProps) {
-    const categories: HomeCategory[] = [
-        {
-            id: 1,
-            name: 'Car Wash',
-            image: '/assets/images/category/CarWash.png',
-        },
-        {
-            id: 2,
-            name: 'Full Detailing',
-            image: '/assets/images/category/FullDetailing.png',
-        },
-        {
-            id: 3,
-            name: 'Paint & Protection',
-            image: '/assets/images/category/PaintProtection.png',
-        },
-        {
-            id: 4,
-            name: 'Interior Care',
-            image: '/assets/images/category/InteriorCare.png',
-        },
-        {
-            id: 5,
-            name: 'Specialty Services',
-            image: '/assets/images/category/SpecialtyServices.png',
-        },
-        {
-            id: 6,
-            name: 'Tinting',
-            image: '/assets/images/category/Tinting.png',
-        },
-        {
-            id: 7,
-            name: 'Mobile Services',
-            image: '/assets/images/category/MobileServices.png',
-        },
-    ];
-
+export default function Home({ services, categories }: HomePageProps) {
     return (
         <FrontendLayout activePage="home">
             <Banner />

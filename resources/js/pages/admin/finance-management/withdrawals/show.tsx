@@ -203,7 +203,7 @@ export default function WithdrawalShow({ withdrawal }: Props) {
                         }
                         placeholder="e.g. Invalid payout account"
                         rows={3}
-                        className="resize-none"
+                        className="resize-none text-white"
                       />
                       {errors.rejection_reason && (
                         <p className="text-sm text-rose-400">

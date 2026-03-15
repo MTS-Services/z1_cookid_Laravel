@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { CreditCard, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import InputError from '@/components/input-error'
 
 type ModalBaseProps = {
     open: boolean
@@ -51,6 +52,21 @@ export function WithdrawFundsModal({
 }: WithdrawFundsModalProps) {
     const [amount, setAmount] = useState('')
     const [selectedMethodId, setSelectedMethodId] = useState<number | undefined>(methods[0]?.id)
+    const [amountError, setAmountError] = useState<string | null>(null)
+
+    const availableBalanceValue = useMemo(() => {
+        const numeric = availableBalance.replace(/[^0-9.,-]/g, '').replace(/,/g, '')
+        const parsed = Number(numeric)
+        return Number.isFinite(parsed) ? parsed : 0
+    }, [availableBalance])
+
+    useEffect(() => {
+        if (!open) {
+            setAmount('')
+            setAmountError(null)
+            setSelectedMethodId(methods[0]?.id)
+        }
+    }, [open, methods])
 
     return (
         <PaymentModalShell open={open} onOpenChange={onOpenChange}>
@@ -60,41 +76,46 @@ export function WithdrawFundsModal({
                     <h2 className="text-2xl font-semibold">Enter amount</h2>
                 </div>
 
-                <label className="space-y-2 text-sm">
-                    <span className="text-text-gray">Amount</span>
-                    <div className="flex items-center rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
-                        <span className="text-text-gray-50 text-lg font-semibold">$</span>
-                        <input
-                            value={amount}
-                            onChange={(event) => setAmount(event.target.value)}
-                            type="number"
-                            step="0.01"
-                            className="ml-3 w-full bg-transparent text-lg font-semibold text-white placeholder:text-text-gray focus:outline-none"
-                            placeholder="0.00"
-                        />
-                    </div>
-                    <span className="text-xs text-(--color-accent-blue)">Available: {availableBalance}</span>
-                </label>
+                <div>
+                    <label className="space-y-2 text-sm">
+                        <span className="text-text-gray">Amount</span>
+                        <div className="flex items-center rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
+                            <span className="text-text-gray-50 text-lg font-semibold">$</span>
+                            <input
+                                value={amount}
+                                onChange={(event) => setAmount(event.target.value)}
+                                type="number"
+                                step="0.01"
+                                className="ml-3 w-full bg-transparent text-lg font-semibold text-white placeholder:text-text-gray focus:outline-none"
+                                placeholder="0.00"
+                            />
+                        </div>
+                        <InputError message={amountError ?? undefined} />
+                        <span className="text-xs text-(--color-accent-blue)">Available: {availableBalance}</span>
+                    </label>
+                </div>
 
-                <label className="space-y-2 text-sm">
-                    <span className="text-text-gray">Select payment method</span>
-                    <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-1">
-                        <select
-                            className="w-full bg-transparent py-2 text-white focus:outline-none"
-                            value={selectedMethodId ?? ''}
-                            onChange={(event) => setSelectedMethodId(Number(event.target.value))}
-                        >
-                            <option value="" disabled className="bg-bg-black text-black">
-                                Select payout account
-                            </option>
-                            {methods.map((method) => (
-                                <option key={method.id} value={method.id} className="bg-bg-black text-black">
-                                    {method.label}
+                <div>
+                    <label className="space-y-2 text-sm">
+                        <span className="text-text-gray">Select payment method</span>
+                        <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-1">
+                            <select
+                                className="w-full bg-transparent py-2 text-white focus:outline-none"
+                                value={selectedMethodId ?? ''}
+                                onChange={(event) => setSelectedMethodId(Number(event.target.value))}
+                            >
+                                <option value="" disabled className="bg-bg-black text-white">
+                                    Select payout account
                                 </option>
-                            ))}
-                        </select>
-                    </div>
-                </label>
+                                {methods.map((method) => (
+                                    <option key={method.id} value={method.id} className="bg-bg-black text-white">
+                                        {method.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </label>
+                </div>
 
                 <div className="flex flex-col gap-3 sm:flex-row mt-4">
                     <Button
@@ -107,6 +128,19 @@ export function WithdrawFundsModal({
                     <Button
                         className="w-full rounded-2xl bg-(--color-accent-blue) text-white hover:bg-(--color-accent-blue-dark)"
                         onClick={() => {
+                            setAmountError(null)
+
+                            const amountValue = Number(amount)
+                            if (!amount || Number.isNaN(amountValue) || amountValue <= 0) {
+                                setAmountError('Enter a valid withdrawal amount.')
+                                return
+                            }
+
+                            if (amountValue > availableBalanceValue) {
+                                setAmountError('Amount exceeds available balance.')
+                                return
+                            }
+
                             if (!selectedMethodId) {
                                 return
                             }

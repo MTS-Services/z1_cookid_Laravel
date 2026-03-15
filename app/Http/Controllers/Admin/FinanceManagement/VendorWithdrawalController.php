@@ -124,7 +124,7 @@ class VendorWithdrawalController extends Controller
 
         return Inertia::render('admin/finance-management/withdrawals/show', [
             'withdrawal' => [
-                'id' => $withdrawal->id,
+                'id' => Crypt::encryptString($withdrawal->id),
                 'vendor_id' => $withdrawal->vendor_id,
                 'vendor_name' => $vendorName,
                 'vendor_email' => $vendor->email ?? null,
@@ -151,7 +151,7 @@ class VendorWithdrawalController extends Controller
         $withdrawalId = Crypt::decryptString($id);
         $withdrawal = VendorWithdrawal::findOrFail($withdrawalId);
         if ($withdrawal->status !== WithdrawalStatus::Pending) {
-            return redirect()->route('admin.fm.withdrawals.show', $withdrawal)
+            return redirect()->route('admin.fm.withdrawals.show', Crypt::encryptString($withdrawal->id))
                 ->with('error', 'Only pending withdrawals can be approved.');
         }
 
@@ -181,7 +181,7 @@ class VendorWithdrawalController extends Controller
         $withdrawalId = Crypt::decryptString($id);
         $withdrawal = VendorWithdrawal::findOrFail($withdrawalId);
         if ($withdrawal->status !== WithdrawalStatus::Pending) {
-            return redirect()->route('admin.fm.withdrawals.show', $withdrawal)
+            return redirect()->route('admin.fm.withdrawals.show', Crypt::encryptString($withdrawal->id))
                 ->with('error', 'Only pending withdrawals can be rejected.');
         }
 
@@ -212,7 +212,7 @@ class VendorWithdrawalController extends Controller
         $withdrawalId = Crypt::decryptString($id);
         $withdrawal = VendorWithdrawal::findOrFail($withdrawalId);
         if (! in_array($withdrawal->status, [WithdrawalStatus::Pending, WithdrawalStatus::Approved], true)) {
-            return redirect()->route('admin.fm.withdrawals.show', $withdrawal)
+            return redirect()->route('admin.fm.withdrawals.show', Crypt::encryptString($withdrawal->id))
                 ->with('error', 'Only pending or approved withdrawals can be marked as processing.');
         }
 
@@ -222,7 +222,7 @@ class VendorWithdrawalController extends Controller
             'reviewed_at' => $withdrawal->reviewed_at ?? now(),
         ]);
 
-        return redirect()->route('admin.fm.withdrawals.show', $withdrawal)
+        return redirect()->route('admin.fm.withdrawals.show', Crypt::encryptString($withdrawal->id))
             ->with('success', 'Withdrawal marked as processing.');
     }
 
@@ -231,7 +231,7 @@ class VendorWithdrawalController extends Controller
         $withdrawalId = Crypt::decryptString($id);
         $withdrawal = VendorWithdrawal::findOrFail($withdrawalId);
         if (! in_array($withdrawal->status, [WithdrawalStatus::Approved, WithdrawalStatus::Processing], true)) {
-            return redirect()->route('admin.fm.withdrawals.show', $withdrawal)
+            return redirect()->route('admin.fm.withdrawals.show', Crypt::encryptString($withdrawal->id))
                 ->with('error', 'Only approved or processing withdrawals can be marked as completed.');
         }
 
@@ -249,7 +249,7 @@ class VendorWithdrawalController extends Controller
             ));
         }
 
-        return redirect()->route('admin.fm.withdrawals.show', $withdrawal)
+        return redirect()->route('admin.fm.withdrawals.show', Crypt::encryptString($withdrawal->id))
             ->with('success', 'Withdrawal marked as completed.');
     }
 }

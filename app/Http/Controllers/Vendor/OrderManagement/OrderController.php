@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Vendor\OrderManagement;
 use App\Enums\CommissionType;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Commission;
 use App\Models\Order;
 use App\Models\VendorEarning;
 use App\Services\DataTableService;
@@ -145,14 +146,18 @@ class OrderController extends Controller
 
                 if ($vendor) {
                     $grossAmount = (float) $order->total;
-                    $commissionRate = (float) $vendor->commission;
-                    $commissionType = commissionType::Percentage->value;
+                    $categoryId = $service->category_id ? (int) $service->category_id : null;
+                    $commissionRule = Commission::resolveForCategory($categoryId);
 
-                    $commissionAmount = $commissionType === CommissionType::Percentage->value
-                        ? round($grossAmount * ($commissionRate / 100), 2)
-                        : $commissionRate;
+                    if ($commissionRule !== null) {
+                        $commissionAmount = $commissionRule->computeAmount($grossAmount);
+                        $commissionType = $commissionRule->commission_type->value;
+                    } else {
+                        $commissionAmount = 0.0;
+                        $commissionType = CommissionType::Percentage->value;
+                    }
 
-                    $netAmount = $grossAmount - $commissionAmount;
+                    $netAmount = round($grossAmount - $commissionAmount, 2);
 
                     VendorEarning::create([
                         'vendor_id' => $vendor->id,

@@ -3,7 +3,9 @@
 use App\Enums\ActiveInactiveStatus;
 use App\Enums\CommissionType;
 use App\Models\Admin;
+use App\Models\Category;
 use App\Models\Commission;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 
 use function Pest\Laravel\actingAs;
@@ -12,7 +14,7 @@ use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 use function Pest\Laravel\put;
 
-uses()->group('admin', 'commission');
+uses(RefreshDatabase::class)->group('admin', 'commission');
 
 beforeEach(function () {
     $this->admin = Admin::factory()->create();
@@ -91,4 +93,70 @@ it('can destroy a commission', function () {
 
     $response->assertRedirect(route('admin.commission'));
     expect(Commission::query()->find($commission->id))->toBeNull();
+});
+
+it('resolves category-specific commission over global', function () {
+    $category = Category::create([
+        'name' => 'Test Category',
+        'slug' => 'test-category',
+        'status' => ActiveInactiveStatus::ACTIVE,
+    ]);
+    Commission::factory()->create([
+        'category_id' => null,
+        'commission_type' => CommissionType::Percentage,
+        'commission_value' => 10,
+        'status' => ActiveInactiveStatus::ACTIVE,
+    ]);
+    $categoryRule = Commission::factory()->create([
+        'category_id' => $category->id,
+        'commission_type' => CommissionType::Percentage,
+        'commission_value' => 5,
+        'status' => ActiveInactiveStatus::ACTIVE,
+    ]);
+
+    $resolved = Commission::resolveForCategory($category->id);
+
+    expect($resolved)->not->toBeNull()
+        ->and($resolved->id)->toBe($categoryRule->id)
+        ->and((float) $resolved->commission_value)->toBe(5.0);
+});
+
+it('resolves global commission when no category-specific rule', function () {
+    $category = Category::create([
+        'name' => 'Other Category',
+        'slug' => 'other-category',
+        'status' => ActiveInactiveStatus::ACTIVE,
+    ]);
+    Commission::factory()->create([
+        'category_id' => null,
+        'commission_type' => CommissionType::Percentage,
+        'commission_value' => 7,
+        'status' => ActiveInactiveStatus::ACTIVE,
+    ]);
+
+    $resolved = Commission::resolveForCategory($category->id);
+
+    expect($resolved)->not->toBeNull()
+        ->and($resolved->category_id)->toBeNull()
+        ->and((float) $resolved->commission_value)->toBe(7.0);
+});
+
+it('computes percentage commission amount', function () {
+    $rule = Commission::factory()->create([
+        'commission_type' => CommissionType::Percentage,
+        'commission_value' => 10,
+    ]);
+
+    expect($rule->computeAmount(100.0))->toBe(10.0)
+        ->and($rule->computeAmount(55.50))->toBe(5.55);
+});
+
+it('computes fixed commission amount', function () {
+    $rule = Commission::factory()->create([
+        'commission_type' => CommissionType::Fixed,
+        'commission_value' => 2.50,
+    ]);
+
+    expect($rule->computeAmount(100.0))->toBe(2.5)
+        ->and($rule->computeAmount(55.50))->toBe(2.5);
 });

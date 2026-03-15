@@ -485,6 +485,8 @@ export function AddAccountModal({ open, onOpenChange, onContinue }: AddAccountMo
     const [form, setForm] = useState(baseFormState)
     const [formError, setFormError] = useState<string | null>(null)
 
+    const enforceDigits = (value: string, maxLength?: number) => value.replace(/\D/g, '').slice(0, maxLength ?? value.length)
+
     useEffect(() => {
         if (!open) {
             setProvider('card')
@@ -555,8 +557,15 @@ export function AddAccountModal({ open, onOpenChange, onContinue }: AddAccountMo
                                 <Input
                                     placeholder="CVV"
                                     maxLength={4}
+                                    inputMode="numeric"
+                                    pattern="\d*"
                                     value={form.securityCode}
-                                    onChange={(event) => setForm((prev) => ({ ...prev, securityCode: event.target.value }))}
+                                    onChange={(event) =>
+                                        setForm((prev) => ({
+                                            ...prev,
+                                            securityCode: enforceDigits(event.target.value, 4),
+                                        }))
+                                    }
                                     className="rounded-xl border-white/10 bg-black/30 text-white"
                                 />
                             </div>
@@ -607,6 +616,11 @@ export function AddAccountModal({ open, onOpenChange, onContinue }: AddAccountMo
                             }
                             if (!form.securityCode.trim()) {
                                 setFormError('Security code is required for cards.')
+                                return
+                            }
+                            const cvvLength = form.securityCode.trim().length
+                            if (cvvLength < 3 || cvvLength > 4) {
+                                setFormError('Security code must be 3 or 4 digits.')
                                 return
                             }
                         }

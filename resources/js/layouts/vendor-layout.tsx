@@ -1,8 +1,11 @@
 import * as React from 'react';
+import { RealtimeNotificationListener } from '@/components/realtime-notification-listener';
 import { useAppearance } from '@/hooks/use-appearance';
+import { usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
 import { VendorSidebar } from './partials/vendor/sidebar';
 import VendorHeader from './partials/vendor/header';
+import type { SharedData } from '@/types';
 
 interface VendorLayoutProps {
   children: React.ReactNode;
@@ -10,6 +13,10 @@ interface VendorLayoutProps {
 }
 
 export default function VendorLayout({ children, activeSlug }: VendorLayoutProps) {
+  const { auth } = usePage<SharedData>().props;
+  const vendorId = auth.vendor?.id;
+  const notificationChannel = vendorId != null ? `App.Models.Vendor.${vendorId}` : null;
+
   const [isCollapsed, setIsCollapsed] = React.useState(() => {
     // Persist sidebar state in localStorage
     if (typeof window !== 'undefined') {
@@ -35,6 +42,9 @@ export default function VendorLayout({ children, activeSlug }: VendorLayoutProps
 
   return (
     <>
+      {notificationChannel && (
+        <RealtimeNotificationListener channelName={notificationChannel} />
+      )}
       <div className="relative flex h-full min-h-screen max-h-screen bg-bg-black">
         <VendorSidebar isCollapsed={isCollapsed} activeSlug={activeSlug} />
         <div className="flex flex-1 flex-col overflow-hidden">

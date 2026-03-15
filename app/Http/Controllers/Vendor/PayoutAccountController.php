@@ -46,6 +46,14 @@ class PayoutAccountController extends Controller
 
         abort_unless($vendor, 403);
 
+        $otp = preg_replace('/\D/', '', (string) $request->input('otp'));
+        $securityCode = preg_replace('/\D/', '', (string) $request->input('security_code'));
+
+        $request->merge([
+            'otp' => $otp,
+            'security_code' => blank($securityCode) ? null : $securityCode,
+        ]);
+
         $request->validate([
             'email' => ['required', 'email', 'max:255'],
             'otp' => ['required', 'digits:6'],

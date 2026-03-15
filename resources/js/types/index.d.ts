@@ -3,9 +3,11 @@ import { LucideIcon } from 'lucide-react';
 
 export interface Auth {
     user: User;
-    admin: Admin;
+    admin: Admin | null;
+    vendor: Vendor | null;
 }
 export interface Admin {
+    id: number;
     first_name: string | null;
     last_name: string | null;
     email: string | null;

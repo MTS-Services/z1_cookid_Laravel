@@ -15,6 +15,8 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use function Symfony\Component\Clock\now;
+
 class OrderController extends Controller
 {
     public function __construct(protected DataTableService $dataTableService) {}
@@ -65,7 +67,7 @@ class OrderController extends Controller
 
         // Transform orders to the shape expected by the frontend (reference = real id for URLs)
         $orders = collect($result['data'])->map(function (Order $order) {
-            $customerName = $order->service?->vendor?->first_name.' '.$order->service?->vendor?->last_name ?? 'N/A';
+            $customerName = $order->service?->vendor?->first_name . ' ' . $order->service?->vendor?->last_name ?? 'N/A';
 
             return [
                 'id' => $order->order_number,
@@ -159,15 +161,26 @@ class OrderController extends Controller
 
                     $netAmount = round($grossAmount - $commissionAmount, 2);
 
-                    VendorEarning::create([
-                        'vendor_id' => $vendor->id,
-                        'order_id' => $order->id,
-                        'gross_amount' => $grossAmount,
-                        'commission' => $commissionAmount,
-                        'commission_type' => $commissionType,
-                        'net_amount' => $netAmount,
-                        'released_at' => now(),
-                    ]);
+                    $vendorEarning = VendorEarning::where('order_id', $order->id)->first();
+                    if ($vendorEarning) {
+                        $vendorEarning->update([
+                            'gross_amount' => $grossAmount,
+                            'commission' => $commissionAmount,
+                            'commission_type' => $commissionType,
+                            'net_amount' => $netAmount,
+                            'released_at' => now(),
+                        ]);
+                    } else {
+                        VendorEarning::create([
+                            'vendor_id' => $vendor->id,
+                            'order_id' => $order->id,
+                            'gross_amount' => $grossAmount,
+                            'commission' => $commissionAmount,
+                            'commission_type' => $commissionType,
+                            'net_amount' => $netAmount,
+                            'released_at' => null,
+                        ]);
+                    }
                 }
             }
         });

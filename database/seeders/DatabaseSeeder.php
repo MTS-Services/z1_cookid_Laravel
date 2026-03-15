@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             CarTypeSeeder::class,
             ServiceSeeder::class,
-            OrderSeeder::class,
+            // OrderSeeder::class,
         ]);
     }
 }

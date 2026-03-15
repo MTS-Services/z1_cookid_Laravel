@@ -50,9 +50,7 @@ class OrderController extends Controller
                 'subtotal' => isset($order->subtotal) ? (float) $order->subtotal : null,
                 'total' => $total,
                 'service_name' => $order->service?->title ?? 'N/A',
-                'vendor_name' => $order->service?->vendor
-                    ? trim(($order->service->vendor->first_name ?? '').' '.($order->service->vendor->last_name ?? '')) ?: $order->service->vendor->shop_name ?? 'N/A'
-                    : 'N/A',
+                'vendor_name' => $order->service?->vendor?->full_name ?? $order->service?->vendor?->shop_name ?? 'N/A',
                 'price' => $total,
                 'commission' => $commission,
                 'vendor_earning' => $vendorEarning,

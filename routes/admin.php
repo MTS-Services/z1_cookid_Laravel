@@ -100,5 +100,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
 
         Route::get('/commission', [CommissionController::class, 'commission'])->name('commission');
+        Route::post('/commission', [CommissionController::class, 'store'])->name('commission.store');
+        Route::put('/commission/{commission}', [CommissionController::class, 'update'])->name('commission.update');
+        Route::delete('/commission/{commission}', [CommissionController::class, 'destroy'])->name('commission.destroy');
     });
 });

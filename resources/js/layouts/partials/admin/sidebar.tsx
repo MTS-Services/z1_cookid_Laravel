@@ -49,10 +49,24 @@ const adminNavItems: NavItemType[] = [
         slug: "orders",
     },
     {
-        title: "Finances",
+        title: "Finance Management",
         href: route('admin.fm.index'),
         icon: DollarSign,
-        slug: "finances",
+        slug: "finance-management",
+        children: [
+            {
+                title: "Finances",
+                href: route('admin.fm.index'),
+                icon: DollarSign,
+                slug: "finances",
+            },
+            {
+                title: "Withdrawals",
+                href: route('admin.fm.withdrawals.index'),
+                icon: DollarSign,
+                slug: "withdrawals",
+            },
+        ],
     },
     {
         title: "Commission",

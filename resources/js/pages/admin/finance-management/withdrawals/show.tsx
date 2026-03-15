@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   Banknote,
   Check,
+  Copy,
   Loader2,
   X,
 } from 'lucide-react'
@@ -25,10 +26,13 @@ import { Textarea } from '@/components/ui/textarea'
 interface PayoutAccount {
   account_holder_name: string
   account_type: string
-  masked_number: string | null
+  account_type_label: string
+  account_number: string | null
   bank_name: string | null
   routing_number: string | null
   email: string | null
+  card_expiry_month: string | null
+  card_expiry_year: string | null
 }
 
 interface Withdrawal {
@@ -72,6 +76,34 @@ function formatCurrency(value: number): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value)
+}
+
+function CopyButton({ text, label }: { text: string; label: string }) {
+  const [copied, setCopied] = useState(false)
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // ignore
+    }
+  }
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      aria-label={label}
+      className="rounded p-1.5 text-text-gray hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+      title={label}
+    >
+      {copied ? (
+        <span className="text-xs font-medium text-emerald-400">Copied!</span>
+      ) : (
+        <Copy className="h-4 w-4" />
+      )}
+    </button>
+  )
 }
 
 const statusStyles: Record<string, string> = {
@@ -321,26 +353,100 @@ export default function WithdrawalShow({ withdrawal }: Props) {
                 )}
               </div>
               {withdrawal.payout_account && (
-                <div className="mt-4 rounded-xl border border-white/5 bg-black/20 p-4">
-                  <dt className="text-text-gray">Payout account</dt>
-                  <dd className="mt-1 font-medium text-white">
-                    {withdrawal.payout_account.account_holder_name}
-                  </dd>
-                  <dd className="text-text-gray">
-                    {withdrawal.payout_account.account_type}
-                    {withdrawal.payout_account.masked_number &&
-                      ` •••• ${withdrawal.payout_account.masked_number}`}
-                  </dd>
-                  {withdrawal.payout_account.bank_name && (
-                    <dd className="text-text-gray">
-                      {withdrawal.payout_account.bank_name}
-                    </dd>
-                  )}
-                  {withdrawal.payout_account.email && (
-                    <dd className="text-text-gray">
-                      {withdrawal.payout_account.email}
-                    </dd>
-                  )}
+                <div className="mt-6 rounded-xl border border-white/10 bg-black/20 p-5">
+                  <h3 className="mb-4 text-sm font-medium uppercase tracking-wider text-text-gray">
+                    Payout account — use for payment
+                  </h3>
+                  <dl className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <dt className="text-xs font-medium text-text-gray">Account holder</dt>
+                      <dd className="mt-0.5 flex items-center gap-2">
+                        <span className="font-medium text-white">
+                          {withdrawal.payout_account.account_holder_name}
+                        </span>
+                        <CopyButton
+                          text={withdrawal.payout_account.account_holder_name}
+                          label="Copy account holder name"
+                        />
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-medium text-text-gray">Account type</dt>
+                      <dd className="mt-0.5 text-white">
+                        {withdrawal.payout_account.account_type_label}
+                      </dd>
+                    </div>
+                    {withdrawal.payout_account.account_number && (
+                      <div className="sm:col-span-2">
+                        <dt className="text-xs font-medium text-text-gray">Account / card number</dt>
+                        <dd className="mt-0.5 flex items-center gap-2">
+                          <span className="font-mono text-base font-medium text-white">
+                            {withdrawal.payout_account.account_number}
+                          </span>
+                          <CopyButton
+                            text={withdrawal.payout_account.account_number}
+                            label="Copy account number"
+                          />
+                        </dd>
+                      </div>
+                    )}
+                    {withdrawal.payout_account.bank_name && (
+                      <div>
+                        <dt className="text-xs font-medium text-text-gray">Bank name</dt>
+                        <dd className="mt-0.5 flex items-center gap-2">
+                          <span className="text-white">
+                            {withdrawal.payout_account.bank_name}
+                          </span>
+                          <CopyButton
+                            text={withdrawal.payout_account.bank_name}
+                            label="Copy bank name"
+                          />
+                        </dd>
+                      </div>
+                    )}
+                    {withdrawal.payout_account.routing_number && (
+                      <div>
+                        <dt className="text-xs font-medium text-text-gray">Routing number</dt>
+                        <dd className="mt-0.5 flex items-center gap-2">
+                          <span className="font-mono text-white">
+                            {withdrawal.payout_account.routing_number}
+                          </span>
+                          <CopyButton
+                            text={withdrawal.payout_account.routing_number}
+                            label="Copy routing number"
+                          />
+                        </dd>
+                      </div>
+                    )}
+                    {withdrawal.payout_account.email && (
+                      <div className="sm:col-span-2">
+                        <dt className="text-xs font-medium text-text-gray">Payout email</dt>
+                        <dd className="mt-0.5 flex items-center gap-2">
+                          <span className="text-white">
+                            {withdrawal.payout_account.email}
+                          </span>
+                        </dd>
+                      </div>
+                    )}
+                    {(withdrawal.payout_account.card_expiry_month || withdrawal.payout_account.card_expiry_year) && (
+                      <div>
+                        <dt className="text-xs font-medium text-text-gray">Card expiry</dt>
+                        <dd className="mt-0.5 flex items-center gap-2">
+                          <span className="text-white">
+                            {[withdrawal.payout_account.card_expiry_month, withdrawal.payout_account.card_expiry_year]
+                              .filter(Boolean)
+                              .join(' / ') || '—'}
+                          </span>
+                          <CopyButton
+                            text={[withdrawal.payout_account.card_expiry_month, withdrawal.payout_account.card_expiry_year]
+                              .filter(Boolean)
+                              .join(' / ')}
+                            label="Copy card expiry"
+                          />
+                        </dd>
+                      </div>
+                    )}
+                  </dl>
                 </div>
               )}
             </dl>

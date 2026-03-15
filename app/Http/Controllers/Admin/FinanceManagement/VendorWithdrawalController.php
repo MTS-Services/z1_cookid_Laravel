@@ -99,7 +99,7 @@ class VendorWithdrawalController extends Controller
         $withdrawal = VendorWithdrawal::findOrFail($withdrawalId);
         $withdrawal->load([
             'vendor:id,first_name,last_name,shop_name,email,phone,address,city,region_state',
-            'payoutAccount:id,vendor_id,account_holder_name,account_type,account_number,bank_name,routing_number,email',
+            'payoutAccount:id,vendor_id,account_holder_name,account_type,account_number,bank_name,routing_number,email,card_expiry_month,card_expiry_year',
             'reviewer:id,first_name,last_name',
         ]);
 
@@ -107,9 +107,20 @@ class VendorWithdrawalController extends Controller
         $vendorName = $vendor->full_name ?? $vendor->shop_name ?? 'N/A';
 
         $payoutAccount = $withdrawal->payoutAccount;
-        $maskedNumber = $payoutAccount && $payoutAccount->account_number
-            ? str_repeat('•', max(0, strlen($payoutAccount->account_number) - 4)).substr($payoutAccount->account_number, -4)
-            : null;
+        $payoutPayload = null;
+        if ($payoutAccount) {
+            $payoutPayload = [
+                'account_holder_name' => $payoutAccount->account_holder_name,
+                'account_type' => $payoutAccount->account_type->value,
+                'account_type_label' => $payoutAccount->account_type->label(),
+                'account_number' => $payoutAccount->account_number,
+                'bank_name' => $payoutAccount->bank_name,
+                'routing_number' => $payoutAccount->routing_number,
+                'email' => $payoutAccount->email,
+                'card_expiry_month' => $payoutAccount->card_expiry_month,
+                'card_expiry_year' => $payoutAccount->card_expiry_year,
+            ];
+        }
 
         return Inertia::render('admin/finance-management/withdrawals/show', [
             'withdrawal' => [
@@ -130,14 +141,7 @@ class VendorWithdrawalController extends Controller
                 'reviewer_name' => $withdrawal->reviewer
                     ? trim(($withdrawal->reviewer->first_name ?? '').' '.($withdrawal->reviewer->last_name ?? ''))
                     : null,
-                'payout_account' => $payoutAccount ? [
-                    'account_holder_name' => $payoutAccount->account_holder_name,
-                    'account_type' => $payoutAccount->account_type->value,
-                    'masked_number' => $maskedNumber,
-                    'bank_name' => $payoutAccount->bank_name,
-                    'routing_number' => $payoutAccount->routing_number,
-                    'email' => $payoutAccount->email,
-                ] : null,
+                'payout_account' => $payoutPayload,
             ],
         ]);
     }

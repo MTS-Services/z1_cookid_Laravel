@@ -5,8 +5,9 @@ use App\Http\Controllers\Admin\CommissionController;
 use App\Http\Controllers\Admin\CustomerManagement\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FinanceManagement\FinanceController;
-use App\Http\Controllers\Admin\OrderManagement\OrderController;
+use App\Http\Controllers\Admin\FinanceManagement\VendorWithdrawalController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\OrderManagement\OrderController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ServiceManagement\ServiceController;
 use App\Http\Controllers\Admin\UserManagement\UserController;
@@ -67,6 +68,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::group(['prefix' => 'finance-management', 'as' => 'fm.'], function () {
             Route::get('/finance', [FinanceController::class, 'index'])->name('index');
+            Route::get('/withdrawals', [VendorWithdrawalController::class, 'index'])->name('withdrawals.index');
+            Route::get('/withdrawals/{withdrawal}', [VendorWithdrawalController::class, 'show'])->name('withdrawals.show');
+            Route::post('/withdrawals/{withdrawal}/approve', [VendorWithdrawalController::class, 'approve'])->name('withdrawals.approve');
+            Route::post('/withdrawals/{withdrawal}/reject', [VendorWithdrawalController::class, 'reject'])->name('withdrawals.reject');
+            Route::post('/withdrawals/{withdrawal}/mark-processing', [VendorWithdrawalController::class, 'markProcessing'])->name('withdrawals.mark-processing');
+            Route::post('/withdrawals/{withdrawal}/mark-completed', [VendorWithdrawalController::class, 'markCompleted'])->name('withdrawals.mark-completed');
         });
 
         Route::group(['prefix' => 'vendor-management', 'as' => 'vm.'], function () {

@@ -77,6 +77,7 @@ class VendorDashboardController extends Controller
         $currentYear = $now->year;
         $monthlyEarnings = VendorEarning::query()
             ->where('vendor_id', $vendor->id)
+            ->where('released_at', '!=', null)
             ->whereYear('created_at', $currentYear)
             ->selectRaw('MONTH(created_at) as month')
             ->selectRaw('SUM(net_amount) as total')

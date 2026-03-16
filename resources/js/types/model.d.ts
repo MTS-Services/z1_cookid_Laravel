@@ -25,6 +25,7 @@ export interface ServiceFilters {
     location?: string | null;
     minPrice?: number | null;
     maxPrice?: number | null;
+    minRating?: number | null;
 }
 
 export interface FilterOptionItem {

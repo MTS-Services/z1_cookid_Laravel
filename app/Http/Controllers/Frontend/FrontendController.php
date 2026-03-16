@@ -83,18 +83,13 @@ class FrontendController extends Controller
         }
 
         $minRating = $request->integer('min_rating', 0);
-        if ($minRating === 5) {
-            $query->where('average_rating', '>=', 5);
-        } elseif ($minRating === 4) {
-            $query->where('average_rating', '>=', 4.0)->where('average_rating', '<', 5.0);
-        } elseif ($minRating === 3) {
-            $query->where('average_rating', '>=', 3.0)->where('average_rating', '<', 4.0);
-        } elseif ($minRating === 2) {
-            $query->where('average_rating', '>=', 2.0)->where('average_rating', '<', 3.0);
-        } elseif ($minRating === 1) {
-            $query->where('average_rating', '>=', 1.0)->where('average_rating', '<', 2.0);
-        } elseif ($minRating === 0) {
-            $query->where('average_rating', '>=', 0.0)->where('average_rating', '<', 1.0);
+        if ($minRating >= 1 && $minRating <= 5) {
+            if ($minRating === 5) {
+                $query->where('average_rating', '>=', 5.0);
+            } else {
+                $query->where('average_rating', '>=', (float) $minRating)
+                    ->where('average_rating', '<', (float) $minRating + 1);
+            }
         }
 
         $sort = $request->string('sort')->toString();

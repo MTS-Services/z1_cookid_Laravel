@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Vendor;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -21,10 +22,16 @@ class NotificationController extends Controller
             ->map(function ($notification) {
                 $data = $notification->data ?? [];
 
+                // Avoid mixed-content issues from local HTTP avatar URLs in production
+                $avatar = $data['avatar_url'] ?? null;
+                if (is_string($avatar) && Str::startsWith($avatar, 'http://localhost')) {
+                    $avatar = null;
+                }
+
                 return [
                     'id' => (string) $notification->id,
                     'sender' => $data['sender'] ?? 'System',
-                    'avatar' => $data['avatar_url'] ?? null,
+                    'avatar' => $avatar,
                     'message' => $data['message'] ?? '',
                     'time' => optional($notification->created_at)?->diffForHumans(),
                     'isRead' => $notification->read_at !== null,

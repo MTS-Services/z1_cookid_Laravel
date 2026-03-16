@@ -25,7 +25,7 @@ class FrontendController extends Controller
             ->orderByDesc('average_rating')
             ->take(40)
             ->get()
-            ->map(fn (Service $service) => [
+            ->map(fn(Service $service) => [
                 'id' => Crypt::encryptString((string) $service->id),
                 'image' => $service->image_url,
                 'name' => $service->vendor->shop_name ?? $service->title,
@@ -41,7 +41,7 @@ class FrontendController extends Controller
             ->orderBy('name')
             ->take(12)
             ->get()
-            ->map(fn (Category $category) => [
+            ->map(fn(Category $category) => [
                 'id' => $category->id,
                 'name' => $category->name,
                 'image' => $category->image_url,
@@ -53,9 +53,88 @@ class FrontendController extends Controller
         ]);
     }
 
-    public function search($id = null): Response
+    public function search(Request $request, $id = null): Response
     {
-        return Inertia::render('frontend/search-page');
+        $query = Service::query()
+            ->with('vendor')
+            ->where('status', ActiveInactiveStatus::ACTIVE);
+
+        $location = $request->string('location')->toString();
+        if ($location !== '') {
+            $query->where('location', 'LIKE', '%' . $location . '%');
+        }
+
+        $service = $request->string('service')->toString();
+        if ($service !== '') {
+            $query->whereHas('category', function ($q) use ($service) {
+                $q->where('name', 'LIKE', '%' . $service . '%');
+            });
+        }
+
+        $minPrice = $request->input('min_price');
+        $maxPrice = $request->input('max_price');
+
+        if (is_numeric($minPrice)) {
+            $query->where('price', '>=', (float) $minPrice);
+        }
+
+        if (is_numeric($maxPrice)) {
+            $query->where('price', '<=', (float) $maxPrice);
+        }
+
+        $minRating = $request->integer('min_rating', 0);
+        if ($minRating === 5) {
+            $query->where('average_rating', '>=', 5);
+        } elseif ($minRating === 4) {
+            $query->where('average_rating', '>=', 4.0)->where('average_rating', '<', 5.0);
+        } elseif ($minRating === 3) {
+            $query->where('average_rating', '>=', 3.0)->where('average_rating', '<', 4.0);
+        } elseif ($minRating === 2) {
+            $query->where('average_rating', '>=', 2.0)->where('average_rating', '<', 3.0);
+        } elseif ($minRating === 1) {
+            $query->where('average_rating', '>=', 1.0)->where('average_rating', '<', 2.0);
+        } elseif ($minRating === 0) {
+            $query->where('average_rating', '>=', 0.0)->where('average_rating', '<', 1.0);
+        }
+
+        $sort = $request->string('sort')->toString();
+        match ($sort) {
+            'price_asc' => $query->orderBy('price'),
+            'price_desc' => $query->orderByDesc('price'),
+            default => $query->orderByDesc('average_rating'),
+        };
+
+        $perPage = (int) $request->integer('per_page', 9);
+        $perPage = max(6, min(48, $perPage));
+
+        $services = $query
+            ->paginate($perPage)
+            ->withQueryString()
+            ->through(function (Service $service) {
+                return [
+                    'id' => Crypt::encryptString((string) $service->id),
+                    'name' => $service->vendor->shop_name ?? $service->title,
+                    'location' => $service->location ?? '—',
+                    'category' => $service->category?->name ?? 'Service',
+                    'price' => (float) $service->price,
+                    'rating' => (float) ($service->average_rating ?? 0),
+                    'image' => $service->image_url,
+                ];
+            });
+
+        return Inertia::render('frontend/search-page', [
+            'filters' => [
+                'location' => $location,
+                'service' => $service,
+                'vehicle_type' => $request->string('vehicle_type')->toString(),
+                'min_price' => $minPrice,
+                'max_price' => $maxPrice,
+                'min_rating' => $minRating >= 1 && $minRating <= 5 ? $minRating : null,
+                'sort' => in_array($sort, ['relevance', 'price_asc', 'price_desc'], true) ? $sort : 'relevance',
+                'per_page' => $perPage,
+            ],
+            'services' => $services,
+        ]);
     }
 
     public function privacyPolicy(): Response
@@ -85,7 +164,7 @@ class FrontendController extends Controller
                         'title' => $order->service->title,
                     ] : null,
                     'provider' => $order->service && $order->service->vendor
-                        ? ($order->service->vendor->shop_name ?? trim($order->service->vendor->first_name.' '.$order->service->vendor->last_name))
+                        ? ($order->service->vendor->shop_name ?? trim($order->service->vendor->first_name . ' ' . $order->service->vendor->last_name))
                         : null,
                     'address' => $order->address ? [
                         'address' => $order->address->address,
@@ -123,7 +202,7 @@ class FrontendController extends Controller
             ->orderBy('name')
             ->paginate($perPage)
             ->withQueryString()
-            ->through(fn (Category $category) => [
+            ->through(fn(Category $category) => [
                 'id' => $category->id,
                 'name' => $category->name,
                 'image' => $category->image_url,
@@ -135,7 +214,7 @@ class FrontendController extends Controller
             ->orderByDesc('average_rating')
             ->take(40)
             ->get()
-            ->map(fn (Service $service) => [
+            ->map(fn(Service $service) => [
                 'id' => Crypt::encryptString((string) $service->id),
                 'image' => $service->image_url,
                 'name' => $service->vendor->shop_name ?? $service->title,
@@ -177,7 +256,7 @@ class FrontendController extends Controller
             ->withQueryString()
             ->through(function (Review $review) {
                 $name = $review->user?->first_name && $review->user?->last_name
-                    ? trim($review->user->first_name.' '.$review->user->last_name)
+                    ? trim($review->user->first_name . ' ' . $review->user->last_name)
                     : ($review->user?->email ?? 'Guest');
 
                 return [
@@ -195,7 +274,7 @@ class FrontendController extends Controller
         return Inertia::render('frontend/vendor-reviews', [
             'vendor' => [
                 'id' => $id,
-                'name' => $vendor->shop_name ?? trim(($vendor->first_name ?? '').' '.($vendor->last_name ?? '')) ?: 'Vendor',
+                'name' => $vendor->shop_name ?? trim(($vendor->first_name ?? '') . ' ' . ($vendor->last_name ?? '')) ?: 'Vendor',
                 'location' => $vendor->location ?? null,
                 'avatar_url' => $vendor->avatar_url,
             ],
@@ -279,7 +358,7 @@ class FrontendController extends Controller
             'categories' => $categories,
             'vendor' => [
                 'id' => $id,
-                'name' => $vendor->shop_name ?? trim(($vendor->first_name ?? '').' '.($vendor->last_name ?? '')) ?: 'Vendor',
+                'name' => $vendor->shop_name ?? trim(($vendor->first_name ?? '') . ' ' . ($vendor->last_name ?? '')) ?: 'Vendor',
                 'location' => $vendor->location ?? null,
                 'avatar_url' => $vendor->avatar_url,
                 'averageRating' => $vendorAverageRating,

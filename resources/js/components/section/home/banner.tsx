@@ -1,5 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
+import { router } from "@inertiajs/react";
+
 export default function Banner() {
+    const [service, setService] = useState<string>("");
+    const [vehicleType, setVehicleType] = useState<string>("");
+    const [location, setLocation] = useState<string>("");
+
+    const handleSearch = () => {
+        router.get(
+            route("frontend.search"),
+            {
+                service,
+                vehicle_type: vehicleType,
+                location,
+            },
+            {
+                preserveState: true,
+                replace: true,
+            }
+        );
+    };
+
     return (
         <div
             className="relative h-[calc(100vh-145px)] bg-cover bg-center bg-no-repeat"
@@ -30,7 +51,11 @@ export default function Banner() {
                     {/* Select Service */}
                     <div>
                         <div className="relative inline-flex">
-                            <select className="h-full cursor-pointer appearance-none border-r border-gray-200 bg-bg-white px-5 py-4 pr-10 text-sm font-medium text-text-gray focus:outline-none">
+                            <select
+                                className="h-full cursor-pointer appearance-none border-r border-gray-200 bg-bg-white px-5 py-4 pr-10 text-sm font-medium text-text-gray focus:outline-none"
+                                value={service}
+                                onChange={(e) => setService(e.target.value)}
+                            >
                                 <option value="">Select Service</option>
                                 <option value="carwash">Car Wash</option>
                                 <option value="detailing">Detailing</option>
@@ -58,7 +83,11 @@ export default function Banner() {
                     {/* Vehicle Type */}
                     <div>
                         <div className="relative inline-flex">
-                            <select className="h-full cursor-pointer appearance-none border-r border-gray-200 bg-bg-white px-5 py-4 pr-10 text-sm font-medium text-text-gray focus:outline-none">
+                            <select
+                                className="h-full cursor-pointer appearance-none border-r border-gray-200 bg-bg-white px-5 py-4 pr-10 text-sm font-medium text-text-gray focus:outline-none"
+                                value={vehicleType}
+                                onChange={(e) => setVehicleType(e.target.value)}
+                            >
                                 <option value="">Vehicle Type</option>
                                 <option value="sedan">Sedan</option>
                                 <option value="suv">SUV</option>
@@ -111,8 +140,19 @@ export default function Banner() {
                             type="text"
                             placeholder="Enter Your Location"
                             className="h-full w-full bg-bg-white py-4 pr-16 pl-10 text-sm  text-text-gray focus:outline-none"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    handleSearch();
+                                }
+                            }}
                         />
-                        <button className="absolute top-1/2 right-2 -translate-y-1/2 bg-black px-3 py-2 text-xs font-semibold text-text-white flex items-center gap-1">
+                        <button
+                            type="button"
+                            onClick={handleSearch}
+                            className="absolute top-1/2 right-2 -translate-y-1/2 bg-black px-3 py-2 text-xs font-semibold text-text-white flex items-center gap-1"
+                        >
                             <svg
                                 className="h-3 w-3"
                                 fill="none"

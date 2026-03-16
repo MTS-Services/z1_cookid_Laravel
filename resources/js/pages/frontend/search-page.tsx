@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { ArrowLeft, MapPin, Star } from 'lucide-react'
 import Pagination from '@/components/ui/pagination'
 import FrontendLayout from '@/layouts/frontend-layout'
@@ -6,40 +6,52 @@ import PriceRange from '@/components/ui/price-range'
 import { Link, router, usePage } from '@inertiajs/react'
 
 type ServiceCard = {
-    id: number
+    id: string
     name: string
     location: string
     category: string
-    price: string
+    price: number
     rating: number
     image: string
 }
 
-const chips = ['WASH', 'TINT', 'TINT']
-const sortOptions = ['Relevance', 'Price: Low to High', 'Price: High to Low']
+type Paginated<T> = {
+    data: T[]
+    current_page: number
+    last_page: number
+    total: number
+}
 
-const services: ServiceCard[] = Array.from({ length: 9 }).map((_, index) => {
-    const base = index % 3
-    return {
-        id: index + 1,
-        name: ['Quick Clean Pro', 'Master Tint & Wrap', 'Elite Automotive Detailers'][base],
-        location: ['Westside', 'North Hills', 'San Francisco'][base],
-        category: ['WASH', 'TINT', 'TINT'][base],
-        price: base === 0 ? '$45' : '$180',
-        rating: base === 1 ? 4.8 : 4.9,
-        image: [
-            'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=60',
-            'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=60',
-            'https://images.unsplash.com/photo-1529429617124-aee711a70412?auto=format&fit=crop&w=800&q=60',
-        ][base],
+type PageProps = {
+    services: Paginated<ServiceCard>
+    filters: {
+        location: string
+        service: string
+        vehicle_type: string
+        min_price: number | null
+        max_price: number | null
+        min_rating: number | null
+        sort: string
+        per_page?: number
     }
-})
+}
+
+const SORT_OPTIONS = [
+    { value: 'relevance', label: 'Relevance' },
+    { value: 'price_asc', label: 'Price: Low to High' },
+    { value: 'price_desc', label: 'Price: High to Low' },
+] as const
 
 export default function SearchPage() {
-    const totalResults = 65897
+    const { services, filters } = usePage<PageProps>().props
+
+    const totalResults = services?.total ?? 0
+    const chips = Array.from(
+        new Set((services?.data ?? []).map((service) => service.category))
+    )
 
     const priceOptions = [
-        { label: "All Price", min: 0, max: 10000 },
+        { label: "All Price", min: 100, max: 10000 },
         { label: "$100 - $300", min: 100, max: 300 },
         { label: "$300 - $500", min: 300, max: 500 },
         { label: "$500 - $1,000", min: 500, max: 1000 },
@@ -48,7 +60,9 @@ export default function SearchPage() {
 
     const [activePrice, setActivePrice] = useState("All Price");
 
-
+    const applySearchFilters = (extra: Record<string, string | number | null | undefined>) => {
+        router.get(route("frontend.search"), { ...filters, page: 1, ...extra }, { preserveState: true, replace: true });
+    };
 
     return (
         <FrontendLayout>
@@ -63,41 +77,46 @@ export default function SearchPage() {
                         onChange={(option) => {
                             setActivePrice(option.label);
 
-                            router.get(
-                                route("frontend.search"),
-                                {
-                                    min_price: option.min,
-                                    max_price: option.max,
-                                },
-                                {
-                                    preserveState: true,
-                                    replace: true,
-                                }
-                            );
+                            applySearchFilters({
+                                min_price: option.min,
+                                max_price: option.max,
+                            });
                         }}
                     />
 
                     {/* Ratings */}
                     <div>
                         <h3 className="text-lg font-medium mb-4">Ratings & Reviews</h3>
-                        {[5, 4, 3, 2, 1].map((rating) => (
-                            <div key={rating} className="flex items-center gap-3 mb-2 group cursor-pointer">
-                                <div className={`w-4 h-4 rounded-full border transition-all ${rating === 5 ? 'bg-bg-nevy border-bg-nevy ring-2 ring-blue-900/30' : 'border-text-gray'}`}></div>
-                                <span className="text-sm w-4 text-text-gray-50">{rating}</span>
-                                <div className="flex-1 h-1.5 bg-bg-black-50 rounded-full overflow-hidden">
-                                    <div className="h-full bg-bg-nevy" style={{ width: `${rating * 20}%` }}></div>
-                                </div>
-                            </div>
-                        ))}
+                        {[5, 4, 3, 2, 1].map((rating) => {
+                            const isActive = filters.min_rating === rating;
+                            return (
+                                <button
+                                    key={rating}
+                                    type="button"
+                                    onClick={() => applySearchFilters({ min_rating: isActive ? 0 : rating })}
+                                    className="flex w-full items-center gap-3 mb-2 group cursor-pointer text-left rounded px-1 py-0.5 -mx-1 hover:bg-slate-800/50 transition-colors"
+                                >
+                                    <div className={`w-4 h-4 shrink-0 rounded-full border transition-all ${isActive ? 'bg-bg-nevy border-bg-nevy ring-2 ring-blue-900/30' : 'border-text-gray'}`} />
+                                    <span className="text-sm w-4 text-text-gray-50">{rating}</span>
+                                    <div className="flex-1 h-1.5 bg-bg-black-50 rounded-full overflow-hidden">
+                                        <div className="h-full bg-bg-nevy" style={{ width: `${rating * 20}%` }} />
+                                    </div>
+                                </button>
+                            );
+                        })}
                     </div>
                 </aside>
 
                 <div className="flex-1 space-y-6">
                     <div className="flex items-center justify-end gap-2 text-md text-slate-400">
                         <span>Sort by:</span>
-                        <select className="rounded bg-bg-gray px-3 py-4 text-lg">
-                            {sortOptions.map((option) => (
-                                <option key={option}>{option}</option>
+                        <select
+                            value={filters.sort ?? 'relevance'}
+                            onChange={(e) => applySearchFilters({ sort: e.target.value })}
+                            className="rounded bg-bg-gray px-3 py-4 text-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-bg-nevy/50"
+                        >
+                            {SORT_OPTIONS.map((opt) => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
                             ))}
                         </select>
                     </div>
@@ -115,15 +134,15 @@ export default function SearchPage() {
                             </div>
                             <div className="flex items-center gap-2 text-sm text-slate-400">
 
-                                <span className="ml-4 text-slate-300">
-                                    {totalResults.toLocaleString()} results found
-                                </span>
+                        <span className="ml-4 text-slate-300">
+                            {totalResults.toLocaleString()} results found
+                        </span>
                             </div>
                         </div>
                     </header>
 
                     <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                        {services.map((service) => (
+                        {services?.data.map((service) => (
                             <article
                                 key={service.id}
                                 className="flex flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/70 shadow-lg shadow-black/30"
@@ -143,11 +162,11 @@ export default function SearchPage() {
                                             <Star className="h-4 w-4 fill-amber-400" /> {service.rating.toFixed(1)}
                                         </span>
                                     </div>
-                                    <span className="inline-flex w-fit rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-200">
+                                        <span className="inline-flex w-fit rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-200">
                                         {service.category}
                                     </span>
                                     <div className="mt-auto flex items-center justify-between">
-                                        <span className="text-2xl font-semibold">{service.price}</span>
+                                        <span className="text-2xl font-semibold">${service.price}</span>
                                         <button className="rounded-full bg-navy px-4 py-2 text-sm font-semibold text-white transition hover:bg-navy">
                                             See Details
                                         </button>
@@ -157,9 +176,27 @@ export default function SearchPage() {
                         ))}
                     </div>
 
-                    <div className="flex justify-center pt-4">
-                        <Pagination currentPage={1} totalPages={6} onPageChange={(page) => console.log(page)} />
-                    </div>
+                    {services?.last_page && services.last_page > 1 && (
+                        <div className="flex justify-center pt-4">
+                            <Pagination
+                                currentPage={services.current_page}
+                                totalPages={services.last_page}
+                                onPageChange={(page) =>
+                                    router.get(
+                                        route("frontend.search"),
+                                        {
+                                            ...filters,
+                                            page,
+                                        },
+                                        {
+                                            preserveState: true,
+                                            replace: true,
+                                        }
+                                    )
+                                }
+                            />
+                        </div>
+                    )}
                 </div>
             </section>
         </FrontendLayout>

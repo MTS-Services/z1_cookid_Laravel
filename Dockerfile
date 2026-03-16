@@ -22,8 +22,6 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql mbstring zip exif pcntl gd \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -53,7 +51,7 @@ RUN mkdir -p storage/framework/{views,sessions,cache} \
     && chmod -R 775 storage/framework storage/logs bootstrap/cache
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader 
 
 # Install npm dependencies and build assets
 RUN npm install && npm run build
@@ -63,7 +61,7 @@ RUN rm -f /etc/nginx/sites-enabled/default
 COPY ./docker/nginx.conf /etc/nginx/nginx.conf
 COPY ./docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Expose HTTP and WebSocket ports
+# Expose HTTP port and Reverb WebSocket port
 EXPOSE 80
 EXPOSE 8080
 

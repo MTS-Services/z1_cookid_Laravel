@@ -1,4 +1,4 @@
-import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -26,6 +26,10 @@ function PaymentModalShell({ open, onOpenChange, size = 'md', children }: ModalB
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className={cn(modalShellClass, modalSizeMap[size])}>
+                <DialogHeader className="sr-only">
+                    <DialogTitle>Payment dialog</DialogTitle>
+                    <DialogDescription>Payment related modal</DialogDescription>
+                </DialogHeader>
                 <DialogClose className="absolute right-6 top-6 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/15">
                     <X className="h-4 w-4" />
                 </DialogClose>

@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { Heart, User, Menu, X, UserIcon, User2 } from "lucide-react";
+import { Heart, User, Menu, X, User2 } from "lucide-react";
 import {
   FaTwitter,
   FaFacebookF,
-  FaPinterestP,
   FaInstagram,
   FaYoutube,
-  FaRedditAlien,
 } from "react-icons/fa";
 import { Link, usePage } from "@inertiajs/react";
 import { SharedData } from "@/types";

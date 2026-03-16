@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Bell, ChevronDown, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import React from 'react';
+import type { SharedData } from '@/types';
 
 interface VendorHeaderProps {
   isCollapsed: boolean;
@@ -10,12 +11,13 @@ interface VendorHeaderProps {
 
 function VendorHeader({ isCollapsed, setIsCollapsed }: VendorHeaderProps) {
   const [userMenuOpen, setUserMenuOpen] = React.useState(false);
-  const { vendorNotifications } = usePage<{
+  const { auth, vendorNotifications } = usePage<SharedData & {
     vendorNotifications?: {
       unreadCount: number;
     };
   }>().props;
 
+  const vendor = auth.vendor;
   const unreadCount = vendorNotifications?.unreadCount ?? 0;
   const displayCount = unreadCount > 9 ? '9+' : unreadCount.toString();
 
@@ -45,10 +47,16 @@ function VendorHeader({ isCollapsed, setIsCollapsed }: VendorHeaderProps) {
             className="flex items-center gap-3 hover:bg-gray-800 px-3 py-2 rounded-lg transition-colors"
           >
             <div className="w-12 h-12 bg-yellow-500 rounded-sm flex items-center justify-center text-black font-bold">
-              <img src="/user.png" alt="user" />
+              {vendor?.image_url ? (
+                <img src={vendor.image_url} alt="user" className="h-full w-full rounded-sm object-cover" />
+              ) : (
+                <span>{vendor?.first_name?.charAt(0).toUpperCase() ?? 'U'}</span>
+              )}
             </div>
             <div className="text-left">
-              <p className="text-sm font-medium">Brayden</p>
+              <p className="text-sm font-medium">
+                {vendor ? `${vendor.first_name} ${vendor.last_name}` : 'Vendor'}
+              </p>
               <p className="text-xs text-gray-500">Seller</p>
             </div>
             <ChevronDown size={16} />

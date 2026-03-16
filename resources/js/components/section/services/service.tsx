@@ -102,6 +102,9 @@ const ServiceMarketplace = ({ services, filters, options }: ServiceMarketplacePr
         if (merged.maxPrice != null) {
             query.max_price = merged.maxPrice;
         }
+        if (merged.minRating != null && merged.minRating >= 1 && merged.minRating <= 5) {
+            query.min_rating = merged.minRating;
+        }
         if (page && page > 1) {
             query.page = page;
         }
@@ -272,15 +275,27 @@ const ServiceMarketplace = ({ services, filters, options }: ServiceMarketplacePr
                         {/* Ratings */}
                         <div>
                             <h3 className="text-lg font-medium mb-4">Ratings & Reviews</h3>
-                            {[5, 4, 3, 2, 1].map((rating) => (
-                                <div key={rating} className="flex items-center gap-3 mb-3 group cursor-pointer">
-                                    <div className={`w-4 h-4 rounded-full border ${rating === 5 ? 'bg-navy border-navy ring-2 ring-blue-900/30' : 'border-gray-600'}`}></div>
-                                    <span className="text-sm w-4 text-gray-400">{rating}</span>
-                                    <div className="flex-1 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                                        <div className="h-full bg-navy" style={{ width: `${rating * 20}%` }}></div>
-                                    </div>
-                                </div>
-                            ))}
+                            {[5, 4, 3, 2, 1].map((rating) => {
+                                const isActive = filters.minRating === rating;
+                                const label = `${rating}`;
+                                return (
+                                    <button
+                                        key={rating}
+                                        type="button"
+                                        onClick={() => {
+                                            navigateWithFilters({ minRating: isActive ? null : rating }, 1);
+                                            if (window.innerWidth < 768) setIsSidebarOpen(false);
+                                        }}
+                                        className="flex w-full items-center gap-3 mb-2 group cursor-pointer text-left rounded px-1 py-0.5 -mx-1 hover:bg-slate-800/50 transition-colors"
+                                    >
+                                        <div className={`w-4 h-4 shrink-0 rounded-full border transition-all ${isActive ? 'bg-navy border-navy ring-2 ring-blue-900/30' : 'border-gray-600'}`} />
+                                        <span className="text-sm w-16 shrink-0 text-gray-400">{label}</span>
+                                        <div className="flex-1 h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                            <div className="h-full bg-navy" style={{ width: `${rating * 20}%` }} />
+                                        </div>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </aside>
@@ -304,6 +319,7 @@ const ServiceMarketplace = ({ services, filters, options }: ServiceMarketplacePr
                                     location: null,
                                     minPrice: options.priceBounds.min,
                                     maxPrice: options.priceBounds.max,
+                                    minRating: null,
                                 }, 1)}
                                 className="mt-4 text-navy hover:underline"
                             >

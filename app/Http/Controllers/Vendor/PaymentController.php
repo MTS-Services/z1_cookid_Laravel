@@ -39,6 +39,7 @@ class PaymentController extends Controller
                 WithdrawalStatus::Approved,
                 WithdrawalStatus::Processing,
                 WithdrawalStatus::Completed,
+                WithdrawalStatus::Pending,
             ])
             ->sum('amount');
 
@@ -119,6 +120,7 @@ class PaymentController extends Controller
                 WithdrawalStatus::Approved,
                 WithdrawalStatus::Processing,
                 WithdrawalStatus::Completed,
+                WithdrawalStatus::Pending,
             ])
             ->sum('amount');
 

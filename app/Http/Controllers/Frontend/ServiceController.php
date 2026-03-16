@@ -25,6 +25,7 @@ class ServiceController extends Controller
         $location = $request->input('location');
         $minPrice = $request->input('min_price');
         $maxPrice = $request->input('max_price');
+        $minRating = $request->integer('min_rating', 0);
 
         $servicesQuery = Service::query()
             ->with(['category', 'carType'])
@@ -43,6 +44,14 @@ class ServiceController extends Controller
             ->when($location, fn ($query) => $query->where('location', $location))
             ->when($minPrice !== null, fn ($query) => $query->where('price', '>=', (float) $minPrice))
             ->when($maxPrice !== null, fn ($query) => $query->where('price', '<=', (float) $maxPrice))
+            ->when($minRating >= 1 && $minRating <= 5, function ($query) use ($minRating) {
+                if ($minRating === 5) {
+                    $query->where('average_rating', '>=', 5.0);
+                } else {
+                    $query->where('average_rating', '>=', (float) $minRating)
+                        ->where('average_rating', '<', (float) $minRating + 1);
+                }
+            })
             ->latest();
 
         $services = $servicesQuery
@@ -110,6 +119,7 @@ class ServiceController extends Controller
                 'location' => $location,
                 'minPrice' => $minPrice !== null ? (float) $minPrice : null,
                 'maxPrice' => $maxPrice !== null ? (float) $maxPrice : null,
+                'minRating' => $minRating >= 1 && $minRating <= 5 ? $minRating : null,
             ],
             'options' => [
                 'categories' => $categories,

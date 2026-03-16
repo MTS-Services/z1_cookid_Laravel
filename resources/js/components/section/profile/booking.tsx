@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { CalendarClock, ChevronLeft, ChevronRight, LocateIcon, User2 } from 'lucide-react'
+import type { UserOrderSummary } from '@/pages/user/profile/order-details'
 
 type BookingStatus = 'All' | 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled' | 'In Progress'
 
@@ -19,19 +20,10 @@ interface BookingItem {
     time: string
     price: number
     orderId?: number
+    hasReview: boolean
 }
 
-function orderToBooking(order: {
-    id: number
-    orderNumber: string
-    status: string
-    statusLabel: string
-    scheduledAt: string | null
-    createdAt: string | null
-    totals: { total: number | null }
-    service?: { title: string | null; vendorName: string | null } | null
-    address?: { addressLine?: string; address?: string; city?: string; state?: string; zipCode?: string; zip_code?: string } | null
-}): BookingItem {
+function orderToBooking(order: UserOrderSummary): BookingItem {
     const statusMap: Record<string, Exclude<BookingStatus, 'All'>> = {
         pending: 'Pending',
         confirmed: 'Confirmed',
@@ -59,101 +51,10 @@ function orderToBooking(order: {
         date,
         time,
         price,
+        hasReview: !!order.review,
     }
 }
 
-const defaultBookings: BookingItem[] = [
-    {
-        id: 'BK-2026-001',
-        title: 'Full Car Service',
-        status: 'Confirmed',
-        store: 'Maktech Store',
-        address: '2769 Ash Dr, San Jose, South Dakota 83475',
-        date: 'Wednesday, February 21, 2026',
-        time: '10:00 AM - 12:00 PM',
-        price: 120,
-    },
-    {
-        id: 'BK-2026-002',
-        title: 'Master Tint & Wrap',
-        status: 'Pending' as BookingStatus,
-        store: 'Maktech Store',
-        address: '2769 Ash Dr, San Jose, South Dakota 83475',
-        date: 'Wednesday, February 21, 2026',
-        time: '10:00 AM - 12:00 PM',
-        price: 120,
-    },
-    {
-        id: 'BK-2026-003',
-        title: 'Full Car Service',
-        status: 'Completed',
-        store: 'Maktech Store',
-        address: '2769 Ash Dr, San Jose, South Dakota 83475',
-        date: 'Wednesday, February 21, 2026',
-        time: '10:00 AM - 12:00 PM',
-        price: 120,
-    },
-    {
-        id: 'BK-2026-004',
-        title: 'Full Car Service',
-        status: 'Cancelled',
-        store: 'Maktech Store',
-        address: '2769 Ash Dr, San Jose, South Dakota 83475',
-        date: 'Wednesday, February 21, 2026',
-        time: '10:00 AM - 12:00 PM',
-        price: 120,
-    },
-    {
-        id: 'BK-2026-005',
-        title: 'Full Car Service',
-        status: 'Confirmed',
-        store: 'Maktech Store',
-        address: '2769 Ash Dr, San Jose, South Dakota 83475',
-        date: 'Wednesday, February 21, 2026',
-        time: '10:00 AM - 12:00 PM',
-        price: 120,
-    },
-    {
-        id: 'BK-2026-006',
-        title: 'Master Tint & Wrap',
-        status: 'Pending',
-        store: 'Maktech Store',
-        address: '2769 Ash Dr, San Jose, South Dakota 83475',
-        date: 'Wednesday, February 21, 2026',
-        time: '10:00 AM - 12:00 PM',
-        price: 120,
-    },
-    {
-        id: 'BK-2026-007',
-        title: 'Full Car Service',
-        status: 'Completed',
-        store: 'Maktech Store',
-        address: '2769 Ash Dr, San Jose, South Dakota 83475',
-        date: 'Wednesday, February 21, 2026',
-        time: '10:00 AM - 12:00 PM',
-        price: 120,
-    },
-    {
-        id: 'BK-2026-008',
-        title: 'Full Car Service',
-        status: 'Confirmed',
-        store: 'Maktech Store',
-        address: '2769 Ash Dr, San Jose, South Dakota 83475',
-        date: 'Wednesday, February 21, 2026',
-        time: '10:00 AM - 12:00 PM',
-        price: 120,
-    },
-    {
-        id: 'BK-2026-009',
-        title: 'Full Car Service',
-        status: 'Cancelled',
-        store: 'Maktech Store',
-        address: '2769 Ash Dr, San Jose, South Dakota 83475',
-        date: 'Wednesday, February 21, 2026',
-        time: '10:00 AM - 12:00 PM',
-        price: 120,
-    },
-]
 
 const statusStyles: Record<Exclude<BookingStatus, 'All'>, { badge: string; button: string }> = {
     Confirmed: {
@@ -217,7 +118,7 @@ interface BookingsSectionProps {
 export function BookingsSection({ orders = [] }: BookingsSectionProps) {
     const [activeTab, setActiveTab] = useState<BookingStatus>('All')
     const bookingsList = useMemo(
-        () => (orders.length > 0 ? orders.map(orderToBooking) : defaultBookings),
+        () => (orders.map(orderToBooking)),
         [orders]
     )
     const { current, page, setPage, totalPages } = usePaginatedBookings(activeTab, bookingsList)
@@ -231,11 +132,10 @@ export function BookingsSection({ orders = [] }: BookingsSectionProps) {
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`rounded-md px-6 py-2 text-sm font-semibold transition-all duration-300 ${
-                                isActive
+                            className={`rounded-md px-6 py-2 text-sm font-semibold transition-all duration-300 ${isActive
                                     ? 'bg-navy text-white shadow-lg shadow-navy/30'
                                     : 'border border-text-border bg-bg-gray/50 text-white/80 hover:text-white'
-                            }`}
+                                }`}
                         >
                             {tab}
                         </button>
@@ -278,7 +178,7 @@ export function BookingsSection({ orders = [] }: BookingsSectionProps) {
 
                                 <span className="text-2xl font-bold">${booking.price.toFixed(2)}</span>
                                 <div className="border-t border-[#292929] pt-4">
-                                    {['Confirmed', 'Completed', 'In Progress'].includes(booking.status) ? (
+                                    {['Confirmed', 'Completed', 'In Progress'].includes(booking.status) && !booking.hasReview ? (
                                         <div className="grid grid-cols-2 gap-3">
                                             <Link
                                                 href={
@@ -301,7 +201,7 @@ export function BookingsSection({ orders = [] }: BookingsSectionProps) {
                                                     </Button>
                                                 </Link>
                                             )}
-                                            {booking.status === 'Completed' && (
+                                            {booking.status === 'Completed' && !booking.hasReview && (
                                                 <Link
                                                     href={
                                                         booking.orderId != null
@@ -355,11 +255,10 @@ export function BookingsSection({ orders = [] }: BookingsSectionProps) {
                     <button
                         key={p}
                         onClick={() => setPage(p)}
-                        className={`h-10 w-10 rounded-full text-sm font-semibold transition ${
-                            p === page
+                        className={`h-10 w-10 rounded-full text-sm font-semibold transition ${p === page
                                 ? 'bg-navy text-white shadow-lg shadow-navy/30'
                                 : 'border border-[#292929] text-slate-400 hover:text-white'
-                        }`}
+                            }`}
                     >
                         {p.toString().padStart(2, '0')}
                     </button>

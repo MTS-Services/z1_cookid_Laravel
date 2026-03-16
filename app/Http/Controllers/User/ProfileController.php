@@ -53,7 +53,7 @@ class ProfileController extends Controller
             $orders = $user->orders()
                 ->with(['service.vendor', 'address', 'payments', 'review'])
                 ->orderByDesc('created_at')
-                ->limit(50)
+                ->limit(12)
                 ->get()
                 ->map(fn (Order $order) => $this->formatOrderForUser($order));
         }

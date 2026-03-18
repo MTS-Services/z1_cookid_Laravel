@@ -28,7 +28,10 @@ class GoogleController extends Controller
 
         Session::put('google_guard', $guard);
 
-        return Socialite::driver('google')->with(['prompt' => 'select_account'])->redirect();
+        /** @var \Laravel\Socialite\Two\AbstractProvider $provider */
+        $provider = Socialite::driver('google');
+
+        return $provider->with(['prompt' => 'select_account'])->redirect();
     }
 
     public function callback()

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowLeft, MapPin, Star } from 'lucide-react'
+import { ArrowLeft, MapPin, Search, Star } from 'lucide-react'
 import Pagination from '@/components/ui/pagination'
 import FrontendLayout from '@/layouts/frontend-layout'
 import PriceRange from '@/components/ui/price-range'
@@ -134,15 +134,15 @@ export default function SearchPage() {
                             </div>
                             <div className="flex items-center gap-2 text-sm text-slate-400">
 
-                        <span className="ml-4 text-slate-300">
-                            {totalResults.toLocaleString()} results found
-                        </span>
+                                <span className="ml-4 text-slate-300">
+                                    {totalResults.toLocaleString()} results found
+                                </span>
                             </div>
                         </div>
                     </header>
 
                     <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                        {services?.data.map((service) => (
+                        {services?.data.length > 0 ? services?.data.map((service) => (
                             <article
                                 key={service.id}
                                 className="flex flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/70 shadow-lg shadow-black/30"
@@ -162,7 +162,7 @@ export default function SearchPage() {
                                             <Star className="h-4 w-4 fill-amber-400" /> {service.rating.toFixed(1)}
                                         </span>
                                     </div>
-                                        <span className="inline-flex w-fit rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-200">
+                                    <span className="inline-flex w-fit rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-200">
                                         {service.category}
                                     </span>
                                     <div className="mt-auto flex items-center justify-between">
@@ -173,7 +173,29 @@ export default function SearchPage() {
                                     </div>
                                 </div>
                             </article>
-                        ))}
+                        )) : (
+                        <div className="flex flex-col items-center justify-center py-20 text-gray-500 col-span-full">
+                            <Search size={48} className="mb-4" />
+                            <p className="text-xl">No services match your criteria.</p>
+                            <button
+                                onClick={() => {
+                                    setActivePrice("All Price");
+                                    applySearchFilters({
+                                        location: '',
+                                        service: '',
+                                        vehicle_type: '',
+                                        min_price: null,
+                                        max_price: null,
+                                        min_rating: null,
+                                        sort: 'relevance',
+                                    });
+                                }}
+                                className="mt-4 text-navy hover:underline"
+                            >
+                                Reset all filters
+                            </button>
+                        </div>
+                        )}
                     </div>
 
                     {services?.last_page && services.last_page > 1 && (

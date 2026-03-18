@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link } from '@inertiajs/react'
+import { useMemo, useState } from 'react'
+import { Link, router } from '@inertiajs/react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { CalendarClock, ChevronLeft, ChevronRight, LocateIcon, User2 } from 'lucide-react'
-import type { UserOrderSummary } from '@/pages/user/profile/order-details'
 
 type BookingStatus = 'All' | 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled' | 'In Progress'
 
@@ -23,7 +22,20 @@ interface BookingItem {
     hasReview: boolean
 }
 
-function orderToBooking(order: UserOrderSummary): BookingItem {
+type OrderSummaryForBookings = {
+    id: number
+    orderNumber: string
+    status: string
+    statusLabel: string
+    scheduledAt: string | null
+    createdAt: string | null
+    totals: { total: number | null }
+    service?: { title: string | null; vendorName: string | null } | null
+    address?: { addressLine?: string; city?: string; state?: string; zipCode?: string } | null
+    review?: unknown | null
+}
+
+function orderToBooking(order: OrderSummaryForBookings): BookingItem {
     const statusMap: Record<string, Exclude<BookingStatus, 'All'>> = {
         pending: 'Pending',
         confirmed: 'Confirmed',
@@ -79,49 +91,54 @@ const statusStyles: Record<Exclude<BookingStatus, 'All'>, { badge: string; butto
     },
 }
 
-function usePaginatedBookings(activeTab: BookingStatus, items: BookingItem[], itemsPerPage = 9) {
-    const [page, setPage] = useState(1)
-
-    const filtered = useMemo(() => {
-        if (activeTab === 'All') {
-            return items
-        }
-        return items.filter((booking) => booking.status === activeTab)
-    }, [activeTab, items])
-
-    const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage))
-    const currentPage = Math.min(page, totalPages)
-    const offset = (currentPage - 1) * itemsPerPage
-    const current = filtered.slice(offset, offset + itemsPerPage)
-
-    useEffect(() => {
-        setPage(1)
-    }, [activeTab])
-
-    return { current, totalPages, page: currentPage, setPage }
-}
-
 interface BookingsSectionProps {
-    orders?: Array<{
-        id: number
-        orderNumber: string
-        status: string
-        statusLabel: string
-        scheduledAt: string | null
-        createdAt: string | null
-        totals: { total: number | null }
-        service?: { title: string | null; vendorName: string | null } | null
-        address?: { addressLine?: string; city?: string; state?: string; zipCode?: string } | null
-    }>
+    orders?: {
+        data: OrderSummaryForBookings[]
+        meta?: {
+            current_page?: number
+            last_page?: number
+        }
+    }
 }
 
-export function BookingsSection({ orders = [] }: BookingsSectionProps) {
+export function BookingsSection({ orders }: BookingsSectionProps) {
     const [activeTab, setActiveTab] = useState<BookingStatus>('All')
     const bookingsList = useMemo(
-        () => (orders.map(orderToBooking)),
+        () => ((orders?.data ?? []).map(orderToBooking)),
         [orders]
     )
-    const { current, page, setPage, totalPages } = usePaginatedBookings(activeTab, bookingsList)
+
+    const page = orders?.meta?.current_page ?? 1
+    const totalPages = orders?.meta?.last_page ?? 1
+
+    const current = useMemo(() => {
+        if (activeTab === 'All') return bookingsList
+        return bookingsList.filter((booking) => booking.status === activeTab)
+    }, [activeTab, bookingsList])
+
+    const setPage = (p: number) => {
+        router.get(
+            route('user.profile'),
+            { section: 'bookings', page: p },
+            { preserveScroll: true, preserveState: true }
+        )
+    }
+
+    const pagesToShow = useMemo(() => {
+        if (totalPages <= 1) return []
+
+        const windowSize = 1 // current +/- 1
+        const start = Math.max(2, page - windowSize)
+        const end = Math.min(totalPages - 1, page + windowSize)
+
+        const pages: Array<number | 'ellipsis'> = [1]
+        if (start > 2) pages.push('ellipsis')
+        for (let p = start; p <= end; p++) pages.push(p)
+        if (end < totalPages - 1) pages.push('ellipsis')
+        if (totalPages > 1) pages.push(totalPages)
+
+        return pages
+    }, [page, totalPages])
 
     return (
         <section className="space-y-8">
@@ -131,6 +148,7 @@ export function BookingsSection({ orders = [] }: BookingsSectionProps) {
                     return (
                         <button
                             key={tab}
+                            type="button"
                             onClick={() => setActiveTab(tab)}
                             className={`rounded-md px-6 py-2 text-sm font-semibold transition-all duration-300 ${isActive
                                     ? 'bg-navy text-white shadow-lg shadow-navy/30'
@@ -242,36 +260,52 @@ export function BookingsSection({ orders = [] }: BookingsSectionProps) {
                 )}
             </div>
 
-            <div className="flex items-center justify-center gap-2">
-                <button
-                    aria-label="Previous Page"
-                    onClick={() => setPage(Math.max(1, page - 1))}
-                    disabled={page === 1}
-                    className="rounded-full border border-[#292929] p-2 text-slate-400 transition hover:bg-[#292929] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                    <ChevronLeft className="h-5 w-5" />
-                </button>
-                {Array.from({ length: totalPages }, (_, index) => index + 1).map((p) => (
-                    <button
-                        key={p}
-                        onClick={() => setPage(p)}
-                        className={`h-10 w-10 rounded-full text-sm font-semibold transition ${p === page
-                                ? 'bg-navy text-white shadow-lg shadow-navy/30'
-                                : 'border border-[#292929] text-slate-400 hover:text-white'
-                            }`}
-                    >
-                        {p.toString().padStart(2, '0')}
-                    </button>
-                ))}
-                <button
-                    aria-label="Next Page"
-                    onClick={() => setPage(Math.min(totalPages, page + 1))}
-                    disabled={page === totalPages}
-                    className="rounded-full border border-[#292929] p-2 text-slate-400 transition hover:bg-[#292929] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                    <ChevronRight className="h-5 w-5" />
-                </button>
-            </div>
+            {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2">
+                    {page > 1 && (
+                        <button
+                            aria-label="Previous Page"
+                            type="button"
+                            onClick={() => setPage(page - 1)}
+                            className="rounded-full border border-[#292929] p-2 text-slate-400 transition hover:bg-[#292929] hover:text-white"
+                        >
+                            <ChevronLeft className="h-5 w-5" />
+                        </button>
+                    )}
+
+                    {pagesToShow.map((p, idx) =>
+                        p === 'ellipsis' ? (
+                            <span key={`ellipsis-${idx}`} className="px-2 text-slate-500">
+                                …
+                            </span>
+                        ) : (
+                            <button
+                                key={p}
+                                type="button"
+                                onClick={() => setPage(p)}
+                                aria-current={p === page ? 'page' : undefined}
+                                className={`h-10 w-10 rounded-full text-sm font-semibold transition ${p === page
+                                        ? 'bg-navy text-white shadow-lg shadow-navy/30'
+                                        : 'border border-[#292929] text-slate-400 hover:bg-[#292929] hover:text-white'
+                                    }`}
+                            >
+                                {p.toString().padStart(2, '0')}
+                            </button>
+                        )
+                    )}
+
+                    {page < totalPages && (
+                        <button
+                            aria-label="Next Page"
+                            type="button"
+                            onClick={() => setPage(page + 1)}
+                            className="rounded-full border border-[#292929] p-2 text-slate-400 transition hover:bg-[#292929] hover:text-white"
+                        >
+                            <ChevronRight className="h-5 w-5" />
+                        </button>
+                    )}
+                </div>
+            )}
         </section>
     )
 }

@@ -53,9 +53,9 @@ class ProfileController extends Controller
             $orders = $user->orders()
                 ->with(['service.vendor', 'address', 'payments', 'review'])
                 ->orderByDesc('created_at')
-                ->limit(12)
-                ->get()
-                ->map(fn (Order $order) => $this->formatOrderForUser($order));
+                ->paginate(9)
+                ->through(fn (Order $order) => $this->formatOrderForUser($order))
+                ->withQueryString();
         }
 
         return Inertia::render('user/profile/index', [

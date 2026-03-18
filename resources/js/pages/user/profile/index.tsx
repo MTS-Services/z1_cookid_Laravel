@@ -21,10 +21,18 @@ type ProfileSection = 'bookings' | 'wishlist' | 'account'
 interface ProfilePageProps {
     section: ProfileSection
     wishlist: WishlistItem[]
-    orders?: UserOrderSummary[]
+    orders?: {
+        data: UserOrderSummary[]
+        meta?: {
+            current_page?: number
+            last_page?: number
+            per_page?: number
+            total?: number
+        }
+    }
 }
 
-export default function Index({ section = 'bookings', wishlist = [], orders = [] }: ProfilePageProps) {
+export default function Index({ section = 'bookings', wishlist = [], orders = { data: [] } }: ProfilePageProps) {
     const scrollRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {

@@ -43,11 +43,6 @@ export default function Categories({ categories, services }: CategoriesPageProps
     return (
         <FrontendLayout activePage="categories">
             <CategoryGrid categories={categories.data} />
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={onPageChange}
-            />
             <TopRelated services={services} />
         </FrontendLayout>
     )

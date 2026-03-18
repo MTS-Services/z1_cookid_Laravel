@@ -1,3 +1,6 @@
+import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css'
+
 interface Category {
     id: number;
     name: string;
@@ -15,20 +18,32 @@ export default function Category({ categories }: { categories: Category[] }) {
                 <h2 className="mb-5 text-3xl font-medium text-text-white">
                     Browse By Category
                 </h2>
-                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-4 items-center justify-between text-center">
-                    {categories.map((item, index) => (
-                        <div className="w-full flex flex-col items-center">
-                                <img className="rounded-full"
+                <Swiper
+                    slidesPerView={3}
+                    spaceBetween={16}
+                    grabCursor
+                    className="w-full"
+                    breakpoints={{
+                        768: { slidesPerView: 4 },
+                        1024: { slidesPerView: 6 },
+                        1280: { slidesPerView: 7 },
+                    }}
+                >
+                    {categories.map((item) => (
+                        <SwiperSlide key={item.id} className="text-center w-full h-full">
+                            <div className="w-full flex flex-col items-center">
+                                <img
+                                    className="rounded-full w-full h-full object-cover"
                                     src={item.image}
-                                    alt="Car Wash"
+                                    alt={item.name}
                                 />
-                            <h4 className="mt-4 text-sm font-medium text-text-white">
-                                {item.name}
-                            </h4>
-                        </div>
+                                <h4 className="mt-4 text-sm font-medium text-text-white">
+                                    {item.name}
+                                </h4>
+                            </div>
+                        </SwiperSlide>
                     ))}
-
-                </div>
+                </Swiper>
             </div>
         </div>
     );

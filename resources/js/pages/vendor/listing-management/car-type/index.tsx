@@ -26,6 +26,7 @@ interface CarType extends Record<string, unknown> {
   name: string;
   slug: string;
   status: CarTypeStatus;
+  price: string | number | null;
   created_at: string;
 }
 
@@ -44,12 +45,25 @@ type CarTypeFormData = {
   id: number | null;
   name: string;
   status: CarTypeStatus;
+  price: string;
 };
 
 const defaultFormValues: CarTypeFormData = {
   id: null,
   name: '',
   status: 'active',
+  price: '',
+};
+
+const formatPriceDisplay = (value: string | number | null | undefined): string => {
+  if (value === null || value === undefined || value === '') {
+    return '—';
+  }
+  const n = typeof value === 'string' ? parseFloat(value) : value;
+  if (Number.isNaN(n)) {
+    return '—';
+  }
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
 };
 
 export default function CarTypeIndex({
@@ -81,6 +95,12 @@ export default function CarTypeIndex({
         label: 'Name',
         sortable: true,
         render: (item) => <span className="font-semibold">{item.name}</span>,
+      },
+      {
+        key: 'price',
+        label: 'Est. price',
+        sortable: true,
+        render: (item) => <span className="text-muted-foreground">{formatPriceDisplay(item.price)}</span>,
       },
       {
         key: 'status',
@@ -134,6 +154,10 @@ export default function CarTypeIndex({
         id: carType.id,
         name: carType.name,
         status: carType.status,
+        price:
+          carType.price !== null && carType.price !== undefined && carType.price !== ''
+            ? String(carType.price)
+            : '',
       }));
     } else {
       setData(() => ({ ...defaultFormValues }));
@@ -253,6 +277,22 @@ export default function CarTypeIndex({
               <FieldContent className="text-white">
                 <Input value={data.name} onChange={(e) => setData('name', e.target.value)} />
                 <FieldError errors={errors.name ? [{ message: errors.name }] : undefined} />
+              </FieldContent>
+            </Field>
+
+            <Field>
+              <FieldLabel className="text-white">Estimated price (USD)</FieldLabel>
+              <FieldContent className="text-white">
+                <Input
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  step="0.01"
+                  placeholder="Optional — rough estimate for clients"
+                  value={data.price}
+                  onChange={(e) => setData('price', e.target.value)}
+                />
+                <FieldError errors={errors.price ? [{ message: errors.price }] : undefined} />
               </FieldContent>
             </Field>
 

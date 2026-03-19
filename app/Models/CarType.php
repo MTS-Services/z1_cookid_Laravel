@@ -12,6 +12,7 @@ class CarType extends Model
         'name',
         'slug',
         'status',
+        'price',
 
         'creater_id',
         'creater_type',
@@ -25,6 +26,7 @@ class CarType extends Model
     {
         return [
             'status' => ActiveInactiveStatus::class,
+            'price' => 'decimal:2',
         ];
     }
 
@@ -37,5 +39,4 @@ class CarType extends Model
     {
         return $this->morphTo('updater');
     }
-
 }

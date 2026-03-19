@@ -178,7 +178,7 @@ test('vendor can update own listing', function () {
 
     $response = $this
         ->actingAs($this->vendor, 'vendor')
-        ->patch(route('vendor.lm.listing.update', $service->id), [
+        ->post(route('vendor.lm.listing.update', $service->id), [
             'serviceTitle' => 'Updated Title',
             'description' => 'Updated desc',
             'duration' => 'Half-Day',

@@ -25,7 +25,7 @@ class CarTypeController extends Controller
             [
                 'searchable' => ['name', 'slug'],
                 'filterable' => ['status'],
-                'sortable' => ['id', 'name', 'status', 'created_at'],
+                'sortable' => ['id', 'name', 'price', 'status', 'created_at'],
             ],
         );
 

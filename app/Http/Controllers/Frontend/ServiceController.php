@@ -97,11 +97,18 @@ class ServiceController extends Controller
         $vehicleTypes = CarType::query()
             ->where('status', ActiveInactiveStatus::ACTIVE)
             ->orderBy('name')
-            ->get(['id', 'name'])
-            ->map(fn ($carType) => [
-                'label' => $carType->name,
-                'value' => $carType->id,
-            ]);
+            ->get(['id', 'name', 'price'])
+            ->map(function ($carType) {
+                $label = $carType->name;
+                if ($carType->price !== null) {
+                    $label .= ' (~$'.number_format((float) $carType->price, 0).')';
+                }
+
+                return [
+                    'label' => $label,
+                    'value' => $carType->id,
+                ];
+            });
 
         $locations = Service::query()
             ->where('status', ActiveInactiveStatus::ACTIVE)

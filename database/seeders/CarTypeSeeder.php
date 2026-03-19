@@ -12,19 +12,20 @@ class CarTypeSeeder extends Seeder
     public function run(): void
     {
         $carTypes = [
-            'Compact',
-            'Sedan',
-            'SUV',
-            'Truck',
-            'Luxury',
-            'Electric',
+            ['name' => 'Compact', 'price' => 45.00],
+            ['name' => 'Sedan', 'price' => 55.00],
+            ['name' => 'SUV', 'price' => 75.00],
+            ['name' => 'Truck', 'price' => 85.00],
+            ['name' => 'Luxury', 'price' => 120.00],
+            ['name' => 'Electric', 'price' => 65.00],
         ];
 
         foreach ($carTypes as $type) {
             CarType::create([
-                'name' => $type,
-                'slug' => Str::slug($type),
+                'name' => $type['name'],
+                'slug' => Str::slug($type['name']),
                 'status' => ActiveInactiveStatus::ACTIVE,
+                'price' => $type['price'],
             ]);
         }
     }

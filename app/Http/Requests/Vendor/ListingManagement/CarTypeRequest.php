@@ -18,6 +18,7 @@ class CarTypeRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'status' => ['required', new Enum(ActiveInactiveStatus::class)],
+            'price' => ['nullable', 'numeric', 'min:0', 'max:99999999.99'],
         ];
     }
 }

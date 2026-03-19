@@ -11,8 +11,7 @@ export default function HowItWorks() {
                         How It Works
                     </h2>
                     <p className="mx-auto max-w-2xl font-poppins text-lg text-gray-300">
-                        It's about you and your family, having a comfortable
-                        payment, exceptional service and a lender.
+                        Get started in three simple steps to book trusted local services or offer your own.
                     </p>
                 </div>
 
@@ -35,7 +34,7 @@ export default function HowItWorks() {
                                 </span>
                                 <div className="relative z-10 mt-12 ml-24 lg:ml-14 w-[200px] lg:w-[325px] border border-text-border bg-bg-black-100 p-6 lg:p-9 shadow-2xl backdrop-blur-sm">
                                     <h3 className="mb-4 text-center text-base lg:text-2xl font-medium text-text-white">
-                                        Create Account
+                                        Create Your Account
                                     </h3>
                                     <div className="mb-5 flex flex-col items-center space-y-2">
                                         <div className="h-2 w-full rounded-full bg-text-border" />
@@ -54,12 +53,10 @@ export default function HowItWorks() {
                             {/* Right: Text */}
                             <div className="flex-1 md:pl-16">
                                 <h2 className="mb-3 font-poppins text-2xl font-medium text-text-white">
-                                    Create Account
+                                    01 — Create Your Account
                                 </h2>
                                 <p className="max-w-md font-poppins text-base font-normal text-text-border">
-                                    We know your home is more than just a place
-                                    to live, that's why we're committed to
-                                    providing the best home loan experience.
+                                    Sign up and set up your profile to start booking services or offering your own.
                                 </p>
                             </div>
                         </div>
@@ -69,13 +66,10 @@ export default function HowItWorks() {
                             {/* Left: Text */}
                             <div className="order-2 flex-1 md:order-1 md:pr-16 mt-16 lg:mt-0">
                                 <h2 className="mb-3 font-poppins text-2xl font-medium text-text-white">
-                                    Search for Services
+                                    02 — Find What You Need
                                 </h2>
                                 <p className="max-w-sm font-poppins text-base font-normal text-text-border">
-                                    It’s the fast, easy way to apply for your
-                                    mortgage and access your application
-                                    anytime, anywhere. With our mortgage access
-                                    center
+                                    Search and explore local services available in your area.
                                 </p>
                             </div>
 
@@ -93,7 +87,7 @@ export default function HowItWorks() {
                                 </span>
                                 <div className="relative z-10 mt-16 lg:mt-12 ml-14  lg:w-[380px] border border-text-border bg-bg-black-100 p-6 lg:p-9 shadow-2xl backdrop-blur-sm">
                                     <h3 className="mb-4 text-center text-base lg:text-2xl font-medium text-text-white">
-                                        Search
+                                        Find What You Need
                                     </h3>
                                     <div className="bg-black-50 flex items-center gap-3 border border-text-border px-4 py-2.5">
                                         <input
@@ -101,7 +95,7 @@ export default function HowItWorks() {
                                             placeholder="Search services"
                                             className="flex-1 bg-transparent text-sm text-text-gray-50 focus:outline-none"
                                         />
-                                        <button className="text-text-gray-50 transition-colors hover:text-white">
+                                        <button type="button" className="text-text-gray-50 transition-colors hover:text-white">
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className="h-4 w-4"
@@ -138,15 +132,12 @@ export default function HowItWorks() {
                                         03
                                     </span>
                                     <div className="relative z-10 mt-2 lg:mt-12 ml-20 lg:w-[300px] border border-text-border bg-bg-black-100 p-9 shadow-2xl backdrop-blur-sm">
-                                        <span className="cursor-pointer text-4xl transition-transform hover:scale-110">
-                                            😮
-                                        </span>
-                                        <span className="cursor-pointer text-4xl transition-transform hover:scale-110">
-                                            😎
-                                        </span>
-                                        <span className="cursor-pointer text-4xl transition-transform hover:scale-110">
-                                            ❤️
-                                        </span>
+                                        <h3 className="mb-3 text-center text-base lg:text-xl font-medium text-text-white">
+                                            Booking
+                                        </h3>
+                                        <p className="text-center font-poppins text-sm font-normal text-text-border">
+                                            Secure, verified booking in just a few taps.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -154,10 +145,10 @@ export default function HowItWorks() {
                             {/* Right: Text */}
                            <div className="flex-1 md:pl-16 mt-20 md:mt-0">
                                 <h2 className="mb-3 font-poppins text-2xl font-medium text-text-white">
-                                    Sit back and Enjoy
+                                    03 — Booking
                                 </h2>
                                 <p className="max-w-sm font-poppins text-base font-normal text-text-border">
-                                    It’s about you and your family, having a comfortable payment, exceptional service and a lender.
+                                    Schedule your service instantly with secure, verified booking.
                                 </p>
                             </div>
                         </div>

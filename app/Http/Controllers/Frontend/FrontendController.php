@@ -20,7 +20,7 @@ class FrontendController extends Controller
     public function index(): Response
     {
         $services = Service::query()
-            ->with('vendor')
+            ->with(['vendor', 'category'])
             ->where('status', ActiveInactiveStatus::ACTIVE)
             ->orderByDesc('average_rating')
             ->take(40)
@@ -31,7 +31,7 @@ class FrontendController extends Controller
                 'name' => $service->vendor->shop_name ?? $service->title,
                 'rating' => (float) ($service->average_rating ?? 0),
                 'location' => $service->location ?? '—',
-                'service' => 'See Details',
+                'service' => $service->category?->name ?? 'Service',
                 'price' => (float) $service->price,
             ]);
 

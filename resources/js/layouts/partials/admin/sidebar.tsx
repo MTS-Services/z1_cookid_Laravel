@@ -61,6 +61,12 @@ const adminNavItems: NavItemType[] = [
                 slug: "finances",
             },
             {
+                title: "Payment gateways",
+                href: route('admin.fm.payment-gateways.edit'),
+                icon: DollarSign,
+                slug: "payment-gateways",
+            },
+            {
                 title: "Withdrawals",
                 href: route('admin.fm.withdrawals.index'),
                 icon: DollarSign,

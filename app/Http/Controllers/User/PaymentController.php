@@ -44,6 +44,14 @@ class PaymentController extends Controller
             abort(422, 'Invalid payment method.');
         }
 
+        if ($paymentMethod === 'stripe' && ! PaymentGatewayConfig::stripeActive()) {
+            abort(422, 'Stripe checkout is not available.');
+        }
+
+        if ($paymentMethod === 'paypal' && ! PaymentGatewayConfig::paypalActive()) {
+            abort(422, 'PayPal checkout is not available.');
+        }
+
         $service = $this->resolveService($encryptedServiceId);
         $user = $request->user();
 

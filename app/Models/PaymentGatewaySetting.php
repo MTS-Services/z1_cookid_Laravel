@@ -10,10 +10,12 @@ class PaymentGatewaySetting extends Model
         'stripe_publishable_key',
         'stripe_secret',
         'stripe_currency',
+        'stripe_active',
         'paypal_client_id',
         'paypal_client_secret',
         'paypal_environment',
         'paypal_currency',
+        'paypal_active',
     ];
 
     /**
@@ -24,6 +26,8 @@ class PaymentGatewaySetting extends Model
         return [
             'stripe_secret' => 'encrypted',
             'paypal_client_secret' => 'encrypted',
+            'stripe_active' => 'boolean',
+            'paypal_active' => 'boolean',
         ];
     }
 }

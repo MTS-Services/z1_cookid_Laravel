@@ -25,9 +25,8 @@ class PaymentGatewaySettingsController extends Controller
                 'paypal_currency' => $row?->paypal_currency ?? config('services.paypal.currency', 'usd'),
                 'has_stripe_secret' => $row !== null && filled($row->stripe_secret),
                 'has_paypal_client_secret' => $row !== null && filled($row->paypal_client_secret),
-            ],
-            'flash' => [
-                'success' => session('success'),
+                'stripe_active' => $row === null ? true : (bool) $row->stripe_active,
+                'paypal_active' => $row === null ? true : (bool) $row->paypal_active,
             ],
         ]);
     }
@@ -61,6 +60,9 @@ class PaymentGatewaySettingsController extends Controller
         if ($request->filled('paypal_client_secret')) {
             $setting->paypal_client_secret = (string) $validated['paypal_client_secret'];
         }
+
+        $setting->stripe_active = $request->boolean('stripe_active');
+        $setting->paypal_active = $request->boolean('paypal_active');
 
         $setting->save();
 

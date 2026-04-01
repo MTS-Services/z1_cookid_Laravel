@@ -21,10 +21,12 @@ class UpdatePaymentGatewaySettingsRequest extends FormRequest
             'stripe_publishable_key' => ['nullable', 'string', 'max:255'],
             'stripe_secret' => ['nullable', 'string', 'max:5000'],
             'stripe_currency' => ['nullable', 'string', 'max:10'],
+            'stripe_active' => ['sometimes', 'boolean'],
             'paypal_client_id' => ['nullable', 'string', 'max:255'],
             'paypal_client_secret' => ['nullable', 'string', 'max:5000'],
             'paypal_environment' => ['nullable', Rule::in(['sandbox', 'live'])],
             'paypal_currency' => ['nullable', 'string', 'max:10'],
+            'paypal_active' => ['sometimes', 'boolean'],
         ];
     }
 }

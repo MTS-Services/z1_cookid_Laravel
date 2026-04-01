@@ -9,9 +9,11 @@ import InputError from '@/components/input-error'
 type Settings = {
     stripe_publishable_key: string
     stripe_currency: string
+    stripe_active: boolean
     paypal_client_id: string
     paypal_environment: string
     paypal_currency: string
+    paypal_active: boolean
     has_stripe_secret: boolean
     has_paypal_client_secret: boolean
 }
@@ -28,10 +30,12 @@ export default function PaymentGatewaysPage({ settings, flash = {} }: Props) {
         stripe_publishable_key: settings.stripe_publishable_key,
         stripe_secret: '',
         stripe_currency: settings.stripe_currency,
+        stripe_active: settings.stripe_active,
         paypal_client_id: settings.paypal_client_id,
         paypal_client_secret: '',
         paypal_environment: settings.paypal_environment === 'live' ? 'live' : 'sandbox',
         paypal_currency: settings.paypal_currency,
+        paypal_active: settings.paypal_active,
     })
 
     const submit: FormEventHandler = (e) => {
@@ -63,16 +67,23 @@ export default function PaymentGatewaysPage({ settings, flash = {} }: Props) {
                         For security, secret keys are encrypted and stored safely in the database. If you do not want to change an existing secret key, simply leave that field empty — the current value will remain unchanged.
                     </p>
                 </header>
-
-                {pageFlash?.success ? (
-                    <p className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
-                        {pageFlash.success}
-                    </p>
-                ) : null}
-
                 <form onSubmit={submit} className="space-y-10 rounded-2xl border border-white/5 bg-bg-gray p-6">
                     <fieldset className="space-y-4">
                         <legend className="text-lg font-semibold">Stripe</legend>
+                        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-white/10 bg-bg-black/50 p-4">
+                            <input
+                                type="checkbox"
+                                checked={form.data.stripe_active}
+                                onChange={(e) => form.setData('stripe_active', e.target.checked)}
+                                className="mt-1 h-4 w-4 rounded border-text-border"
+                            />
+                            <span>
+                                <span className="font-medium text-white">Active at checkout</span>
+                                <span className="mt-1 block text-sm text-text-gray">
+                                    When off, customers will not see Stripe on the booking payment step.
+                                </span>
+                            </span>
+                        </label>
                         <div className="space-y-2">
                             <label htmlFor="stripe_publishable_key" className="text-sm font-medium text-text-gray">
                                 Publishable key
@@ -118,6 +129,20 @@ export default function PaymentGatewaysPage({ settings, flash = {} }: Props) {
 
                     <fieldset className="space-y-4">
                         <legend className="text-lg font-semibold">PayPal</legend>
+                        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-white/10 bg-bg-black/50 p-4">
+                            <input
+                                type="checkbox"
+                                checked={form.data.paypal_active}
+                                onChange={(e) => form.setData('paypal_active', e.target.checked)}
+                                className="mt-1 h-4 w-4 rounded border-text-border"
+                            />
+                            <span>
+                                <span className="font-medium text-white">Active at checkout</span>
+                                <span className="mt-1 block text-sm text-text-gray">
+                                    When off, customers will not see PayPal on the booking payment step.
+                                </span>
+                            </span>
+                        </label>
                         <div className="space-y-2">
                             <label htmlFor="paypal_client_id" className="text-sm font-medium text-text-gray">
                                 Client ID

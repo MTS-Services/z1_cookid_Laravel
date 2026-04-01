@@ -80,4 +80,45 @@ final class PaymentGatewayConfig
 
         return filled($v) ? (string) $v : (string) config('services.paypal.currency', 'usd');
     }
+
+    /**
+     * When no admin row exists, both gateways are treated as active (legacy behaviour).
+     */
+    public static function stripeActive(): bool
+    {
+        $row = self::row();
+
+        if ($row === null) {
+            return true;
+        }
+
+        return (bool) $row->stripe_active;
+    }
+
+    public static function paypalActive(): bool
+    {
+        $row = self::row();
+
+        if ($row === null) {
+            return true;
+        }
+
+        return (bool) $row->paypal_active;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function enabledCheckoutMethods(): array
+    {
+        $methods = [];
+        if (self::stripeActive()) {
+            $methods[] = 'stripe';
+        }
+        if (self::paypalActive()) {
+            $methods[] = 'paypal';
+        }
+
+        return $methods;
+    }
 }

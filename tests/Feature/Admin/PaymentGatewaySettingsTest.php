@@ -42,10 +42,12 @@ test('admin can save payment gateway settings', function () {
             'stripe_publishable_key' => 'pk_test_xxx',
             'stripe_secret' => 'sk_test_yyy',
             'stripe_currency' => 'usd',
+            'stripe_active' => true,
             'paypal_client_id' => 'paypal-client',
             'paypal_client_secret' => 'paypal-secret',
             'paypal_environment' => 'sandbox',
             'paypal_currency' => 'USD',
+            'paypal_active' => false,
         ])
         ->assertSessionHasNoErrors()
         ->assertRedirect(route('admin.fm.payment-gateways.edit'));
@@ -56,4 +58,6 @@ test('admin can save payment gateway settings', function () {
     expect($row->stripe_secret)->toBe('sk_test_yyy');
     expect($row->paypal_client_id)->toBe('paypal-client');
     expect($row->paypal_client_secret)->toBe('paypal-secret');
+    expect($row->stripe_active)->toBeTrue();
+    expect($row->paypal_active)->toBeFalse();
 });

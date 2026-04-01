@@ -12,6 +12,7 @@ use App\Models\OrderAddress;
 use App\Models\Payment;
 use App\Models\Service;
 use App\Notifications\VendorGenericNotification;
+use App\Support\PaymentGatewayConfig;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,6 +42,14 @@ class PaymentController extends Controller
         // Validate payment method whitelist
         if (! in_array($paymentMethod, ['stripe', 'paypal'], true)) {
             abort(422, 'Invalid payment method.');
+        }
+
+        if ($paymentMethod === 'stripe' && ! PaymentGatewayConfig::stripeActive()) {
+            abort(422, 'Stripe checkout is not available.');
+        }
+
+        if ($paymentMethod === 'paypal' && ! PaymentGatewayConfig::paypalActive()) {
+            abort(422, 'PayPal checkout is not available.');
         }
 
         $service = $this->resolveService($encryptedServiceId);
@@ -77,7 +86,7 @@ class PaymentController extends Controller
         // Consume session immediately — prevents replay attacks
         session()->forget('payment_pending');
 
-        $currency = (string) config('services.stripe.currency', 'usd');
+        $currency = PaymentGatewayConfig::stripeCurrency();
 
         if ($paymentMethod === PaymentMethod::Stripe->value) {
             $checkoutUrl = $this->createStripeCheckoutSession(
@@ -94,7 +103,7 @@ class PaymentController extends Controller
         }
 
         if ($paymentMethod === PaymentMethod::Paypal->value) {
-            $paypalCurrency = (string) config('services.paypal.currency', 'usd');
+            $paypalCurrency = PaymentGatewayConfig::paypalCurrency();
             $approvalUrl = $this->createPaypalOrder(
                 $service,
                 $amountInCents,
@@ -138,7 +147,7 @@ class PaymentController extends Controller
             return redirect()->route('frontend.home')->withErrors(['payment' => 'Missing Stripe session.']);
         }
 
-        $secretKey = (string) config('services.stripe.secret');
+        $secretKey = PaymentGatewayConfig::stripeSecret();
         if ($secretKey === '') {
             return redirect()->route('frontend.home')->withErrors(['payment' => 'Stripe is not configured.']);
         }
@@ -228,9 +237,9 @@ class PaymentController extends Controller
             return redirect()->route('frontend.home')->withErrors(['payment' => 'Payment not found.']);
         }
 
-        $clientId = (string) config('services.paypal.client_id');
-        $clientSecret = (string) config('services.paypal.secret');
-        $environment = (string) config('services.paypal.environment', 'sandbox');
+        $clientId = PaymentGatewayConfig::paypalClientId();
+        $clientSecret = PaymentGatewayConfig::paypalSecret();
+        $environment = PaymentGatewayConfig::paypalEnvironment();
         $baseUrl = $environment === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
 
         $tokenResponse = Http::asForm()
@@ -324,7 +333,7 @@ class PaymentController extends Controller
         Order $order,
         Payment $payment
     ): string {
-        $secretKey = (string) config('services.stripe.secret');
+        $secretKey = PaymentGatewayConfig::stripeSecret();
 
         if ($secretKey === '') {
             abort(500, 'Stripe is not configured.');
@@ -391,9 +400,9 @@ class PaymentController extends Controller
         Order $order,
         Payment $payment
     ): string {
-        $clientId = (string) config('services.paypal.client_id');
-        $clientSecret = (string) config('services.paypal.secret');
-        $environment = (string) config('services.paypal.environment', 'sandbox');
+        $clientId = PaymentGatewayConfig::paypalClientId();
+        $clientSecret = PaymentGatewayConfig::paypalSecret();
+        $environment = PaymentGatewayConfig::paypalEnvironment();
         if ($clientId === '' || $clientSecret === '') {
             abort(500, 'PayPal is not configured.');
         }

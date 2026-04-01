@@ -11,10 +11,12 @@ use App\Models\OrderAddress;
 use App\Models\Service;
 use App\Models\VendorEarning;
 use App\Notifications\VendorGenericNotification;
+use App\Support\PaymentGatewayConfig;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -121,12 +123,24 @@ class OrderController extends Controller
                 'price' => (float) $service->price,
             ],
             'supportPhone' => config('app.support_phone', '(219) 555-0114'),
+            'payment_methods' => [
+                'stripe' => PaymentGatewayConfig::stripeActive(),
+                'paypal' => PaymentGatewayConfig::paypalActive(),
+            ],
         ]);
     }
 
     // ─── Store Billing Address & Redirect to Payment ───────────────────────────
     public function billingAddressStore(Request $request): RedirectResponse
     {
+        $allowed = PaymentGatewayConfig::enabledCheckoutMethods();
+
+        if ($allowed === []) {
+            throw ValidationException::withMessages([
+                'payment_method' => __('No payment methods are available right now. Please contact support.'),
+            ]);
+        }
+
         $validated = $request->validate([
             'order_id' => ['required', 'exists:orders,id'],
             'service_id' => ['required', 'string'],
@@ -139,7 +153,7 @@ class OrderController extends Controller
             'city' => ['required', 'string', 'max:255'],
             'zip_code' => ['required', 'string', 'max:20'],
             'comments' => ['nullable', 'string', 'max:1000'],
-            'payment_method' => ['required', 'in:paypal,stripe'],
+            'payment_method' => ['required', Rule::in($allowed)],
         ]);
 
         // Resolve & verify service is still active

@@ -27,11 +27,26 @@ type BillingAddressProps = {
         price:   number;
     };
     supportPhone: string;
+    payment_methods?: {
+        stripe: boolean;
+        paypal: boolean;
+    };
 };
+
+function defaultPaymentMethod(pm: NonNullable<BillingAddressProps['payment_methods']>): 'paypal' | 'stripe' {
+    if (pm.stripe) return 'stripe';
+    if (pm.paypal) return 'paypal';
+    return 'stripe';
+}
 
 // ─── Component ─────────────────────────────────────────────────────────────────
 
-export default function BillingAddress({ address, summary, supportPhone }: BillingAddressProps) {
+export default function BillingAddress({
+    address,
+    summary,
+    supportPhone,
+    payment_methods = { stripe: true, paypal: true },
+}: BillingAddressProps) {
     const { data, setData, post, processing, errors } = useForm({
         order_id:       address?.order_id ?? '',
         service_id:     summary.id,
@@ -44,8 +59,11 @@ export default function BillingAddress({ address, summary, supportPhone }: Billi
         city:           address?.city       ?? '',
         zip_code:       address?.zip_code   ?? '',
         comments:       '',
-        payment_method: 'stripe' as 'paypal' | 'stripe',
+        payment_method: defaultPaymentMethod(payment_methods),
     });
+
+    const checkoutMethods = (['stripe', 'paypal'] as const).filter((m) => payment_methods[m]);
+    const hasAnyPaymentMethod = checkoutMethods.length > 0;
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -239,8 +257,15 @@ export default function BillingAddress({ address, summary, supportPhone }: Billi
                                 <h2 className="text-2xl font-semibold">Payment Method</h2>
                                 <p className="text-sm text-gray-400 mt-2">Select a payment method</p>
 
+                                {!hasAnyPaymentMethod ? (
+                                    <p className="mt-6 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+                                        Online payment is temporarily unavailable. Please contact support at{' '}
+                                        <span className="font-semibold text-white">{supportPhone}</span>.
+                                    </p>
+                                ) : null}
+
                                 <div className="mt-6 space-y-4">
-                                    {(['stripe', 'paypal'] as const).map(method => (
+                                    {checkoutMethods.map(method => (
                                         <button
                                             key={method}
                                             type="button"
@@ -311,7 +336,7 @@ export default function BillingAddress({ address, summary, supportPhone }: Billi
 
                                 <button
                                     type="submit"
-                                    disabled={processing}
+                                    disabled={processing || !hasAnyPaymentMethod}
                                     className="mt-8 w-full rounded bg-navy py-4 text-lg font-semibold transition hover:bg-navy/80 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {processing

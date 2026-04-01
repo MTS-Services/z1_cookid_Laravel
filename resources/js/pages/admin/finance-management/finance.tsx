@@ -1,6 +1,6 @@
 import { ActionButton } from '@/components/ui/action-button'
 import AdminLayout from '@/layouts/admin-layout'
-import { Banknote, CheckCircle2, Clock3, FileText, TrendingUp } from 'lucide-react'
+import { Banknote, CheckCircle2, Clock3, CreditCard, FileText, TrendingUp } from 'lucide-react'
 import { Head, Link } from '@inertiajs/react'
 
 interface Stats {
@@ -57,11 +57,18 @@ export default function FinanceDashboard({ stats }: Props) {
               Track vendor balances, review withdrawal requests, and monitor payouts.
             </p>
           </div>
-          <Link href={route('admin.fm.withdrawals.index')}>
-            <ActionButton IconNode={FileText} className="shrink-0">
-              Withdrawal Requests
-            </ActionButton>
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link href={route('admin.fm.payment-gateways.edit')}>
+              <ActionButton IconNode={CreditCard} className="shrink-0">
+                Payment gateways
+              </ActionButton>
+            </Link>
+            <Link href={route('admin.fm.withdrawals.index')}>
+              <ActionButton IconNode={FileText} className="shrink-0">
+                Withdrawal Requests
+              </ActionButton>
+            </Link>
+          </div>
         </header>
 
         <div className="grid gap-4 md:grid-cols-3">

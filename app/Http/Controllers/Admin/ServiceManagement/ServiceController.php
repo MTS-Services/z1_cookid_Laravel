@@ -44,7 +44,7 @@ class ServiceController extends Controller
 
     public function show(Service $service): Response
     {
-        $service->load(['vendor', 'category', 'carType', 'images', 'inclusions']);
+        $service->load(['vendor', 'category', 'carType', 'images']);
 
         return Inertia::render('admin/service-management/services/show', [
             'service' => $service,

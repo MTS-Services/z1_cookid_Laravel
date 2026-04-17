@@ -17,15 +17,18 @@ use Inertia\Response;
 
 class FrontendController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $perPage = (int) $request->integer('per_page', 9);
+        $perPage = max(6, min(48, $perPage));
+
         $services = Service::query()
             ->with(['vendor', 'category'])
             ->where('status', ActiveInactiveStatus::ACTIVE)
             ->orderByDesc('average_rating')
-            ->take(40)
-            ->get()
-            ->map(fn(Service $service) => [
+            ->paginate(2)
+            ->withQueryString()
+            ->through(fn(Service $service) => [
                 'id' => Crypt::encryptString((string) $service->id),
                 'image' => $service->image_url,
                 'name' => $service->vendor->shop_name ?? $service->title,

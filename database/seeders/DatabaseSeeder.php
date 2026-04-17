@@ -12,9 +12,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             AdminSeeder::class,
             VendorSeeder::class,
-            CategorySeeder::class,
-            CarTypeSeeder::class,
-            ServiceSeeder::class,
+            // CategorySeeder::class,
+            // CarTypeSeeder::class,
+            // ServiceSeeder::class,
             // OrderSeeder::class,
         ]);
     }

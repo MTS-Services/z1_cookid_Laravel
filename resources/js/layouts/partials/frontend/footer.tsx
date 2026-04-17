@@ -13,7 +13,7 @@ const FrontendFooter: React.FC = () => {
         <>
 
             <footer className="relative bg-bg-black-100 py-6 md:py-12 text-text-white z-10 pt-16 md:pt-20">
-            <GrowYourCarServiceBusiness />
+                <GrowYourCarServiceBusiness />
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
                         {/* Logo and Social Media */}
@@ -98,7 +98,7 @@ const FrontendFooter: React.FC = () => {
                             <ul className="space-y-2">
                                 <li>
                                     <Link
-                                        href="/find-services"
+                                        href="/services"
                                         className="font-poppins font-normal text-text-white transition-colors"
                                     >
                                         Find Services

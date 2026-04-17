@@ -26,7 +26,7 @@ class FrontendController extends Controller
             ->with(['vendor', 'category'])
             ->where('status', ActiveInactiveStatus::ACTIVE)
             ->orderByDesc('average_rating')
-            ->paginate(2)
+            ->paginate($perPage)
             ->withQueryString()
             ->through(fn(Service $service) => [
                 'id' => Crypt::encryptString((string) $service->id),

@@ -27,7 +27,7 @@ class VendorAuthController extends Controller
     */
     public function showLogin()
     {
-        if (Auth::check()) {
+        if (Auth::guard('vendor')->check()) {
             return redirect()->route('vendor.dashboard');
         }
 

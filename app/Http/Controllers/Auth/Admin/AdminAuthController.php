@@ -7,6 +7,7 @@ use App\Enums\OtpPurpose;
 use App\Http\Controllers\Controller;
 use App\Mail\Otp\AdminOtpMail;
 use App\Models\Admin;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -17,8 +18,12 @@ use Inertia\Response;
 
 class AdminAuthController extends Controller
 {
-    public function showLogin(): Response
+    public function showLogin(): Response|RedirectResponse
     {
+        if (Auth::guard('admin')->check()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         return Inertia::render('admin/auth/login');
     }
 
@@ -45,6 +50,7 @@ class AdminAuthController extends Controller
         if ($admin->otp_verified_at) {
             Auth::guard('admin')->login($admin);
             $request->session()->regenerate();
+
             return redirect()->intended(route('admin.dashboard'));
         }
 
@@ -85,19 +91,19 @@ class AdminAuthController extends Controller
     {
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
-            'last_name'  => ['required', 'string', 'max:255'],
-            'email'      => ['required', 'email', 'unique:admins,email'],
-            'phone'      => ['required', 'string', 'max:20'],
-            'password'   => ['required', 'confirmed', 'min:8'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:admins,email'],
+            'phone' => ['required', 'string', 'max:20'],
+            'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
         $admin = Admin::create([
             'first_name' => $validated['first_name'],
-            'last_name'  => $validated['last_name'],
-            'email'      => $validated['email'],
-            'phone'      => $validated['phone'],
-            'password'   => Hash::make($validated['password']),
-            'status'     => ActiveInactiveStatus::ACTIVE,
+            'last_name' => $validated['last_name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'password' => Hash::make($validated['password']),
+            'status' => ActiveInactiveStatus::ACTIVE,
         ]);
 
         Auth::guard('admin')->login($admin);

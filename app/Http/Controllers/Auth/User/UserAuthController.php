@@ -22,7 +22,7 @@ class UserAuthController extends Controller
 {
     public function showLogin(Request $request): Response|RedirectResponse
     {
-        if (Auth::check()) {
+        if (Auth::guard('web')->check()) {
             return redirect()->route('user.profile');
         }
 
@@ -143,7 +143,7 @@ class UserAuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
